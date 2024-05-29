@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foody_zidio/pages/login.dart';
 
 void main() {
   runApp(const MainApp());
@@ -9,12 +10,14 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
+    return  MaterialApp (
+   debugShowCheckedModeBanner: false,
+   title: 'Foody',
+   theme: ThemeData(
+    primaryColor: Colors.yellow,
+    visualDensity: VisualDensity.adaptivePlatformDensity,
+   ),
+   home: LogIn(),
     );
   }
 }
