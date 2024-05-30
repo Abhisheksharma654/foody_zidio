@@ -17,7 +17,7 @@ class MainApp extends StatelessWidget {
     primaryColor: Colors.yellow,
     visualDensity: VisualDensity.adaptivePlatformDensity,
    ),
-   home: LogIn(),
+   home: const LogIn(),
     );
   }
 }
