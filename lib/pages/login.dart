@@ -145,6 +145,7 @@ class _LogInState extends State<LogIn> {
     return Material(
       elevation: 5.0,
       borderRadius: BorderRadius.circular(20),
+      
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 8.0),
         width: 200,
