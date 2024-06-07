@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foody_zidio/pages/home.dart';
 
-
 void main() {
   runApp(const MainApp());
 }
