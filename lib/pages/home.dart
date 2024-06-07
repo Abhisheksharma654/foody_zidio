@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:foody_zidio/pages/details.dart';
 import 'package:foody_zidio/widget/widget_support.dart';
-import 'package:foody_zidio/pages/details.dart';
-import 'package:foody_zidio/widget/widget_support.dart';
+
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -19,7 +18,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
-          margin: EdgeInsets.only(top: 50.0, left: 20.0),
+          margin: const EdgeInsets.only(top: 50.0, left: 20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -28,30 +27,30 @@ class _HomeState extends State<Home> {
                 children: [
                   Text("Hello USER,", style: AppWidget.boldTextFeildStyle()),
                   Container(
-                    margin: EdgeInsets.only(right: 20.0),
-                    padding: EdgeInsets.all(3),
+                    margin: const EdgeInsets.only(right: 20.0),
+                    padding: const EdgeInsets.all(3),
                     decoration: BoxDecoration(
                         color: Colors.black,
                         borderRadius: BorderRadius.circular(8)),
-                    child: Icon(
+                    child: const Icon(
                       Icons.shopping_cart_outlined,
                       color: Colors.white,
                     ),
                   )
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20.0,
               ),
               Text("Delicious Food", style: AppWidget.HeadlineTextFeildStyle()),
               Text("Discover and Get Great Food",
                   style: AppWidget.LightTextFeildStyle()),
-              SizedBox(
+              const SizedBox(
                 height: 20.0,
               ),
               Container(
-                  margin: EdgeInsets.only(right: 20.0), child: showItem()),
-              SizedBox(
+                  margin: const EdgeInsets.only(right: 20.0), child: showItem()),
+              const SizedBox(
                 height: 30.0,
               ),
               SingleChildScrollView(
@@ -61,15 +60,15 @@ class _HomeState extends State<Home> {
                     GestureDetector(
                       onTap: () {
                         Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => Details()));
+                            MaterialPageRoute(builder: (context) => const Details()));
                       },
                       child: Container(
-                        margin: EdgeInsets.all(4),
+                        margin: const EdgeInsets.all(4),
                         child: Material(
                           elevation: 5.0,
                           borderRadius: BorderRadius.circular(20),
                           child: Container(
-                            padding: EdgeInsets.all(14),
+                            padding: const EdgeInsets.all(14),
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -82,12 +81,12 @@ class _HomeState extends State<Home> {
                                   Text("Veggie Taco Hash",
                                       style:
                                           AppWidget.semiBoldTextFeildStyle()),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 5.0,
                                   ),
                                   Text("Fresh and Healthy",
                                       style: AppWidget.LightTextFeildStyle()),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 5.0,
                                   ),
                                   Text(
@@ -99,16 +98,16 @@ class _HomeState extends State<Home> {
                         ),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 15.0,
                     ),
                     Container(
-                      margin: EdgeInsets.all(4),
+                      margin: const EdgeInsets.all(4),
                       child: Material(
                         elevation: 5.0,
                         borderRadius: BorderRadius.circular(20),
                         child: Container(
-                          padding: EdgeInsets.all(14),
+                          padding: const EdgeInsets.all(14),
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -120,12 +119,12 @@ class _HomeState extends State<Home> {
                                 ),
                                 Text("Mix Veg Salad",
                                     style: AppWidget.semiBoldTextFeildStyle()),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5.0,
                                 ),
                                 Text("Spicy with Onion",
                                     style: AppWidget.LightTextFeildStyle()),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5.0,
                                 ),
                                 Text(
@@ -139,16 +138,16 @@ class _HomeState extends State<Home> {
                   ],
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 30.0,
               ),
               Container(
-                margin: EdgeInsets.only(right: 20.0),
+                margin: const EdgeInsets.only(right: 20.0),
                 child: Material(
                   elevation: 5.0,
                   borderRadius: BorderRadius.circular(20),
                   child: Container(
-                    padding: EdgeInsets.all(5),
+                    padding: const EdgeInsets.all(5),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -158,30 +157,30 @@ class _HomeState extends State<Home> {
                           width: 120,
                           fit: BoxFit.cover,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 10.0,
                         ),
                         Column(
                           children: [
-                            Container(
+                            SizedBox(
                                 width: MediaQuery.of(context).size.width / 2,
                                 child: Text(
                                   "Mediterranean Chickpea Salad",
                                   style: AppWidget.semiBoldTextFeildStyle(),
                                 )),
-                            SizedBox(
+                            const SizedBox(
                               height: 5.0,
                             ),
-                            Container(
+                            SizedBox(
                                 width: MediaQuery.of(context).size.width / 2,
                                 child: Text(
                                   "Honey goot cheese",
                                   style: AppWidget.LightTextFeildStyle(),
                                 )),
-                            SizedBox(
+                            const SizedBox(
                               height: 5.0,
                             ),
-                            Container(
+                            SizedBox(
                                 width: MediaQuery.of(context).size.width / 2,
                                 child: Text(
                                   "\u{20B9}${250}",
@@ -194,16 +193,16 @@ class _HomeState extends State<Home> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20.0,
               ),
               Container(
-                margin: EdgeInsets.only(right: 10.0),
+                margin: const EdgeInsets.only(right: 10.0),
                 child: Material(
                   elevation: 5.0,
                   borderRadius: BorderRadius.circular(20),
                   child: Container(
-                    padding: EdgeInsets.all(5),
+                    padding: const EdgeInsets.all(5),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -213,30 +212,30 @@ class _HomeState extends State<Home> {
                           width: 120,
                           fit: BoxFit.cover,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 20.0,
                         ),
                         Column(
                           children: [
-                            Container(
+                            SizedBox(
                                 width: MediaQuery.of(context).size.width / 2,
                                 child: Text(
                                   "Veggie Taco Hash",
                                   style: AppWidget.semiBoldTextFeildStyle(),
                                 )),
-                            SizedBox(
+                            const SizedBox(
                               height: 5.0,
                             ),
-                            Container(
+                            SizedBox(
                                 width: MediaQuery.of(context).size.width / 2,
                                 child: Text(
                                   "Honey goot cheese",
                                   style: AppWidget.LightTextFeildStyle(),
                                 )),
-                            SizedBox(
+                            const SizedBox(
                               height: 5.0,
                             ),
-                            Container(
+                            SizedBox(
                                 width: MediaQuery.of(context).size.width / 2,
                                 child: Text(
                                   "\u{20B9}${200}",
@@ -275,7 +274,7 @@ class _HomeState extends State<Home> {
               decoration: BoxDecoration(
                   color: icecream ? Colors.black : Colors.white,
                   borderRadius: BorderRadius.circular(10)),
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               child: Image.asset(
                 "images/ice-cream.png",
                 height: 40,
@@ -301,7 +300,7 @@ class _HomeState extends State<Home> {
               decoration: BoxDecoration(
                   color: pizza ? Colors.black : Colors.white,
                   borderRadius: BorderRadius.circular(10)),
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               child: Image.asset(
                 "images/pizza.png",
                 height: 40,
@@ -327,7 +326,7 @@ class _HomeState extends State<Home> {
               decoration: BoxDecoration(
                   color: salad ? Colors.black : Colors.white,
                   borderRadius: BorderRadius.circular(10)),
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               child: Image.asset(
                 "images/salad.png",
                 height: 40,
@@ -353,7 +352,7 @@ class _HomeState extends State<Home> {
               decoration: BoxDecoration(
                   color: burger ? Colors.black : Colors.white,
                   borderRadius: BorderRadius.circular(10)),
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               child: Image.asset(
                 "images/burger.png",
                 height: 40,
