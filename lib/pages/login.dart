@@ -26,7 +26,7 @@ class _LogInState extends State<LogIn> {
     return Container(
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height / 2.5,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -44,26 +44,26 @@ class _LogInState extends State<LogIn> {
       margin: EdgeInsets.only(top: MediaQuery.of(context).size.height / 3),
       height: MediaQuery.of(context).size.height / 2,
       width: MediaQuery.of(context).size.width,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(40),
           topRight: Radius.circular(40),
         ),
       ),
-      child: SizedBox.shrink(), // Placeholder for potential future content
+      child: const SizedBox.shrink(), // Placeholder for potential future content
     );
   }
 
   Widget _buildLoginContent(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: 60.0, left: 20.0, right: 20.0),
+      margin: const EdgeInsets.only(top: 60.0, left: 20.0, right: 20.0),
       child: Column(
         children: [
           _buildLogo(context),
-          SizedBox(height: 50.0),
+          const SizedBox(height: 50.0),
           _buildLoginForm(context),
-          SizedBox(height: 70.0),
+          const SizedBox(height: 70.0),
           _buildSignUpPrompt(),
         ],
       ),
@@ -85,7 +85,7 @@ class _LogInState extends State<LogIn> {
       elevation: 5.0,
       borderRadius: BorderRadius.circular(20),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height / 2,
         decoration: BoxDecoration(
@@ -94,15 +94,15 @@ class _LogInState extends State<LogIn> {
         ),
         child: Column(
           children: [
-            SizedBox(height: 30.0),
+            const SizedBox(height: 30.0),
             Text("Login", style: AppWidget.HeadlineTextFeildStyle()),
-            SizedBox(height: 30.0),
+            const SizedBox(height: 30.0),
             _buildEmailField(),
-            SizedBox(height: 30.0),
+            const SizedBox(height: 30.0),
             _buildPasswordField(),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             _buildForgotPassword(),
-            SizedBox(height: 80.0),
+            const SizedBox(height: 80.0),
             _buildLoginButton(),
           ],
         ),
@@ -115,7 +115,7 @@ class _LogInState extends State<LogIn> {
       decoration: InputDecoration(
         labelText: 'Email',
         hintStyle: AppWidget.semiBoldTextFeildStyle(),
-        prefixIcon: Icon(Icons.email_outlined),
+        prefixIcon: const Icon(Icons.email_outlined),
       ),
     );
   }
@@ -126,7 +126,7 @@ class _LogInState extends State<LogIn> {
       decoration: InputDecoration(
         labelText: 'Password',
         hintStyle: AppWidget.semiBoldTextFeildStyle(),
-        prefixIcon: Icon(Icons.password_outlined),
+        prefixIcon: const Icon(Icons.password_outlined),
       ),
     );
   }
@@ -147,13 +147,13 @@ class _LogInState extends State<LogIn> {
       borderRadius: BorderRadius.circular(20),
       
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 8.0),
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
         width: 200,
         decoration: BoxDecoration(
-          color: Color(0Xffff5722),
+          color: const Color(0Xffff5722),
           borderRadius: BorderRadius.circular(20),
         ),
-        child: Center(
+        child: const Center(
           child: Text(
             "LOGIN",
             style: TextStyle(
