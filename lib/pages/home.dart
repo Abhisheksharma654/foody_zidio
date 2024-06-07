@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:foody_zidio/pages/details.dart';
 import 'package:foody_zidio/widget/widget_support.dart';
-import 'package:foody_zidio/pages/details.dart';
-import 'package:foody_zidio/widget/widget_support.dart';
+
 
 class Home extends StatefulWidget {
   const Home({super.key});
