@@ -1,8 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import 'package:foody_zidio/pages/details.dart';
-import 'package:foody_zidio/widget/widget_support.dart';
 
+import 'package:foody_zidio/widget/widget_support.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -25,7 +25,7 @@ class _HomeState extends State<Home> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Hello USER,", style: AppWidget.boldTextFeildStyle()),
+                  Text("Hello   $User,", style: AppWidget.boldTextFeildStyle()),
                   Container(
                     margin: const EdgeInsets.only(right: 20.0),
                     padding: const EdgeInsets.all(3),
@@ -48,8 +48,7 @@ class _HomeState extends State<Home> {
               const SizedBox(
                 height: 20.0,
               ),
-              Container(
-                  margin: const EdgeInsets.only(right: 20.0), child: showItem()),
+              Container(margin: const EdgeInsets.only(right: 20.0), child: showItem()),
               const SizedBox(
                 height: 30.0,
               ),
@@ -58,9 +57,8 @@ class _HomeState extends State<Home> {
                 child: Row(
                   children: [
                     GestureDetector(
-                      onTap: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => const Details()));
+                      onTap: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=> const Details()));
                       },
                       child: Container(
                         margin: const EdgeInsets.all(4),
@@ -79,8 +77,7 @@ class _HomeState extends State<Home> {
                                     fit: BoxFit.cover,
                                   ),
                                   Text("Veggie Taco Hash",
-                                      style:
-                                          AppWidget.semiBoldTextFeildStyle()),
+                                      style: AppWidget.semiBoldTextFeildStyle()),
                                   const SizedBox(
                                     height: 5.0,
                                   ),
@@ -90,7 +87,7 @@ class _HomeState extends State<Home> {
                                     height: 5.0,
                                   ),
                                   Text(
-                                    "\u{20B9}${300}",
+                                    "\$25",
                                     style: AppWidget.semiBoldTextFeildStyle(),
                                   )
                                 ]),
@@ -128,7 +125,7 @@ class _HomeState extends State<Home> {
                                   height: 5.0,
                                 ),
                                 Text(
-                                  "\u{20B9}${280}",
+                                  "\$28",
                                   style: AppWidget.semiBoldTextFeildStyle(),
                                 )
                               ]),
@@ -157,47 +154,30 @@ class _HomeState extends State<Home> {
                           width: 120,
                           fit: BoxFit.cover,
                         ),
-                        const SizedBox(
-                          width: 10.0,
-                        ),
-                        Column(
-                          children: [
+                        const SizedBox(width: 20.0,),
+                        Column(children: [
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width/2,
+                            child: Text("Mediterranean Chickpea Salad", style: AppWidget.semiBoldTextFeildStyle(),)),
+                            const SizedBox(height: 5.0,),
                             SizedBox(
-                                width: MediaQuery.of(context).size.width / 2,
-                                child: Text(
-                                  "Mediterranean Chickpea Salad",
-                                  style: AppWidget.semiBoldTextFeildStyle(),
-                                )),
-                            const SizedBox(
-                              height: 5.0,
-                            ),
+                            width: MediaQuery.of(context).size.width/2,
+                            child: Text("Honey goot cheese", style: AppWidget.LightTextFeildStyle(),)),
+                              const SizedBox(height: 5.0,),
                             SizedBox(
-                                width: MediaQuery.of(context).size.width / 2,
-                                child: Text(
-                                  "Honey goot cheese",
-                                  style: AppWidget.LightTextFeildStyle(),
-                                )),
-                            const SizedBox(
-                              height: 5.0,
-                            ),
-                            SizedBox(
-                                width: MediaQuery.of(context).size.width / 2,
-                                child: Text(
-                                  "\u{20B9}${250}",
-                                  style: AppWidget.semiBoldTextFeildStyle(),
-                                ))
-                          ],
-                        )
+                            width: MediaQuery.of(context).size.width/2,
+                            child: Text("\$28", style: AppWidget.semiBoldTextFeildStyle(),))
+                        ],)
                       ],
                     ),
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 20.0,
+                const SizedBox(
+                height: 30.0,
               ),
               Container(
-                margin: const EdgeInsets.only(right: 10.0),
+                margin: const EdgeInsets.only(right: 20.0),
                 child: Material(
                   elevation: 5.0,
                   borderRadius: BorderRadius.circular(20),
@@ -212,37 +192,20 @@ class _HomeState extends State<Home> {
                           width: 120,
                           fit: BoxFit.cover,
                         ),
-                        const SizedBox(
-                          width: 20.0,
-                        ),
-                        Column(
-                          children: [
+                        const SizedBox(width: 20.0,),
+                        Column(children: [
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width/2,
+                            child: Text("Veggie Taco Hash", style: AppWidget.semiBoldTextFeildStyle(),)),
+                            const SizedBox(height: 5.0,),
                             SizedBox(
-                                width: MediaQuery.of(context).size.width / 2,
-                                child: Text(
-                                  "Veggie Taco Hash",
-                                  style: AppWidget.semiBoldTextFeildStyle(),
-                                )),
-                            const SizedBox(
-                              height: 5.0,
-                            ),
+                            width: MediaQuery.of(context).size.width/2,
+                            child: Text("Honey goot cheese", style: AppWidget.LightTextFeildStyle(),)),
+                              const SizedBox(height: 5.0,),
                             SizedBox(
-                                width: MediaQuery.of(context).size.width / 2,
-                                child: Text(
-                                  "Honey goot cheese",
-                                  style: AppWidget.LightTextFeildStyle(),
-                                )),
-                            const SizedBox(
-                              height: 5.0,
-                            ),
-                            SizedBox(
-                                width: MediaQuery.of(context).size.width / 2,
-                                child: Text(
-                                  "\u{20B9}${200}",
-                                  style: AppWidget.semiBoldTextFeildStyle(),
-                                ))
-                          ],
-                        )
+                            width: MediaQuery.of(context).size.width/2,
+                            child: Text("\$28", style: AppWidget.semiBoldTextFeildStyle(),))
+                        ],)
                       ],
                     ),
                   ),
