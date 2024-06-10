@@ -172,8 +172,7 @@ class _LogInState extends State<LogIn> {
   Widget _buildSignUpPrompt() {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Signup()));
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> Signup()));
       },
       child: Text(
         "Don't have an account? Sign up",
