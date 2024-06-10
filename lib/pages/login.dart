@@ -84,6 +84,7 @@ class _LogInState extends State<LogIn> {
     return Material(
       elevation: 5.0,
       borderRadius: BorderRadius.circular(20),
+      
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         width: MediaQuery.of(context).size.width,

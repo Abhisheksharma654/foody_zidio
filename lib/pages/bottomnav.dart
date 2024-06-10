@@ -1,9 +1,9 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:foody_zidio/pages/home.dart';
-import 'package:foody_zidio/pages/order.dart';
-import 'package:foody_zidio/pages/profile.dart';
-import 'package:foody_zidio/pages/wallet.dart';
+//import 'package:foody_zidio/pages/order.dart';
+//import 'package:foody_zidio/pages/profile.dart';
+//import 'package:foody_zidio/pages/wallet.dart';
 
 class BottomNav extends StatefulWidget {
   const BottomNav({super.key});
