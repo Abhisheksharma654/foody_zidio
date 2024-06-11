@@ -32,8 +32,9 @@ class _LogInState extends State<LogIn> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFFff5c30),
-            Color(0xFFe74b1a),
+            Color(0xFFF44336),
+            Color(0xFFF44336),
+           
           ],
         ),
       ),
@@ -104,7 +105,7 @@ class _LogInState extends State<LogIn> {
             _buildPasswordField(),
             const SizedBox(height: 20.0),
             _buildForgotPassword(),
-            const SizedBox(height: 40.0),
+            const SizedBox(height: 20.0),
             _buildLoginButton(),
           ],
         ),
@@ -151,7 +152,7 @@ class _LogInState extends State<LogIn> {
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         width: 200,
         decoration: BoxDecoration(
-          color: const Color(0Xffff5722),
+          color: Colors.red,
           borderRadius: BorderRadius.circular(20),
         ),
         child: const Center(
@@ -170,14 +171,27 @@ class _LogInState extends State<LogIn> {
   }
 
   Widget _buildSignUpPrompt() {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> Signup()));
-      },
-      child: Text(
-        "Don't have an account? Sign up",
-        style: AppWidget.semiBoldTextFeildStyle(),
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+         Text(
+          " Don't Have an account?",
+          style:AppWidget.semiBoldTextFeildStyle(),
+        ),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => const Signup()));
+          },
+          child: const Text(
+            ' Register Now',
+            style: TextStyle(
+              color: Colors.redAccent,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

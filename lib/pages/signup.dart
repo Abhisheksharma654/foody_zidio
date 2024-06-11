@@ -32,8 +32,8 @@ class _SignupState extends State<Signup> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFFff5c30),
-            Color(0xFFe74b1a),
+            Color(0xFFF44336),
+            Color(0xFFF44336),
           ],
         ),
       ),
@@ -52,7 +52,8 @@ class _SignupState extends State<Signup> {
           topRight: Radius.circular(40),
         ),
       ),
-      child: const SizedBox.shrink(), // Placeholder for potential future content
+      child:
+          const SizedBox.shrink(), // Placeholder for potential future content
     );
   }
 
@@ -85,7 +86,6 @@ class _SignupState extends State<Signup> {
     return Material(
       elevation: 5.0,
       borderRadius: BorderRadius.circular(20),
-      
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         width: MediaQuery.of(context).size.width,
@@ -98,13 +98,12 @@ class _SignupState extends State<Signup> {
           children: [
             const SizedBox(height: 30.0),
             Text("Signup", style: AppWidget.HeadlineTextFeildStyle()),
-             const SizedBox(height: 10.0),
+            const SizedBox(height: 10.0),
             _userTextfield(),
             const SizedBox(height: 10.0),
             _buildEmailField(),
             const SizedBox(height: 10.0),
             _buildPasswordField(),
-          
             const SizedBox(height: 50.0),
             _buildSignupButton(),
           ],
@@ -112,7 +111,8 @@ class _SignupState extends State<Signup> {
       ),
     );
   }
- Widget _userTextfield() {
+
+  Widget _userTextfield() {
     return TextField(
       decoration: InputDecoration(
         labelText: 'Name',
@@ -121,6 +121,7 @@ class _SignupState extends State<Signup> {
       ),
     );
   }
+
   Widget _buildEmailField() {
     return TextField(
       decoration: InputDecoration(
@@ -130,7 +131,7 @@ class _SignupState extends State<Signup> {
       ),
     );
   }
-   
+
   Widget _buildPasswordField() {
     return TextField(
       obscureText: true,
@@ -141,16 +142,16 @@ class _SignupState extends State<Signup> {
       ),
     );
   }
+
   Widget _buildSignupButton() {
     return Material(
       elevation: 5.0,
       borderRadius: BorderRadius.circular(20),
-      
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         width: 200,
         decoration: BoxDecoration(
-          color: const Color(0Xffff5722),
+          color: Colors.red,
           borderRadius: BorderRadius.circular(20),
         ),
         child: const Center(
@@ -169,14 +170,27 @@ class _SignupState extends State<Signup> {
   }
 
   Widget _buildSignUpPrompt() {
-    return GestureDetector(
-      onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context)=> LogIn()));
-      },
-      child: Text(
-        " Have an account? Sign in",
-        style: AppWidget.semiBoldTextFeildStyle(),
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+         Text(
+          ' Have an account?',
+          style:AppWidget.semiBoldTextFeildStyle(),
+        ),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => const LogIn()));
+          },
+          child: const Text(
+            ' Login Now',
+            style: TextStyle(
+              color: Colors.redAccent,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

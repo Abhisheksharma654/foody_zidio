@@ -80,7 +80,8 @@ class _OnboardState extends State<Onboard> {
           GestureDetector(
             onTap: () {
               if (currentIndex == contents.length - 1) {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=> LogIn()));
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => LogIn()));
               }
               _controller.nextPage(
                 duration: const Duration(milliseconds: 100),
@@ -88,7 +89,11 @@ class _OnboardState extends State<Onboard> {
               );
             },
             child: Container(
-              decoration: const BoxDecoration(color: Colors.red),
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius:
+                    BorderRadius.circular(20), // Add the border radius here
+              ),
               height: 40,
               margin: const EdgeInsets.all(40),
               width: double.infinity,
@@ -99,7 +104,7 @@ class _OnboardState extends State<Onboard> {
                 ),
               ),
             ),
-          ),
+          )
         ],
       ),
     );
