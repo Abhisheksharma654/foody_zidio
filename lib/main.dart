@@ -1,10 +1,8 @@
 
 
 import 'package:flutter/material.dart';
-
-
-import 'package:foody_zidio/pages/onboard.dart';
-
+import 'package:foody_zidio/pages/home.dart';
+import 'package:foody_zidio/pages/login.dart';
 
 
 void main() {
@@ -19,11 +17,10 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Foody',
-      theme: ThemeData( 
-       
+      theme: ThemeData(
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: const Onboard(),
+      home: const Home(),
     );
   }
 }

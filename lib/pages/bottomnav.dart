@@ -5,7 +5,6 @@ import 'package:foody_zidio/pages/order.dart';
 import 'package:foody_zidio/pages/profile.dart';
 import 'package:foody_zidio/pages/wallet.dart';
 
-
 class BottomNav extends StatefulWidget {
   const BottomNav({super.key});
 
