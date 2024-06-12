@@ -219,7 +219,7 @@ class _HomeState extends State<Home> {
                         Column(
                           children: [
                             SizedBox(
-                                width: MediaQuery.of(context).size.width / 2,
+                                width: MediaQuery.of(context).size.width / 2, 
                                 child: Text(
                                   "Veggie Taco Hash",
                                   style: AppWidget.semiBoldTextFeildStyle(),

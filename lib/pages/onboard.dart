@@ -81,7 +81,7 @@ class _OnboardState extends State<Onboard> {
             onTap: () {
               if (currentIndex == contents.length - 1) {
                 Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => LogIn()));
+                    context, MaterialPageRoute(builder: (context) => const LogIn()));
               }
               _controller.nextPage(
                 duration: const Duration(milliseconds: 100),
