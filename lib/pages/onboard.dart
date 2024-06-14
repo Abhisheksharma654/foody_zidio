@@ -89,7 +89,7 @@ class _OnboardState extends State<Onboard> {
             },
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.red,
+                color: const Color.fromRGBO(244, 67, 54, 1),
                 borderRadius:
                     BorderRadius.circular(20), // Add the border radius here
               ),
