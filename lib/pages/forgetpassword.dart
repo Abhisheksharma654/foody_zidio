@@ -1,122 +1,169 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:foody_zidio/pages/signup.dart';
 
+class ForgotPassword extends StatefulWidget {
+  const ForgotPassword({super.key});
 
-class ForgotPasswordPage extends StatefulWidget {
   @override
-  State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
+  State<ForgotPassword> createState() => _ForgotPasswordState();
 }
 
-class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
-  final emailController = TextEditingController();
+class _ForgotPasswordState extends State<ForgotPassword> {
+  TextEditingController mailcontroller = new TextEditingController();
 
-  Future<void> _resetPassword() async {
+  String email = "";
+
+  final _formkey = GlobalKey<FormState>();
+
+  resetPassword() async {
     try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(
-        email: emailController.text.trim(),
-      );
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Password Reset Email Sent'),
-          content: Text('Please check your email to reset your password.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pop(context); // Navigate back to the login screen
-              },
-              child: Text('OK'),
-            ),
-          ],
-        ),
-      );
-    } catch (error) {
-      String errorMessage = 'An error occurred';
-      if (error is FirebaseAuthException) {
-        // Handle FirebaseAuthException errors
-        switch (error.code) {
-          case 'invalid-email':
-            errorMessage = 'Invalid email address';
-            break;
-          case 'user-not-found':
-            errorMessage = 'User not found';
-            break;
-          // Add more cases for other possible error codes
-          default:
-            errorMessage = 'An error occurred';
-        }
-      } else {
-        // Handle generic errors
-        errorMessage = error.toString();
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+        "Password Reset Email has been sent !",
+        style: TextStyle(fontSize: 18.0),
+      )));
+    } on FirebaseAuthException catch (e) {
+      if (e.code == "user-not-found") {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+          "No user found for that email.",
+          style: TextStyle(fontSize: 18.0),
+        )));
       }
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Error'),
-          content: Text(errorMessage),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('OK'),
-            ),
-          ],
-        ),
-      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Forgot Password'),
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(20.0),
+      backgroundColor: Colors.white,
+      body: Container(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            SizedBox(
+              height: 70.0,
+            ),
+            Container(
+              alignment: Alignment.topCenter,
+              child: Text(
+                "Password Recovery",
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 30.0,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+            SizedBox(
+              height: 10.0,
+            ),
             Text(
-              'Forgot Your Password?',
+              "Enter your mail",
               style: TextStyle(
-                fontSize: 24.0,
-                fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold),
+            ),
+            Expanded(
+                child: Form(
+                  key: _formkey,
+                    child: Padding(
+              padding: EdgeInsets.only(left: 10.0),
+              child: ListView(
+                children: [
+                  Container(
+                    padding: EdgeInsets.only(left: 10.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black, width: 2.0),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: TextFormField(
+                      controller: mailcontroller,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please Enter Email';
+                        }
+                        return null;
+                      },
+                      style: TextStyle(color: Colors.black),
+                      decoration: InputDecoration(
+                          hintText: "Email",
+                          hintStyle:
+                              TextStyle(fontSize: 18.0, color: Colors.black),
+                          prefixIcon: Icon(
+                            Icons.person,
+                            color: Colors.black,
+                            size: 30.0,
+                          ),
+                          border: InputBorder.none),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 40.0,
+                  ),
+                  GestureDetector(
+                    onTap: (){
+                    if(_formkey.currentState!.validate()){
+                      setState(() {
+                        email= mailcontroller.text;
+                      });
+                      resetPassword();
+                    }
+                    },
+                    child: Container(
+                      width: 140,
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Center(
+                        child: Text(
+                          "Send Email",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 50.0,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Don't have an account?",
+                        style: TextStyle(fontSize: 18.0, color: Colors.black),
+                      ),
+                      SizedBox(
+                        width: 5.0,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => SignUp()));
+                        },
+                        child: Text(
+                          "Create",
+                          style: TextStyle(
+                              color: Color.fromARGB(225, 184, 166, 6),
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.w500),
+                        ),
+                      )
+                    ],
+                  )
+                ],
               ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 20.0),
-            Text(
-              'Enter your email below to reset your Password.',
-              style: TextStyle(fontSize: 16.0),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 20.0),
-            TextFormField(
-              decoration: InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20.0),
-                ),
-              ),
-            ),
-            SizedBox(height: 20.0),
-            ElevatedButton(
-              onPressed: _resetPassword, child: Text("Reset Password"),
-             
-            ),
+            ))),
           ],
         ),
       ),
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: ForgotPasswordPage(),
-  ));
 }

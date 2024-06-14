@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:foody_zidio/pages/login.dart';
-import 'package:foody_zidio/pages/signup.dart';
 import 'package:foody_zidio/widget/content_model.dart';
 import 'package:foody_zidio/widget/widget_support.dart';
 
@@ -85,7 +84,7 @@ class _OnboardState extends State<Onboard> {
               }
               _controller.nextPage(
                 duration: const Duration(milliseconds: 100),
-                curve: Curves.bounceIn,
+                curve: Curves.linear,
               );
             },
             child: Container(
