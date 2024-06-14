@@ -146,7 +146,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => SignUp()));
+                                  builder: (context) => Signup()));
                         },
                         child: Text(
                           "Create",
