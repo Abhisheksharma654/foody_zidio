@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:foody_zidio/pages/login.dart';
+
+import 'package:foody_zidio/pages/signup.dart';
 import 'package:foody_zidio/widget/content_model.dart';
 import 'package:foody_zidio/widget/widget_support.dart';
 
 class Onboard extends StatefulWidget {
-  const Onboard({Key? key}) : super(key: key);
+  const Onboard({super.key});
 
   @override
   State<Onboard> createState() => _OnboardState();
@@ -17,6 +18,7 @@ class _OnboardState extends State<Onboard> {
   @override
   void initState() {
     _controller = PageController(initialPage: 0);
+
     super.initState();
   }
 
@@ -33,39 +35,42 @@ class _OnboardState extends State<Onboard> {
         children: [
           Expanded(
             child: PageView.builder(
-              controller: _controller,
-              itemCount: contents.length,
-              onPageChanged: (int index) {
-                setState(() {
-                  currentIndex = index;
-                });
-              },
-              itemBuilder: (_, i) {
-                return Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    children: [
-                      Image.asset(
-                        contents[i].image,
-                        height: 450,
-                        width: MediaQuery.of(context).size.width / 1.5,
-                        fit: BoxFit.fill,
-                      ),
-                      const SizedBox(height: 5.0),
-                      Text(
-                        contents[i].title,
-                        style: AppWidget.semiBoldTextFeildStyle(),
-                      ),
-                      const SizedBox(height: 5.0),
-                      Text(
-                        contents[i].description,
-                        style: AppWidget.LightTextFeildStyle(),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
+                controller: _controller,
+                itemCount: contents.length,
+                onPageChanged: (int index) {
+                  setState(() {
+                    currentIndex = index;
+                  });
+                },
+                itemBuilder: (_, i) {
+                  return Padding(
+                    padding: EdgeInsets.only(top: 40.0, left: 20.0, right: 20.0),
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          contents[i].image,
+                          height: 450,
+                          width: MediaQuery.of(context).size.width ,
+                          fit: BoxFit.fill,
+                        ),
+                        SizedBox(
+                          height: 40.0,
+                        ),
+                        Text(
+                          contents[i].title,
+                          style: AppWidget.HeadlineTextFeildStyle(),
+                        ),
+                        SizedBox(
+                          height: 20.0,
+                        ),
+                        Text(
+                          contents[i].description,
+                          style: AppWidget.LightTextFeildStyle(),
+                        )
+                      ],
+                    ),
+                  );
+                }),
           ),
           Container(
             child: Row(
@@ -79,27 +84,22 @@ class _OnboardState extends State<Onboard> {
           GestureDetector(
             onTap: () {
               if (currentIndex == contents.length - 1) {
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => const LogIn()));
+                Navigator.pushReplacement(
+                    context, MaterialPageRoute(builder: (context) => SignUp()));
               }
               _controller.nextPage(
-                duration: const Duration(milliseconds: 100),
-                curve: Curves.linear,
-              );
+                  duration: Duration(milliseconds: 100),
+                  curve: Curves.bounceIn);
             },
             child: Container(
-              decoration: BoxDecoration(
-                color: const Color.fromRGBO(244, 67, 54, 1),
-                borderRadius:
-                    BorderRadius.circular(20), // Add the border radius here
-              ),
-              height: 40,
-              margin: const EdgeInsets.all(40),
+              decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(20)),
+              height: 60,
+              margin: EdgeInsets.all(40),
               width: double.infinity,
-              child: const Center(
+              child: Center(
                 child: Text(
-                  "Next",
-                  style: TextStyle(color: Colors.white),
+                 currentIndex == contents.length - 1?"Start": "Next",
+                  style: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -113,11 +113,9 @@ class _OnboardState extends State<Onboard> {
     return Container(
       height: 10.0,
       width: currentIndex == index ? 18 : 7,
-      margin: const EdgeInsets.only(right: 5),
+      margin: EdgeInsets.only(right: 5),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(6),
-        color: Colors.black38,
-      ),
+          borderRadius: BorderRadius.circular(6), color: Colors.black38),
     );
   }
 }
