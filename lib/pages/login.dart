@@ -4,6 +4,8 @@ import 'package:foody_zidio/pages/bottomnav.dart';
 import 'package:foody_zidio/pages/forgetpassword.dart';
 import 'package:foody_zidio/pages/signup.dart';
 import 'package:foody_zidio/widget/widget_support.dart';
+
+
 class LogIn extends StatefulWidget {
   const LogIn({super.key});
 
@@ -23,16 +25,16 @@ class _LogInState extends State<LogIn> {
     try {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-          Navigator.push(context, MaterialPageRoute(builder: (context)=> const BottomNav()));
+          Navigator.push(context, MaterialPageRoute(builder: (context)=> BottomNav()));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: const Text(
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
           "No User Found for that Email",
           style: TextStyle(fontSize: 18.0, color: Colors.black),
         )));
       }else if(e.code=='wrong-password'){
-         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(
           "Wrong Password Provided by User",
           style: TextStyle(fontSize: 18.0, color: Colors.black),
@@ -50,7 +52,7 @@ class _LogInState extends State<LogIn> {
             Container(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height / 2.5,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                   gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -64,15 +66,15 @@ class _LogInState extends State<LogIn> {
                   EdgeInsets.only(top: MediaQuery.of(context).size.height / 3),
               height: MediaQuery.of(context).size.height / 2,
               width: MediaQuery.of(context).size.width,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(40),
                       topRight: Radius.circular(40))),
-              child: const Text(""),
+              child: Text(""),
             ),
             Container(
-              margin: const EdgeInsets.only(top: 60.0, left: 20.0, right: 20.0),
+              margin: EdgeInsets.only(top: 60.0, left: 20.0, right: 20.0),
               child: Column(
                 children: [
                   Center(
@@ -81,14 +83,14 @@ class _LogInState extends State<LogIn> {
                     width: MediaQuery.of(context).size.width / 1.5,
                     fit: BoxFit.cover,
                   )),
-                  const SizedBox(
+                  SizedBox(
                     height: 50.0,
                   ),
                   Material(
                     elevation: 5.0,
                     borderRadius: BorderRadius.circular(20),
                     child: Container(
-                      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                      padding: EdgeInsets.only(left: 20.0, right: 20.0),
                       width: MediaQuery.of(context).size.width,
                       height: MediaQuery.of(context).size.height / 2,
                       decoration: BoxDecoration(
@@ -98,14 +100,14 @@ class _LogInState extends State<LogIn> {
                         key: _formkey,
                         child: Column(
                           children: [
-                            const SizedBox(
+                            SizedBox(
                               height: 30.0,
                             ),
                             Text(
                               "Login",
                               style: AppWidget.HeadlineTextFeildStyle(),
                             ),
-                            const SizedBox(
+                            SizedBox(
                               height: 30.0,
                             ),
                             TextFormField(
@@ -119,9 +121,9 @@ class _LogInState extends State<LogIn> {
                               decoration: InputDecoration(
                                   hintText: 'Email',
                                   hintStyle: AppWidget.semiBoldTextFeildStyle(),
-                                  prefixIcon: const Icon(Icons.email_outlined)),
+                                  prefixIcon: Icon(Icons.email_outlined)),
                             ),
-                            const SizedBox(
+                            SizedBox(
                               height: 30.0,
                             ),
                             TextFormField(
@@ -136,14 +138,14 @@ class _LogInState extends State<LogIn> {
                               decoration: InputDecoration(
                                   hintText: 'Password',
                                   hintStyle: AppWidget.semiBoldTextFeildStyle(),
-                                  prefixIcon: const Icon(Icons.password_outlined)),
+                                  prefixIcon: Icon(Icons.password_outlined)),
                             ),
-                            const SizedBox(
+                            SizedBox(
                               height: 20.0,
                             ),
                             GestureDetector(
                               onTap: (){
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=> const ForgotPassword()));
+                                Navigator.push(context, MaterialPageRoute(builder: (context)=> ForgotPassword()));
                               },
                               child: Container(
                                   alignment: Alignment.topRight,
@@ -152,7 +154,7 @@ class _LogInState extends State<LogIn> {
                                     style: AppWidget.semiBoldTextFeildStyle(),
                                   )),
                             ),
-                            const SizedBox(
+                            SizedBox(
                               height: 80.0,
                             ),
                             GestureDetector(
@@ -169,12 +171,12 @@ class _LogInState extends State<LogIn> {
                                 elevation: 5.0,
                                 borderRadius: BorderRadius.circular(20),
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                  padding: EdgeInsets.symmetric(vertical: 8.0),
                                   width: 200,
                                   decoration: BoxDecoration(
-                                      color: const Color(0Xffff5722),
+                                      color: Color(0Xffff5722),
                                       borderRadius: BorderRadius.circular(20)),
-                                  child: const Center(
+                                  child: Center(
                                       child: Text(
                                     "LOGIN",
                                     style: TextStyle(
@@ -191,13 +193,13 @@ class _LogInState extends State<LogIn> {
                       ),
                     ),
                   ),
-                  const SizedBox(
+                  SizedBox(
                     height: 70.0,
                   ),
                   GestureDetector(
                       onTap: () {
                         Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => const SignUp()));
+                            MaterialPageRoute(builder: (context) => SignUp()));
                       },
                       child: Text(
                         "Don't have an account? Sign up",

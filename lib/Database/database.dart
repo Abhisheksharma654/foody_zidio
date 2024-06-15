@@ -8,7 +8,7 @@ class DatabaseMethods {
         .set(userInfoMap);
   }
 
-  UpdateUserwallet(String id, String amount) async {
+  Future  updateUserwallet(String id, String amount) async {
     return await FirebaseFirestore.instance
         .collection("users")
         .doc(id)
