@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:foody_zidio/pages/signup.dart';
 
+
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({super.key});
 
@@ -19,14 +20,14 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   resetPassword() async {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
         "Password Reset Email has been sent !",
         style: TextStyle(fontSize: 18.0),
       )));
     } on FirebaseAuthException catch (e) {
       if (e.code == "user-not-found") {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(
           "No user found for that email.",
           style: TextStyle(fontSize: 18.0),
@@ -38,30 +39,30 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.black,
       body: Container(
         child: Column(
           children: [
-            const SizedBox(
+            SizedBox(
               height: 70.0,
             ),
             Container(
               alignment: Alignment.topCenter,
-              child: const Text(
+              child: Text(
                 "Password Recovery",
                 style: TextStyle(
-                    color: Colors.black,
+                    color: Colors.white,
                     fontSize: 30.0,
                     fontWeight: FontWeight.bold),
               ),
             ),
-            const SizedBox(
+            SizedBox(
               height: 10.0,
             ),
-            const Text(
+            Text(
               "Enter your mail",
               style: TextStyle(
-                  color: Colors.black,
+                  color: Colors.white,
                   fontSize: 20.0,
                   fontWeight: FontWeight.bold),
             ),
@@ -69,13 +70,13 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 child: Form(
                   key: _formkey,
                     child: Padding(
-              padding: const EdgeInsets.only(left: 10.0),
+              padding: EdgeInsets.only(left: 10.0),
               child: ListView(
                 children: [
                   Container(
-                    padding: const EdgeInsets.only(left: 10.0),
+                    padding: EdgeInsets.only(left: 10.0),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black, width: 2.0),
+                      border: Border.all(color: Colors.white70, width: 2.0),
                       borderRadius: BorderRadius.circular(30),
                     ),
                     child: TextFormField(
@@ -86,20 +87,20 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         }
                         return null;
                       },
-                      style: const TextStyle(color: Colors.black),
-                      decoration: const InputDecoration(
+                      style: TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
                           hintText: "Email",
                           hintStyle:
-                              TextStyle(fontSize: 18.0, color: Colors.black),
+                              TextStyle(fontSize: 18.0, color: Colors.white),
                           prefixIcon: Icon(
                             Icons.person,
-                            color: Colors.black,
+                            color: Colors.white70,
                             size: 30.0,
                           ),
                           border: InputBorder.none),
                     ),
                   ),
-                  const SizedBox(
+                  SizedBox(
                     height: 40.0,
                   ),
                   GestureDetector(
@@ -113,32 +114,32 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     },
                     child: Container(
                       width: 140,
-                      padding: const EdgeInsets.all(10),
+                      padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                          color: Colors.black,
+                          color: Colors.white,
                           borderRadius: BorderRadius.circular(10)),
-                      child: const Center(
+                      child: Center(
                         child: Text(
                           "Send Email",
                           style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                               fontSize: 18.0,
                               fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(
+                  SizedBox(
                     height: 50.0,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
+                      Text(
                         "Don't have an account?",
-                        style: TextStyle(fontSize: 18.0, color: Colors.black),
+                        style: TextStyle(fontSize: 18.0, color: Colors.white),
                       ),
-                      const SizedBox(
+                      SizedBox(
                         width: 5.0,
                       ),
                       GestureDetector(
@@ -146,9 +147,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const SignUp()));
+                                  builder: (context) => SignUp()));
                         },
-                        child: const Text(
+                        child: Text(
                           "Create",
                           style: TextStyle(
                               color: Color.fromARGB(225, 184, 166, 6),
