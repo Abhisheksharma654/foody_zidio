@@ -1,4 +1,4 @@
-import 'dart:async';
+/*import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:foody_zidio/Database/database.dart';
@@ -114,7 +114,7 @@ class _WalletState extends State<Wallet> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          makePayment('100');
+                      //    makePayment('100');
                         },
                         child: Container(
                           padding: const EdgeInsets.all(5),
@@ -129,7 +129,7 @@ class _WalletState extends State<Wallet> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          makePayment('500');
+                         // makePayment('500');
                         },
                         child: Container(
                           padding: const EdgeInsets.all(5),
@@ -144,7 +144,7 @@ class _WalletState extends State<Wallet> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          makePayment('1000');
+                        //  makePayment('1000');
                         },
                         child: Container(
                           padding: const EdgeInsets.all(5),
@@ -159,7 +159,7 @@ class _WalletState extends State<Wallet> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          makePayment('2000');
+                         // makePayment('2000');
                         },
                         child: Container(
                           padding: const EdgeInsets.all(5),
@@ -206,7 +206,7 @@ class _WalletState extends State<Wallet> {
     );
   }
 
-  Future<void> makePayment(String amount) async {
+  /*Future<void> makePayment(String amount) async {
     try {
       paymentIntent = await createPaymentIntent(amount, 'INR');
       //Payment Sheet
@@ -301,7 +301,7 @@ class _WalletState extends State<Wallet> {
     final calculatedAmout = (int.parse(amount)) * 100;
 
     return calculatedAmout.toString();
-  }
+  }*/
 
   Future openEdit() => showDialog(
       context: context,
@@ -357,7 +357,7 @@ class _WalletState extends State<Wallet> {
                       child: GestureDetector(
                         onTap: () {
                           Navigator.pop(context);
-                          makePayment(amountcontroller.text);
+                         // makePayment(amountcontroller.text);
                         },
                         child: Container(
                           width: 100,
@@ -380,4 +380,19 @@ class _WalletState extends State<Wallet> {
             ),
           ),
       );
+}
+*/
+import 'package:flutter/material.dart';
+class Wallet extends StatefulWidget {
+  const Wallet({super.key});
+
+  @override
+  State<Wallet> createState() => _WalletState();
+}
+
+class _WalletState extends State<Wallet> {
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
 }
