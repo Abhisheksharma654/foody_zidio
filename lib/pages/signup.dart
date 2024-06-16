@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:foody_zidio/Database/database.dart';
-import 'package:foody_zidio/pages/bottomnav.dart';
 import 'package:foody_zidio/pages/login.dart';
 import 'package:foody_zidio/service/shared_pref.dart';
 import 'package:foody_zidio/widget/widget_support.dart';
@@ -17,26 +16,24 @@ class SignUp extends StatefulWidget {
 class _SignUpState extends State<SignUp> {
   String email = "", password = "", name = "";
 
-  TextEditingController namecontroller = new TextEditingController();
-
-  TextEditingController passwordcontroller = new TextEditingController();
-
-  TextEditingController mailcontroller = new TextEditingController();
+  TextEditingController namecontroller = TextEditingController();
+  TextEditingController passwordcontroller = TextEditingController();
+  TextEditingController mailcontroller = TextEditingController();
 
   final _formkey = GlobalKey<FormState>();
 
   registration() async {
-    if (password != null) {
+    if (password.isNotEmpty) {
       try {
         UserCredential userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: email, password: password);
 
-        ScaffoldMessenger.of(context).showSnackBar((SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             backgroundColor: Colors.redAccent,
             content: Text(
               "Registered Successfully",
               style: TextStyle(fontSize: 20.0),
-            ))));
+            )));
         String Id = randomAlphaNumeric(10);
         Map<String, dynamic> addUserInfo = {
           "Name": namecontroller.text,
@@ -52,7 +49,7 @@ class _SignUpState extends State<SignUp> {
 
         // ignore: use_build_context_synchronously
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => BottomNav()));
+            context, MaterialPageRoute(builder: (context) => LogIn()));
       } on FirebaseException catch (e) {
         if (e.code == 'weak-password') {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -65,7 +62,7 @@ class _SignUpState extends State<SignUp> {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               backgroundColor: Colors.orangeAccent,
               content: Text(
-                "Account Already exsists",
+                "Account Already exists",
                 style: TextStyle(fontSize: 18.0),
               )));
         }
@@ -197,8 +194,8 @@ class _SignUpState extends State<SignUp> {
                                     name = namecontroller.text;
                                     password = passwordcontroller.text;
                                   });
+                                  registration();
                                 }
-                                registration();
                               },
                               child: Material(
                                 elevation: 5.0,
@@ -231,8 +228,10 @@ class _SignUpState extends State<SignUp> {
                   ),
                   GestureDetector(
                       onTap: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => LogIn()));
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LogIn()));
                       },
                       child: Text(
                         "Already have an account? Login",

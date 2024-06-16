@@ -1,10 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:foody_zidio/pages/bottomnav.dart';
+import 'package:foody_zidio/main.dart';
 import 'package:foody_zidio/pages/forgetpassword.dart';
 import 'package:foody_zidio/pages/signup.dart';
 import 'package:foody_zidio/widget/widget_support.dart';
-
 
 class LogIn extends StatefulWidget {
   const LogIn({super.key});
@@ -16,16 +15,16 @@ class LogIn extends StatefulWidget {
 class _LogInState extends State<LogIn> {
   String email = "", password = "";
 
-  final _formkey= GlobalKey<FormState>();
+  final _formkey = GlobalKey<FormState>();
 
-  TextEditingController useremailcontroller = new TextEditingController();
-  TextEditingController userpasswordcontroller = new TextEditingController();
+  TextEditingController useremailcontroller = TextEditingController();
+  TextEditingController userpasswordcontroller = TextEditingController();
 
   userLogin() async {
     try {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-          Navigator.push(context, MaterialPageRoute(builder: (context)=> BottomNav()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BottomNav()));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -33,8 +32,8 @@ class _LogInState extends State<LogIn> {
           "No User Found for that Email",
           style: TextStyle(fontSize: 18.0, color: Colors.black),
         )));
-      }else if(e.code=='wrong-password'){
-         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      } else if (e.code == 'wrong-password') {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(
           "Wrong Password Provided by User",
           style: TextStyle(fontSize: 18.0, color: Colors.black),
@@ -112,8 +111,8 @@ class _LogInState extends State<LogIn> {
                             ),
                             TextFormField(
                               controller: useremailcontroller,
-                              validator: (value){
-                                if(value==null|| value.isEmpty){
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
                                   return 'Please Enter Email';
                                 }
                                 return null;
@@ -127,9 +126,9 @@ class _LogInState extends State<LogIn> {
                               height: 30.0,
                             ),
                             TextFormField(
-                               controller:userpasswordcontroller,
-                              validator: (value){
-                                if(value==null|| value.isEmpty){
+                              controller: userpasswordcontroller,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
                                   return 'Please Enter Password';
                                 }
                                 return null;
@@ -144,8 +143,8 @@ class _LogInState extends State<LogIn> {
                               height: 20.0,
                             ),
                             GestureDetector(
-                              onTap: (){
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=> ForgotPassword()));
+                              onTap: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => ForgotPassword()));
                               },
                               child: Container(
                                   alignment: Alignment.topRight,
@@ -158,14 +157,14 @@ class _LogInState extends State<LogIn> {
                               height: 80.0,
                             ),
                             GestureDetector(
-                              onTap: (){
-                                if(_formkey.currentState!.validate()){
+                              onTap: () {
+                                if (_formkey.currentState!.validate()) {
                                   setState(() {
-                                    email= useremailcontroller.text;
-                                    password= userpasswordcontroller.text;
+                                    email = useremailcontroller.text;
+                                    password = userpasswordcontroller.text;
                                   });
+                                  userLogin();
                                 }
-                                userLogin();
                               },
                               child: Material(
                                 elevation: 5.0,
