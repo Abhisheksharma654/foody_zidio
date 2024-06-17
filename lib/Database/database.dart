@@ -1,17 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DatabaseMethods {
-  Future addUserDetail(Map<String, dynamic> userInfoMap, String id) async {
-    return await FirebaseFirestore.instance
-        .collection('users')
-        .doc(id)
-        .set(userInfoMap);
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<void> addUserDetail(Map<String, dynamic> userInfoMap, String id) async {
+    try {
+      await _firestore.collection('users').doc(id).set(userInfoMap);
+      print('User added to Firestore with ID: $id');
+    } catch (e) {
+      print('Error adding user to Firestore: $e');
+      // Handle error as needed
+    }
   }
 
-  Future  updateUserwallet(String id, String amount) async {
-    return await FirebaseFirestore.instance
-        .collection("users")
-        .doc(id)
-        .update({"Wallet": amount});
+  Future<void> updateUserWallet(String id, String amount) async {
+    try {
+      await _firestore.collection("users").doc(id).update({"Wallet": amount});
+      print('Wallet updated for user ID: $id');
+    } catch (e) {
+      print('Error updating wallet: $e');
+      // Handle error as needed
+    }
   }
 }

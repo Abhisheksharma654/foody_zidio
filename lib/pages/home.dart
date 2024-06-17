@@ -94,7 +94,7 @@ class _HomeState extends State<Home> {
                                     height: 5.0,
                                   ),
                                   Text(
-                                    "\$25",
+                                    "\₹25",
                                     style: AppWidget.semiBoldTextFeildStyle(),
                                   )
                                 ]),
@@ -108,7 +108,7 @@ class _HomeState extends State<Home> {
                       "Mix Veg Salad",
                       "Spicy with Onion",
                       "images/salad4.png",
-                      "\$28",
+                      "\₹28",
                     ),
                   ],
                 ),
@@ -158,7 +158,7 @@ class _HomeState extends State<Home> {
                             Container(
                                 width: MediaQuery.of(context).size.width / 2,
                                 child: Text(
-                                  "\$28",
+                                  "\₹28",
                                   style: AppWidget.semiBoldTextFeildStyle(),
                                 ))
                           ],
@@ -213,7 +213,7 @@ class _HomeState extends State<Home> {
                             Container(
                                 width: MediaQuery.of(context).size.width / 2,
                                 child: Text(
-                                  "\$28",
+                                  "\₹28",
                                   style: AppWidget.semiBoldTextFeildStyle(),
                                 ))
                           ],

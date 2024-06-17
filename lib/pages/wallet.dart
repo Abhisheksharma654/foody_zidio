@@ -81,7 +81,7 @@ class _WalletState extends State<Wallet> {
                       ),
                       const SizedBox(height: 5.0),
                       Text(
-                        "\$${wallet ?? '0.00'}",
+                        "\₹${wallet ?? '0.00'}",
                         style: AppWidget.boldTextFeildStyle(),
                       ),
                     ],
@@ -112,7 +112,7 @@ class _WalletState extends State<Wallet> {
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: Text(
-                      "\$100",
+                      "\₹100",
                       style: AppWidget.semiBoldTextFeildStyle(),
                     ),
                   ),
@@ -128,7 +128,7 @@ class _WalletState extends State<Wallet> {
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: Text(
-                      "\$500",
+                      "\₹500",
                       style: AppWidget.semiBoldTextFeildStyle(),
                     ),
                   ),
@@ -144,7 +144,7 @@ class _WalletState extends State<Wallet> {
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: Text(
-                      "\$1000",
+                      "\₹1000",
                       style: AppWidget.semiBoldTextFeildStyle(),
                     ),
                   ),
@@ -160,7 +160,7 @@ class _WalletState extends State<Wallet> {
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: Text(
-                      "\$2000",
+                      "\₹2000",
                       style: AppWidget.semiBoldTextFeildStyle(),
                     ),
                   ),
@@ -224,7 +224,7 @@ class _WalletState extends State<Wallet> {
         print('New Wallet Amount: $add');
         await SharedPreferenceHelper().saveUserWallet(add.toString());
         print('Saved to Shared Pref');
-        await DatabaseMethods().updateUserwallet(id!, add.toString());
+        await DatabaseMethods().updateUserWallet(id!, add.toString());
         print('Updated in Database');
         showDialog(
           context: context,

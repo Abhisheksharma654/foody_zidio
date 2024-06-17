@@ -1,9 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:foody_zidio/Content/bottom_nav.dart';
+import 'package:foody_zidio/Database/database.dart';
 import 'package:foody_zidio/main.dart';
+import 'package:foody_zidio/pages/forgetpassword.dart';
 import 'package:foody_zidio/pages/login.dart';
+import 'package:foody_zidio/service/shared_pref.dart';
 import 'package:foody_zidio/widget/widget_support.dart';
+import 'package:random_string/random_string.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -13,10 +17,10 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  String email = "", password = "";
+  String email = "", password = "",name ="";
 
   final _formkey = GlobalKey<FormState>();
-
+TextEditingController usernamecontroller = TextEditingController();
   TextEditingController useremailcontroller = TextEditingController();
   TextEditingController userpasswordcontroller = TextEditingController();
 
@@ -24,6 +28,26 @@ class _SignUpState extends State<SignUp> {
     try {
       await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
+      ScaffoldMessenger.of(context).showSnackBar((SnackBar(
+            backgroundColor: Colors.redAccent,
+            content: Text(
+              "Registered Successfully",
+              style: TextStyle(fontSize: 20.0),
+            ))));
+        String Id = randomAlphaNumeric(10);
+        Map<String, dynamic> addUserInfo = {
+          "Name": usernamecontroller.text,
+          "Email": useremailcontroller.text,
+          "Wallet": "0",
+          "Id": Id,
+        };
+        await DatabaseMethods().addUserDetail(addUserInfo, Id);
+        await SharedPreferenceHelper().saveUserName(usernamecontroller.text);
+        await SharedPreferenceHelper().saveUserEmail(useremailcontroller.text);
+        await SharedPreferenceHelper().saveUserWallet('0');
+        await SharedPreferenceHelper().saveUserId(Id);
+
+
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => BottomNav()));
     } on FirebaseAuthException catch (e) {
@@ -110,6 +134,23 @@ class _SignUpState extends State<SignUp> {
                               SizedBox(
                                 height: 30.0,
                               ),
+                             
+                              TextFormField(
+                                controller: usernamecontroller,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please Enter name';
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                    hintText: 'Name',
+                                    hintStyle: AppWidget.semiBoldTextFeildStyle(),
+                                    prefixIcon: Icon(Icons.person)),
+                              ),
+                              SizedBox(
+                                height: 30.0,
+                              ),
                               TextFormField(
                                 controller: useremailcontroller,
                                 validator: (value) {
@@ -192,8 +233,7 @@ class _SignUpState extends State<SignUp> {
                         child: Text(
                           "Already have an account? Log in",
                           style: AppWidget.semiBoldTextFeildStyle(),
-                      ),
-                    ),
+                        ))
                   ],
                 ),
               ),
