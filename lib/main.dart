@@ -1,23 +1,33 @@
+
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:foody_zidio/Content/bottom_nav.dart';
+import 'package:foody_zidio/Content/onboard.dart';
 import 'package:foody_zidio/pages/home.dart';
 import 'package:foody_zidio/pages/order.dart';
 import 'package:foody_zidio/pages/profile.dart';
+import 'package:foody_zidio/pages/signup.dart';
 import 'package:foody_zidio/pages/wallet.dart';
+import 'package:foody_zidio/service/app_constraint.dart';
+import 'package:foody_zidio/widget/content_model.dart';
+import 'package:foody_zidio/widget/widget_support.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'pages/signup.dart';
-import 'widget/content_model.dart';
-import 'widget/widget_support.dart';
+import 'pages/login.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  Stripe.publishableKey = publishableKey;
   await Firebase.initializeApp();
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -34,7 +44,7 @@ class SplashScreen extends StatelessWidget {
       future: _checkUserStatus(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Scaffold(
+          return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
         } else {
@@ -44,9 +54,9 @@ class SplashScreen extends StatelessWidget {
           if (isLoggedIn) {
             return BottomNav();
           } else if (hasCompletedOnboarding) {
-            return SignUp();
+            return const LogIn();
           } else {
-            return Onboard();
+            return const Onboard();
           }
         }
       },
@@ -89,9 +99,7 @@ class _OnboardState extends State<Onboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
-        children: [ 
-
-          
+        children: [
           Expanded(
             child: PageView.builder(
               controller: _controller,
