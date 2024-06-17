@@ -89,7 +89,9 @@ class _OnboardState extends State<Onboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
-        children: [
+        children: [ 
+
+          
           Expanded(
             child: PageView.builder(
               controller: _controller,

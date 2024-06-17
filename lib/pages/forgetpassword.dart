@@ -46,6 +46,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             SizedBox(
               height: 70.0,
             ),
+
+            
             Container(
               alignment: Alignment.topCenter,
               child: Text(

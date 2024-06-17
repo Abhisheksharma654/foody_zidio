@@ -47,7 +47,8 @@ class _HomeState extends State<Home> {
               SizedBox(
                 height: 20.0,
               ),
-              Container(margin: EdgeInsets.only(right: 20.0), child: showItem()),
+              Container(
+                  margin: EdgeInsets.only(right: 20.0), child: showItem()),
               SizedBox(
                 height: 30.0,
               ),
@@ -56,8 +57,9 @@ class _HomeState extends State<Home> {
                 child: Row(
                   children: [
                     GestureDetector(
-                      onTap: (){
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=> Details()));
+                      onTap: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => Details()));
                       },
                       child: Container(
                         margin: EdgeInsets.all(4),
@@ -76,7 +78,8 @@ class _HomeState extends State<Home> {
                                     fit: BoxFit.cover,
                                   ),
                                   Text("Veggie Taco Hash",
-                                      style: AppWidget.semiBoldTextFeildStyle()),
+                                      style:
+                                          AppWidget.semiBoldTextFeildStyle()),
                                   SizedBox(
                                     height: 5.0,
                                   ),
@@ -135,7 +138,7 @@ class _HomeState extends State<Home> {
                 ),
               ),
               SizedBox(
-                height: 30.0,
+                height: 20.0,
               ),
               Container(
                 margin: EdgeInsets.only(right: 20.0),
@@ -153,26 +156,43 @@ class _HomeState extends State<Home> {
                           width: 120,
                           fit: BoxFit.cover,
                         ),
-                        SizedBox(width: 20.0,),
-                        Column(children: [
-                          Container(
-                            width: MediaQuery.of(context).size.width/2,
-                            child: Text("Mediterranean Chickpea Salad", style: AppWidget.semiBoldTextFeildStyle(),)),
-                            SizedBox(height: 5.0,),
+                        SizedBox(
+                          width: 10.0,
+                        ),
+                        Column(
+                          children: [
                             Container(
-                            width: MediaQuery.of(context).size.width/2,
-                            child: Text("Honey goot cheese", style: AppWidget.LightTextFeildStyle(),)),
-                              SizedBox(height: 5.0,),
+                                width: MediaQuery.of(context).size.width / 2,
+                                child: Text(
+                                  "Mediterranean Chickpea Salad",
+                                  style: AppWidget.semiBoldTextFeildStyle(),
+                                )),
+                            SizedBox(
+                              height: 5.0,
+                            ),
                             Container(
-                            width: MediaQuery.of(context).size.width/2,
-                            child: Text("\$28", style: AppWidget.semiBoldTextFeildStyle(),))
-                        ],)
+                                width: MediaQuery.of(context).size.width / 2,
+                                child: Text(
+                                  "Honey goot cheese",
+                                  style: AppWidget.LightTextFeildStyle(),
+                                )),
+                            SizedBox(
+                              height: 5.0,
+                            ),
+                            Container(
+                                width: MediaQuery.of(context).size.width / 2,
+                                child: Text(
+                                  "\$28",
+                                  style: AppWidget.semiBoldTextFeildStyle(),
+                                ))
+                          ],
+                        )
                       ],
                     ),
                   ),
                 ),
               ),
-                SizedBox(
+              SizedBox(
                 height: 30.0,
               ),
               Container(
@@ -191,20 +211,37 @@ class _HomeState extends State<Home> {
                           width: 120,
                           fit: BoxFit.cover,
                         ),
-                        SizedBox(width: 20.0,),
-                        Column(children: [
-                          Container(
-                            width: MediaQuery.of(context).size.width/2,
-                            child: Text("Veggie Taco Hash", style: AppWidget.semiBoldTextFeildStyle(),)),
-                            SizedBox(height: 5.0,),
+                        SizedBox(
+                          width: 10.0,
+                        ),
+                        Column(
+                          children: [
                             Container(
-                            width: MediaQuery.of(context).size.width/2,
-                            child: Text("Honey goot cheese", style: AppWidget.LightTextFeildStyle(),)),
-                              SizedBox(height: 5.0,),
+                                width: MediaQuery.of(context).size.width / 2,
+                                child: Text(
+                                  "Veggie Taco Hash",
+                                  style: AppWidget.semiBoldTextFeildStyle(),
+                                )),
+                            SizedBox(
+                              height: 5.0,
+                            ),
                             Container(
-                            width: MediaQuery.of(context).size.width/2,
-                            child: Text("\$28", style: AppWidget.semiBoldTextFeildStyle(),))
-                        ],)
+                                width: MediaQuery.of(context).size.width / 2,
+                                child: Text(
+                                  "Honey goot cheese",
+                                  style: AppWidget.LightTextFeildStyle(),
+                                )),
+                            SizedBox(
+                              height: 5.0,
+                            ),
+                            Container(
+                                width: MediaQuery.of(context).size.width / 2,
+                                child: Text(
+                                  "\$28",
+                                  style: AppWidget.semiBoldTextFeildStyle(),
+                                ))
+                          ],
+                        )
                       ],
                     ),
                   ),
