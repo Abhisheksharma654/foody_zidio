@@ -36,7 +36,7 @@ class _HomeAdminState extends State<HomeAdmin> {
                     ),
                     child: Row(children: [
                       Padding(padding: EdgeInsets.all(6.0),
-                      child: Image.asset("images/food.jpg", height: 100, width: 100, fit: BoxFit.cover,),),
+                      child: Image.asset("images/salad4.png", height: 100, width: 100, fit: BoxFit.cover,),),
                   SizedBox(width: 30.0,) ,
                   Text("Add Food Items", style: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.bold),) ],),
                   ),

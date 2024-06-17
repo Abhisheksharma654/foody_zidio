@@ -1,10 +1,12 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:foody_zidio/Auth/auth_method.dart';
 import 'package:foody_zidio/Content/bottom_nav.dart';
 import 'package:foody_zidio/pages/home.dart';
+import 'package:foody_zidio/pages/login.dart';
 import 'package:foody_zidio/service/shared_pref.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:random_string/random_string.dart';
@@ -20,6 +22,34 @@ class _ProfileState extends State<Profile> {
   String? profile, name, email;
   final ImagePicker _picker = ImagePicker();
   File? selectedImage;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Future<void> signOut(BuildContext context) async {
+    try {
+      await _auth.signOut();
+      print("User signed out");
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (builder) =>
+                LogIn()), // Replace 'LogIn' with your desired page
+      );
+    } catch (e) {
+      print("Error signing out: $e");
+    }
+  }
+
+  Future<void> deleteUser() async {
+    try {
+      User? user = _auth.currentUser;
+      if (user != null) {
+        await user.delete();
+        print("User account deleted");
+      }
+    } catch (e) {
+      print("Error deleting user: $e");
+    }
+  }
 
   Future getImage() async {
     var image = await _picker.pickImage(source: ImageSource.gallery);
@@ -78,7 +108,11 @@ class _ProfileState extends State<Profile> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (builder)=> BottomNav())); // Navigate back to previous screen
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (builder) =>
+                        BottomNav())); // Navigate back to previous screen
           },
         ),
       ),
@@ -302,7 +336,7 @@ class _ProfileState extends State<Profile> {
                   SizedBox(height: 30.0),
                   GestureDetector(
                     onTap: () {
-                      AuthMethods().deleteUser();
+                      deleteUser();
                     },
                     child: Container(
                       margin: EdgeInsets.symmetric(horizontal: 20.0),
@@ -347,7 +381,7 @@ class _ProfileState extends State<Profile> {
                   SizedBox(height: 30.0),
                   GestureDetector(
                     onTap: () {
-                      AuthMethods().signOut();
+                      signOut(context);
                     },
                     child: Container(
                       margin: EdgeInsets.symmetric(horizontal: 20.0),
