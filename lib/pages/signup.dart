@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:foody_zidio/Content/bottom_nav.dart';
 import 'package:foody_zidio/main.dart';
-import 'package:foody_zidio/pages/forgetpassword.dart';
 import 'package:foody_zidio/pages/login.dart';
 import 'package:foody_zidio/widget/widget_support.dart';
 
@@ -193,7 +192,8 @@ class _SignUpState extends State<SignUp> {
                         child: Text(
                           "Already have an account? Log in",
                           style: AppWidget.semiBoldTextFeildStyle(),
-                        ))
+                      ),
+                    ),
                   ],
                 ),
               ),
