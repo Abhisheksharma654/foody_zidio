@@ -24,6 +24,8 @@ class _ProfileState extends State<Profile> {
   File? selectedImage;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  
+
   Future<void> signOut(BuildContext context) async {
     try {
       await _auth.signOut();
