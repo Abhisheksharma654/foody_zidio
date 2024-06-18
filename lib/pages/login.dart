@@ -1,10 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:foody_zidio/Content/bottom_nav.dart';
-import 'package:foody_zidio/main.dart';
-import 'package:foody_zidio/pages/forgetpassword.dart';
-import 'package:foody_zidio/pages/signup.dart';
-import 'package:foody_zidio/widget/widget_support.dart';
+import 'package:foody_zidio/Admin/admin.dart'; // Import your admin page
+import 'package:foody_zidio/Content/bottom_nav.dart'; // Import your regular user page
+import 'package:foody_zidio/pages/forgetpassword.dart'; // Import your forgot password page
+import 'package:foody_zidio/pages/signup.dart'; // Import your signup page
+import 'package:foody_zidio/widget/widget_support.dart'; // Import your widget support
 
 class LogIn extends StatefulWidget {
   const LogIn({super.key});
@@ -14,14 +15,15 @@ class LogIn extends StatefulWidget {
 }
 
 class _LogInState extends State<LogIn> {
-  String email = "", password = "";
+  String email = "";
+  String password = "";
 
   final _formkey = GlobalKey<FormState>();
 
   TextEditingController useremailcontroller = TextEditingController();
   TextEditingController userpasswordcontroller = TextEditingController();
 
-  userLogin() async {
+ userLogin() async {
     try {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
@@ -65,7 +67,7 @@ class _LogInState extends State<LogIn> {
             Container(
               margin:
                   EdgeInsets.only(top: MediaQuery.of(context).size.height / 3),
-              height: MediaQuery.of(context).size.height ,
+              height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
                   color: Colors.white,
@@ -165,10 +167,6 @@ class _LogInState extends State<LogIn> {
                               GestureDetector(
                                 onTap: () {
                                   if (_formkey.currentState!.validate()) {
-                                    setState(() {
-                                      email = useremailcontroller.text;
-                                      password = userpasswordcontroller.text;
-                                    });
                                     userLogin();
                                   }
                                 },
