@@ -38,13 +38,13 @@ class SplashScreen extends StatelessWidget {
           );
         } else {
           bool isLoggedIn = snapshot.data?[0] as bool;
-        //  bool hasCompletedOnboarding = snapshot.data?[1] as bool;
+         bool hasCompletedOnboarding = snapshot.data?[1] as bool;
 
           if (isLoggedIn) {
             return BottomNav();
-          }/* else if (hasCompletedOnboarding) {
+          } else if (hasCompletedOnboarding) {
             return LogIn();
-          }*/ else {
+          } else {
             return Onboard();
           }
         }

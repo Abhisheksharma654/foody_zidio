@@ -23,12 +23,34 @@ class _LogInState extends State<LogIn> {
   TextEditingController useremailcontroller = TextEditingController();
   TextEditingController userpasswordcontroller = TextEditingController();
 
- userLogin() async {
+  @override
+  void dispose() {
+    useremailcontroller.dispose();
+    userpasswordcontroller.dispose();
+    super.dispose();
+  }
+
+  userLogin() async {
+    setState(() {
+      email = useremailcontroller.text;
+      password = userpasswordcontroller.text;
+    });
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          "Email and password cannot be empty",
+          style: TextStyle(fontSize: 18.0, color: Colors.black),
+        ),
+      ));
+      return;
+    }
+
     try {
-      await FirebaseAuth.instance
+      UserCredential userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => BottomNav()));
+      print("Login successful: ${userCredential.user?.email}");
+      Navigator.push(context, MaterialPageRoute(builder: (context) => BottomNav()));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -42,7 +64,14 @@ class _LogInState extends State<LogIn> {
           "Wrong Password Provided by User",
           style: TextStyle(fontSize: 18.0, color: Colors.black),
         )));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+          "Login failed. Please try again.",
+          style: TextStyle(fontSize: 18.0, color: Colors.black),
+        )));
       }
+      print("Login failed: ${e.code}");
     }
   }
 
@@ -209,7 +238,7 @@ class _LogInState extends State<LogIn> {
                         child: Text(
                           "Don't have an account? Sign up",
                           style: AppWidget.semiBoldTextFeildStyle(),
-                        ))
+                        ),),
                   ],
                 ),
               ),
