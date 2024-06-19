@@ -1,18 +1,15 @@
 import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:foody_zidio/Auth/auth_method.dart';
-import 'package:foody_zidio/Content/bottom_nav.dart';
-import 'package:foody_zidio/pages/home.dart';
+import 'package:foody_zidio/Auth/auth_log.dart';
 import 'package:foody_zidio/pages/login.dart';
 import 'package:foody_zidio/service/shared_pref.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:random_string/random_string.dart';
 
 class Profile extends StatefulWidget {
-  const Profile({Key? key}) : super(key: key);
+  const Profile({super.key});
 
   @override
   State<Profile> createState() => _ProfileState();
@@ -22,43 +19,13 @@ class _ProfileState extends State<Profile> {
   String? profile, name, email;
   final ImagePicker _picker = ImagePicker();
   File? selectedImage;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  Future<void> signOut(BuildContext context) async {
-    try {
-      await _auth.signOut();
-      print("User signed out");
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-            builder: (builder) =>
-                LogIn()), // Replace 'LogIn' with your desired page
-      );
-    } catch (e) {
-      print("Error signing out: $e");
-    }
-  }
-
-  Future<void> deleteUser() async {
-    try {
-      User? user = _auth.currentUser;
-      if (user != null) {
-        await user.delete();
-        print("User account deleted");
-      }
-    } catch (e) {
-      print("Error deleting user: $e");
-    }
-  }
 
   Future getImage() async {
     var image = await _picker.pickImage(source: ImageSource.gallery);
 
+    selectedImage = File(image!.path);
     setState(() {
-      if (image != null) {
-        selectedImage = File(image.path);
-        uploadItem();
-      }
+      uploadItem();
     });
   }
 
@@ -67,18 +34,12 @@ class _ProfileState extends State<Profile> {
       String addId = randomAlphaNumeric(10);
 
       Reference firebaseStorageRef =
-          FirebaseStorage.instance.ref().child("profileImages").child(addId);
+          FirebaseStorage.instance.ref().child("blogImages").child(addId);
       final UploadTask task = firebaseStorageRef.putFile(selectedImage!);
 
-      var snapshot = await task.whenComplete(() {});
-      var downloadUrl = await snapshot.ref.getDownloadURL();
-
-      // Save downloadUrl to Shared Preferences or wherever you need it
+      var downloadUrl = await (await task).ref.getDownloadURL();
       await SharedPreferenceHelper().saveUserProfile(downloadUrl);
-
-      setState(() {
-        profile = downloadUrl; // Update profile with the new image URL
-      });
+      setState(() {});
     }
   }
 
@@ -103,49 +64,28 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Profile'),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (builder) =>
-                        BottomNav())); // Navigate back to previous screen
-          },
-        ),
-      ),
       body: name == null
-          ? Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
+          ? CircularProgressIndicator()
+          : Container(
               child: Column(
                 children: [
                   Stack(
                     children: [
                       Container(
-                        padding: EdgeInsets.only(
-                          top: 150.0,
-                          left: 20.0,
-                          right: 20.0,
-                        ),
+                        padding:
+                            EdgeInsets.only(top: 45.0, left: 20.0, right: 20.0),
                         height: MediaQuery.of(context).size.height / 4.3,
                         width: MediaQuery.of(context).size.width,
                         decoration: BoxDecoration(
-                          color: Colors.black,
-                          borderRadius: BorderRadius.vertical(
-                            bottom: Radius.elliptical(
-                              MediaQuery.of(context).size.width,
-                              105.0,
-                            ),
-                          ),
-                        ),
+                            color: Colors.black,
+                            borderRadius: BorderRadius.vertical(
+                                bottom: Radius.elliptical(
+                                    MediaQuery.of(context).size.width, 105.0))),
                       ),
                       Center(
                         child: Container(
                           margin: EdgeInsets.only(
-                            top: MediaQuery.of(context).size.height / 6.5,
-                          ),
+                              top: MediaQuery.of(context).size.height / 6.5),
                           child: Material(
                             elevation: 10.0,
                             borderRadius: BorderRadius.circular(60),
@@ -153,7 +93,9 @@ class _ProfileState extends State<Profile> {
                               borderRadius: BorderRadius.circular(60),
                               child: selectedImage == null
                                   ? GestureDetector(
-                                      onTap: getImage,
+                                      onTap: () {
+                                        getImage();
+                                      },
                                       child: profile == null
                                           ? Image.asset(
                                               "images/person.png",
@@ -186,18 +128,19 @@ class _ProfileState extends State<Profile> {
                             Text(
                               name!,
                               style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 23.0,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Poppins',
-                              ),
+                                  color: Colors.white,
+                                  fontSize: 23.0,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Poppins'),
                             ),
                           ],
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 20.0),
+                  SizedBox(
+                    height: 20.0,
+                  ),
                   Container(
                     margin: EdgeInsets.symmetric(horizontal: 20.0),
                     child: Material(
@@ -209,34 +152,33 @@ class _ProfileState extends State<Profile> {
                           horizontal: 10.0,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10)),
                         child: Row(
                           children: [
                             Icon(
                               Icons.person,
                               color: Colors.black,
                             ),
-                            SizedBox(width: 20.0),
+                            SizedBox(
+                              width: 20.0,
+                            ),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   "Name",
                                   style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                                      color: Colors.black,
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.w600),
                                 ),
                                 Text(
                                   name!,
                                   style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                                      color: Colors.black,
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.w600),
                                 )
                               ],
                             )
@@ -245,7 +187,9 @@ class _ProfileState extends State<Profile> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 20.0),
+                  SizedBox(
+                    height: 30.0,
+                  ),
                   Container(
                     margin: EdgeInsets.symmetric(horizontal: 20.0),
                     child: Material(
@@ -257,82 +201,33 @@ class _ProfileState extends State<Profile> {
                           horizontal: 10.0,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10)),
                         child: Row(
                           children: [
                             Icon(
                               Icons.email,
                               color: Colors.black,
                             ),
-                            SizedBox(width: 20.0),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Email",
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                Text(
-                                  email!,
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                )
-                              ],
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20.0),
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Material(
-                      borderRadius: BorderRadius.circular(10),
-                      elevation: 2.0,
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 15.0,
-                          horizontal: 10.0,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.email,
-                              color: Colors.black,
+                            SizedBox(
+                              width: 20.0,
                             ),
-                            SizedBox(width: 20.0),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   "Email",
                                   style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                                      color: Colors.black,
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.w600),
                                 ),
                                 Text(
                                   email!,
                                   style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                                      color: Colors.black,
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.w600),
                                 )
                               ],
                             )
@@ -341,7 +236,9 @@ class _ProfileState extends State<Profile> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 30.0),
+                  SizedBox(
+                    height: 30.0,
+                  ),
                   Container(
                     margin: EdgeInsets.symmetric(horizontal: 20.0),
                     child: Material(
@@ -353,26 +250,26 @@ class _ProfileState extends State<Profile> {
                           horizontal: 10.0,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10)),
                         child: Row(
                           children: [
                             Icon(
                               Icons.description,
                               color: Colors.black,
                             ),
-                            SizedBox(width: 20.0),
+                            SizedBox(
+                              width: 20.0,
+                            ),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   "Terms and Condition",
                                   style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 20.0,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                                      color: Colors.black,
+                                      fontSize: 20.0,
+                                      fontWeight: FontWeight.w600),
                                 )
                               ],
                             )
@@ -381,10 +278,12 @@ class _ProfileState extends State<Profile> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 30.0),
+                  SizedBox(
+                    height: 30.0,
+                  ),
                   GestureDetector(
                     onTap: () {
-                      deleteUser();
+                      performUserAction(context, 'signOut');
                     },
                     child: Container(
                       margin: EdgeInsets.symmetric(horizontal: 20.0),
@@ -397,26 +296,26 @@ class _ProfileState extends State<Profile> {
                             horizontal: 10.0,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10)),
                           child: Row(
                             children: [
                               Icon(
                                 Icons.delete,
                                 color: Colors.black,
                               ),
-                              SizedBox(width: 20.0),
+                              SizedBox(
+                                width: 20.0,
+                              ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     "Delete Account",
                                     style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 20.0,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                                        color: Colors.black,
+                                        fontSize: 20.0,
+                                        fontWeight: FontWeight.w600),
                                   )
                                 ],
                               )
@@ -426,10 +325,12 @@ class _ProfileState extends State<Profile> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 30.0),
+                  SizedBox(
+                    height: 30.0,
+                  ),
                   GestureDetector(
                     onTap: () {
-                      signOut(context);
+                      performUserAction(context, 'deleteUser');
                     },
                     child: Container(
                       margin: EdgeInsets.symmetric(horizontal: 20.0),
@@ -442,26 +343,26 @@ class _ProfileState extends State<Profile> {
                             horizontal: 10.0,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10)),
                           child: Row(
                             children: [
                               Icon(
                                 Icons.logout,
                                 color: Colors.black,
                               ),
-                              SizedBox(width: 20.0),
+                              SizedBox(
+                                width: 20.0,
+                              ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     "LogOut",
                                     style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 20.0,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                                        color: Colors.black,
+                                        fontSize: 20.0,
+                                        fontWeight: FontWeight.w600),
                                   )
                                 ],
                               )
