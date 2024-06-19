@@ -42,8 +42,7 @@ class _HomeState extends State<Home> {
   // Fetch food data from Firestore
   void fetchData() async {
     try {
-      QuerySnapshot querySnapshot =
-          await FirebaseFirestore.instance.collection('foodItems').get();
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('foodItems').get();
       setState(() {
         foodItems = querySnapshot.docs;
         dataAvailable = foodItems.isNotEmpty;
@@ -88,6 +87,21 @@ class _HomeState extends State<Home> {
     setState(() {});
   }
 
+  // Filter food items based on the selected category
+  List<DocumentSnapshot> getFilteredFoodItems() {
+    if (icecream) {
+      return foodItems.where((doc) => doc['Category'] == 'Ice Cream').toList();
+    } else if (pizza) {
+      return foodItems.where((doc) => doc['Category'] == 'Pizza').toList();
+    } else if (salad) {
+      return foodItems.where((doc) => doc['Category'] == 'Salad').toList();
+    } else if (burger) {
+      return foodItems.where((doc) => doc['Category'] == 'Burger').toList();
+    } else {
+      return foodItems;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -123,7 +137,9 @@ class _HomeState extends State<Home> {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0)),
               Text("Discover and Get Great Food",
                   style: TextStyle(fontSize: 16.0)),
-              SizedBox(height: 90.0),
+              SizedBox(height: 20.0),
+              Container(margin: EdgeInsets.only(right: 20.0), child: showItem()),
+              SizedBox(height: 30.0),
               dataAvailable
                   ? buildFoodItemsList()
                   : Center(
@@ -149,8 +165,9 @@ class _HomeState extends State<Home> {
   }
 
   Widget buildFoodItemsList() {
+    List<DocumentSnapshot> filteredFoodItems = getFilteredFoodItems();
     return Column(
-      children: foodItems.map((doc) {
+      children: filteredFoodItems.map((doc) {
         String name = doc['Name'];
         String detail = doc['Detail'];
         String image = doc['Image'];
@@ -225,10 +242,116 @@ class _HomeState extends State<Home> {
       ),
     );
   }
-}
 
-void main() {
-  runApp(MaterialApp(
-    home: Home(),
-  ));
+  Widget showItem() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        GestureDetector(
+          onTap: () {
+            icecream = true;
+            pizza = false;
+            salad = false;
+            burger = false;
+            setState(() {});
+          },
+          child: Material(
+            elevation: 5.0,
+            borderRadius: BorderRadius.circular(10),
+            child: Container(
+              decoration: BoxDecoration(
+                  color: icecream ? Colors.black : Colors.white,
+                  borderRadius: BorderRadius.circular(10)),
+              padding: EdgeInsets.all(8),
+              child: Image.asset(
+                "images/ice-cream.png",
+                height: 40,
+                width: 40,
+                fit: BoxFit.cover,
+                color: icecream ? Colors.white : Colors.black,
+              ),
+            ),
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            icecream = false;
+            pizza = true;
+            salad = false;
+            burger = false;
+            setState(() {});
+          },
+          child: Material(
+            elevation: 5.0,
+            borderRadius: BorderRadius.circular(10),
+            child: Container(
+              decoration: BoxDecoration(
+                  color: pizza ? Colors.black : Colors.white,
+                  borderRadius: BorderRadius.circular(10)),
+              padding: EdgeInsets.all(8),
+              child: Image.asset(
+                "images/pizza.png",
+                height: 40,
+                width: 40,
+                fit: BoxFit.cover,
+                color: pizza ? Colors.white : Colors.black,
+              ),
+            ),
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            icecream = false;
+            pizza = false;
+            salad = true;
+            burger = false;
+            setState(() {});
+          },
+          child: Material(
+            elevation: 5.0,
+            borderRadius: BorderRadius.circular(10),
+            child: Container(
+              decoration: BoxDecoration(
+                  color: salad ? Colors.black : Colors.white,
+                  borderRadius: BorderRadius.circular(10)),
+              padding: EdgeInsets.all(8),
+              child: Image.asset(
+                "images/salad.png",
+                height: 40,
+                width: 40,
+                fit: BoxFit.cover,
+                color: salad ? Colors.white : Colors.black,
+              ),
+            ),
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            icecream = false;
+            pizza = false;
+            salad = false;
+            burger = true;
+            setState(() {});
+          },
+          child: Material(
+            elevation: 5.0,
+            borderRadius: BorderRadius.circular(10),
+            child: Container(
+              decoration: BoxDecoration(
+                  color: burger ? Colors.black : Colors.white,
+                  borderRadius: BorderRadius.circular(10)),
+              padding: EdgeInsets.all(8),
+              child: Image.asset(
+                "images/burger.png",
+                height: 40,
+                width: 40,
+                fit: BoxFit.cover,
+                color: burger ? Colors.white : Colors.black,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }
