@@ -9,7 +9,6 @@ import 'package:foody_zidio/service/shared_pref.dart';
 import 'package:foody_zidio/widget/widget_support.dart';
 
 import 'package:http/http.dart' as http;
-
 class Wallet extends StatefulWidget {
   const Wallet({super.key});
 

@@ -49,7 +49,7 @@ TextEditingController usernamecontroller = TextEditingController();
 
 
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => BottomNav()));
+          context, MaterialPageRoute(builder: (context) => LogIn()));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(

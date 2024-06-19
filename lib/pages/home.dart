@@ -206,17 +206,17 @@ class _HomeState extends State<Home> {
                 SizedBox(height: 10.0),
                 Text(
                   title,
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: AppWidget.semiBoldTextFeildStyle(),
                 ),
                 SizedBox(height: 5.0),
                 Text(
                   subtitle,
-                  style: TextStyle(fontSize: 14.0),
+                  style: AppWidget.semiBoldTextFeildStyle(),
                 ),
                 SizedBox(height: 5.0),
                 Text(
                   price,
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: AppWidget.semiBoldTextFeildStyle(),
                 ),
               ],
             ),
