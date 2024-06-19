@@ -1,25 +1,22 @@
+import 'dart:core';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:foody_zidio/pages/login.dart';
 
-class AuthMethod extends StatefulWidget {
-  const AuthMethod({Key? key}) : super(key: key);
+class AuthMethod {
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
-  @override
-  _AuthMethodState createState() => _AuthMethodState();
-}
+  getcurrentUser() async {
+    return await auth.currentUser;
+  }
 
-class _AuthMethodState extends State<AuthMethod> {
-  
+  Future signout() async {
+    await FirebaseAuth.instance.signOut();
+  }
 
-  // Function to sign out the user
-  
-
-  // Function to delete the user account
-  
-  @override
-  Widget build(BuildContext context) {
-    // Your widget build logic here
-    throw UnimplementedError();
+  Future deleteUser() async {
+    User? user = await FirebaseAuth.instance.currentUser ;
+    if (user != null) {
+      await user.delete();
+      print("User account deleted");
+    }
   }
 }

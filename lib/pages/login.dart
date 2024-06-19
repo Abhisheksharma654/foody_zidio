@@ -152,7 +152,8 @@ class _LogInState extends State<LogIn> {
                                 },
                                 decoration: InputDecoration(
                                     hintText: 'Email',
-                                    hintStyle: AppWidget.semiBoldTextFeildStyle(),
+                                    hintStyle:
+                                        AppWidget.semiBoldTextFeildStyle(),
                                     prefixIcon: Icon(Icons.email_outlined)),
                               ),
                               SizedBox(
@@ -169,7 +170,8 @@ class _LogInState extends State<LogIn> {
                                 obscureText: true,
                                 decoration: InputDecoration(
                                     hintText: 'Password',
-                                    hintStyle: AppWidget.semiBoldTextFeildStyle(),
+                                    hintStyle:
+                                        AppWidget.semiBoldTextFeildStyle(),
                                     prefixIcon: Icon(Icons.password_outlined)),
                               ),
                               SizedBox(
@@ -196,6 +198,10 @@ class _LogInState extends State<LogIn> {
                               GestureDetector(
                                 onTap: () {
                                   if (_formkey.currentState!.validate()) {
+                                    setState(() {
+                                      email = useremailcontroller.text;
+                                      password = userpasswordcontroller.text;
+                                    });
                                     userLogin();
                                   }
                                 },
@@ -203,11 +209,13 @@ class _LogInState extends State<LogIn> {
                                   elevation: 5.0,
                                   borderRadius: BorderRadius.circular(20),
                                   child: Container(
-                                    padding: EdgeInsets.symmetric(vertical: 15.0),
+                                    padding:
+                                        EdgeInsets.symmetric(vertical: 15.0),
                                     width: double.infinity,
                                     decoration: BoxDecoration(
                                         color: Color(0Xffff5722),
-                                        borderRadius: BorderRadius.circular(20)),
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
                                     child: Center(
                                         child: Text(
                                       "LOGIN",
