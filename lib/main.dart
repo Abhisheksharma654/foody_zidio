@@ -46,7 +46,7 @@ class SplashScreen extends StatelessWidget {
             return LogIn();
           }*/
           else {
-            return AdminLogin();
+            return Onboard();
           }
         }
       },
