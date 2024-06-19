@@ -169,13 +169,11 @@ class _HomeState extends State<Home> {
     return Column(
       children: filteredFoodItems.map((doc) {
         String name = doc['Name'];
-        String detail = doc['Detail'];
         String image = doc['Image'];
         String price = doc['Price'];
         return foodCard(
           context,
           name,
-          detail,
           image,
           price,
         );
@@ -186,7 +184,6 @@ class _HomeState extends State<Home> {
   Widget foodCard(
     BuildContext context,
     String title,
-    String subtitle,
     String imagePath,
     String price,
   ) {
@@ -196,7 +193,7 @@ class _HomeState extends State<Home> {
           context,
           MaterialPageRoute(
             builder: (context) => Details(
-              detail: subtitle,
+              detail: "", // Pass an empty string or null if not used in Details page
               image: imagePath,
               name: title,
               price: price,
@@ -223,11 +220,6 @@ class _HomeState extends State<Home> {
                 SizedBox(height: 10.0),
                 Text(
                   title,
-                  style: AppWidget.semiBoldTextFeildStyle(),
-                ),
-                SizedBox(height: 5.0),
-                Text(
-                  subtitle,
                   style: AppWidget.semiBoldTextFeildStyle(),
                 ),
                 SizedBox(height: 5.0),

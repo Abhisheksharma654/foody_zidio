@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:foody_zidio/Auth/auth_log.dart';
+import 'package:foody_zidio/Content/onboard.dart';
 import 'package:foody_zidio/pages/login.dart';
 import 'package:foody_zidio/service/shared_pref.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,6 +21,7 @@ class _ProfileState extends State<Profile> {
   String? profile, name, email;
   final ImagePicker _picker = ImagePicker();
   File? selectedImage;
+final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future getImage() async {
     var image = await _picker.pickImage(source: ImageSource.gallery);
@@ -29,6 +32,42 @@ class _ProfileState extends State<Profile> {
     });
   }
 
+  Future<void> signOut(BuildContext context) async {
+    try {
+      await _auth.signOut();
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => Onboard()),
+      );
+    } catch (e) {
+      print("Error signing out: $e");
+    }
+  }
+
+  Future<void> deleteUser(BuildContext context) async {
+    User? user = _auth.currentUser;
+
+    if (user != null) {
+      try {
+        await user.delete();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("User account deleted")),
+        );
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => Onboard()),
+        );
+      } catch (e) {
+        if (e is FirebaseAuthException && e.code == 'requires-recent-login') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Recent login required. Please sign in again and try deleting the account.")),
+          );
+        } else {
+          print("Error deleting user: $e");
+        }
+      }
+    }
+  }
+
+  
   uploadItem() async {
     if (selectedImage != null) {
       String addId = randomAlphaNumeric(10);
@@ -282,8 +321,8 @@ class _ProfileState extends State<Profile> {
                     height: 30.0,
                   ),
                   GestureDetector(
-                    onTap: () {
-                      performUserAction(context, 'signOut');
+                    onTap: () async {
+                      await deleteUser(context);
                     },
                     child: Container(
                       margin: EdgeInsets.symmetric(horizontal: 20.0),
@@ -329,8 +368,9 @@ class _ProfileState extends State<Profile> {
                     height: 30.0,
                   ),
                   GestureDetector(
-                    onTap: () {
-                      performUserAction(context, 'deleteUser');
+                    onTap: () async {
+                      
+                       await signOut(context);
                     },
                     child: Container(
                       margin: EdgeInsets.symmetric(horizontal: 20.0),
