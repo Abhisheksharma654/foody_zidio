@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:foody_zidio/pages/order.dart';
 
 class CartPage extends StatelessWidget {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -131,7 +132,7 @@ void main() {
   runApp(MaterialApp(
     home: CartPage(),
     routes: {
-      '/orders': (context) => OrdersPage(),
+      '/orders': (context) => ontheload(),
     },
   ));
 }

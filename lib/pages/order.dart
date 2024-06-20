@@ -64,7 +64,8 @@ class _OrderState extends State<Order> {
           total = 0; // Reset total before recalculating
           List<Widget> itemWidgets = [];
           groupedItems.forEach((name, docs) {
-            int quantity = docs.fold(0, (sum, doc) => sum + int.parse(doc["Quantity"]));
+            int quantity =
+                docs.fold(0, (sum, doc) => sum + int.parse(doc["Quantity"]));
             int itemTotal = docs.fold(0, (sum, doc) {
               var data = doc.data() as Map<String, dynamic>;
               if (data.containsKey("Total")) {
@@ -130,7 +131,7 @@ class _OrderState extends State<Order> {
                               style: TextStyle(fontSize: 16.0),
                             ),
                             Text(
-                              "\$" + itemTotal.toString(),
+                              "\u{20B9}" + itemTotal.toString(),
                               style: TextStyle(fontSize: 16.0),
                             ),
                           ],
@@ -158,7 +159,9 @@ class _OrderState extends State<Order> {
                   width: 400,
                   height: 400,
                 ),
-                SizedBox(height: 10,),
+                SizedBox(
+                  height: 10,
+                ),
                 Text(
                   "Oops .....  Cart Is Empty.",
                   style: TextStyle(
@@ -217,7 +220,7 @@ class _OrderState extends State<Order> {
                     ),
                   ),
                   Text(
-                    "\$" + total.toString(),
+                    "\u{20B9}" + total.toString(),
                     style: TextStyle(
                       fontSize: 20.0,
                       fontWeight: FontWeight.bold,
@@ -234,8 +237,10 @@ class _OrderState extends State<Order> {
                 int walletAmount = int.parse(wallet!);
                 if (walletAmount >= total) {
                   int amount = walletAmount - total;
-                  await DatabaseMethods().updateUserWallet(id!, amount.toString());
-                  await SharedPreferenceHelper().saveUserWallet(amount.toString());
+                  await DatabaseMethods()
+                      .updateUserWallet(id!, amount.toString());
+                  await SharedPreferenceHelper()
+                      .saveUserWallet(amount.toString());
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Payment Successful!')),
                   );
