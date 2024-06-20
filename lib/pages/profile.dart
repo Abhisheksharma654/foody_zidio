@@ -1,17 +1,20 @@
 import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:foody_zidio/Auth/auth_log.dart';
+import 'package:foody_zidio/Content/bottom_nav.dart';
 import 'package:foody_zidio/Content/onboard.dart';
-import 'package:foody_zidio/pages/login.dart';
+import 'package:foody_zidio/pages/home.dart';
 import 'package:foody_zidio/service/shared_pref.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:random_string/random_string.dart';
 
+
+
 class Profile extends StatefulWidget {
-  const Profile({super.key});
+  const Profile({Key? key}) : super(key: key);
 
   @override
   State<Profile> createState() => _ProfileState();
@@ -19,56 +22,23 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   String? profile, name, email;
-  final ImagePicker _picker = ImagePicker();
+  double profileCompletion = 0.0;
   File? selectedImage;
-final FirebaseAuth _auth = FirebaseAuth.instance;
+  final ImagePicker _picker = ImagePicker();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future getImage() async {
+  Future<void> getImage() async {
     var image = await _picker.pickImage(source: ImageSource.gallery);
 
-    selectedImage = File(image!.path);
-    setState(() {
-      uploadItem();
-    });
-  }
-
-  Future<void> signOut(BuildContext context) async {
-    try {
-      await _auth.signOut();
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => Onboard()),
-      );
-    } catch (e) {
-      print("Error signing out: $e");
+    if (image != null) {
+      setState(() {
+        selectedImage = File(image!.path);
+      });
+      await uploadItem();
     }
   }
 
-  Future<void> deleteUser(BuildContext context) async {
-    User? user = _auth.currentUser;
-
-    if (user != null) {
-      try {
-        await user.delete();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("User account deleted")),
-        );
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => Onboard()),
-        );
-      } catch (e) {
-        if (e is FirebaseAuthException && e.code == 'requires-recent-login') {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Recent login required. Please sign in again and try deleting the account.")),
-          );
-        } else {
-          print("Error deleting user: $e");
-        }
-      }
-    }
-  }
-
-  
-  uploadItem() async {
+  Future<void> uploadItem() async {
     if (selectedImage != null) {
       String addId = randomAlphaNumeric(10);
 
@@ -77,344 +47,213 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
       final UploadTask task = firebaseStorageRef.putFile(selectedImage!);
 
       var downloadUrl = await (await task).ref.getDownloadURL();
-      await SharedPreferenceHelper().saveUserProfile(downloadUrl);
-      setState(() {});
+      await SharedPreferenceHelper().saveUserProfile(downloadUrl.toString());
+      setState(() {
+        profile = downloadUrl.toString();
+        profileCompletion = calculateProfileCompletion();
+      });
     }
   }
 
-  getthesharedpref() async {
+  double calculateProfileCompletion() {
+    double completion = 0.0;
+    if (profile != null && profile!.isNotEmpty) completion += 25.0;
+    if (name != null && name!.isNotEmpty) completion += 25.0;
+    if (email != null && email!.isNotEmpty) completion += 25.0;
+    return completion;
+  }
+
+  Future<void> getSharedPrefs() async {
     profile = await SharedPreferenceHelper().getUserProfile();
     name = await SharedPreferenceHelper().getUserName();
     email = await SharedPreferenceHelper().getUserEmail();
-    setState(() {});
-  }
-
-  onthisload() async {
-    await getthesharedpref();
+    profileCompletion = calculateProfileCompletion();
     setState(() {});
   }
 
   @override
   void initState() {
-    onthisload();
     super.initState();
+    getSharedPrefs();
+  }
+
+  Future<void> signOut(BuildContext context) async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Onboard()),
+      );
+    } catch (e) {
+      print('Error signing out: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.black,
+        title: ProfileTitle(profileCompletionCount: (profileCompletion / 25).toInt()),
+        centerTitle: true,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (builder)=> BottomNav()));
+          },
+          icon: const Icon(Icons.arrow_back),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.settings_rounded),
+          ),
+        ],
+      ),
       body: name == null
-          ? CircularProgressIndicator()
-          : Container(
-              child: Column(
-                children: [
-                  Stack(
-                    children: [
-                      Container(
-                        padding:
-                            EdgeInsets.only(top: 45.0, left: 20.0, right: 20.0),
-                        height: MediaQuery.of(context).size.height / 4.3,
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                            color: Colors.black,
-                            borderRadius: BorderRadius.vertical(
-                                bottom: Radius.elliptical(
-                                    MediaQuery.of(context).size.width, 105.0))),
+          ? const Center(child: CircularProgressIndicator())
+          : ListView(
+              padding: const EdgeInsets.all(10),
+              children: [
+                Column(
+                  children: [
+                    GestureDetector(
+                      onTap: getImage,
+                      child: CircleAvatar(
+                        radius: 50,
+                        backgroundImage: selectedImage != null
+                            ? FileImage(selectedImage!)
+                            : (profile != null && profile!.isNotEmpty)
+                                ? NetworkImage(profile!)
+                                : const AssetImage("images/person.png")
+                                      as ImageProvider,
                       ),
-                      Center(
-                        child: Container(
-                          margin: EdgeInsets.only(
-                              top: MediaQuery.of(context).size.height / 6.5),
-                          child: Material(
-                            elevation: 10.0,
-                            borderRadius: BorderRadius.circular(60),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(60),
-                              child: selectedImage == null
-                                  ? GestureDetector(
-                                      onTap: () {
-                                        getImage();
-                                      },
-                                      child: profile == null
-                                          ? Image.asset(
-                                              "images/person.png",
-                                              height: 120,
-                                              width: 120,
-                                              fit: BoxFit.cover,
-                                            )
-                                          : Image.network(
-                                              profile!,
-                                              height: 120,
-                                              width: 120,
-                                              fit: BoxFit.cover,
-                                            ),
-                                    )
-                                  : Image.file(
-                                      selectedImage!,
-                                      height: 120,
-                                      width: 120,
-                                      fit: BoxFit.cover,
-                                    ),
-                            ),
-                          ),
-                        ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      name ?? "Name not set",
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 70.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              name!,
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 23.0,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Poppins'),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Material(
-                      borderRadius: BorderRadius.circular(10),
-                      elevation: 2.0,
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 15.0,
-                          horizontal: 10.0,
-                        ),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.person,
-                              color: Colors.black,
-                            ),
-                            SizedBox(
-                              width: 20.0,
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Name",
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16.0,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                Text(
-                                  name!,
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16.0,
-                                      fontWeight: FontWeight.w600),
-                                )
-                              ],
-                            )
-                          ],
+                    ),
+                    Text(email ?? "Email not set"),
+                  ],
+                ),
+                const SizedBox(height: 25),
+                Row(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(right: 5),
+                      child: Text(
+                        "Complete your profile",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 30.0,
-                  ),
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Material(
-                      borderRadius: BorderRadius.circular(10),
-                      elevation: 2.0,
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 15.0,
-                          horizontal: 10.0,
-                        ),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.email,
-                              color: Colors.black,
-                            ),
-                            SizedBox(
-                              width: 20.0,
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Email",
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16.0,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                Text(
-                                  email!,
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16.0,
-                                      fontWeight: FontWeight.w600),
-                                )
-                              ],
-                            )
-                          ],
-                        ),
+                    Text(
+                      "(${(profileCompletion / 25).toInt()}/3)",
+                      style: const TextStyle(
+                        color: Colors.blue,
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 30.0,
-                  ),
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Material(
-                      borderRadius: BorderRadius.circular(10),
-                      elevation: 2.0,
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: List.generate(3, (index) {
+                    return Expanded(
                       child: Container(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 15.0,
-                          horizontal: 10.0,
-                        ),
+                        height: 7,
+                        margin: EdgeInsets.only(right: index == 2 ? 0 : 6),
                         decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.description,
-                              color: Colors.black,
-                            ),
-                            SizedBox(
-                              width: 20.0,
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Terms and Condition",
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 20.0,
-                                      fontWeight: FontWeight.w600),
-                                )
-                              ],
-                            )
-                          ],
+                          borderRadius: BorderRadius.circular(10),
+                          color: index < (profileCompletion / 25).toInt()
+                              ? Colors.blue
+                              : Colors.black12,
                         ),
                       ),
-                    ),
+                    );
+                  }),
+                ),
+
+                const SizedBox(height: 10),
+                Card(
+                  elevation: 4,
+                  shadowColor: Colors.black12,
+                  child: ListTile(
+                    leading: const Icon(Icons.insights),
+                    title: const Text("Activity"),
+                    trailing: const Icon(Icons.chevron_right),
                   ),
-                  SizedBox(
-                    height: 30.0,
+                ),
+                const SizedBox(height: 5),
+                Card(
+                  elevation: 4,
+                  shadowColor: Colors.black12,
+                  child: ListTile(
+                    leading: const Icon(Icons.location_on_outlined),
+                    title: const Text("Location"),
+                    trailing: const Icon(Icons.chevron_right),
                   ),
-                  GestureDetector(
-                    onTap: () async {
-                      await deleteUser(context);
+                ),
+                const SizedBox(height: 5),
+                Card(
+                  elevation: 4,
+                  shadowColor: Colors.black12,
+                  child: ListTile(
+                    leading: const Icon(CupertinoIcons.bell),
+                    title: const Text("Notifications"),
+                    trailing: const Icon(Icons.chevron_right),
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Card(
+                  elevation: 4,
+                  shadowColor: Colors.black12,
+                  child: ListTile(
+                    leading: const Icon(CupertinoIcons.arrow_right_arrow_left),
+                    title: const Text("Logout"),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () {
+                      signOut(context); // Call the signOut method when Logout tile is tapped
                     },
-                    child: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Material(
-                        borderRadius: BorderRadius.circular(10),
-                        elevation: 2.0,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            vertical: 15.0,
-                            horizontal: 10.0,
-                          ),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.delete,
-                                color: Colors.black,
-                              ),
-                              SizedBox(
-                                width: 20.0,
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Delete Account",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 20.0,
-                                        fontWeight: FontWeight.w600),
-                                  )
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
                   ),
-                  SizedBox(
-                    height: 30.0,
-                  ),
-                  GestureDetector(
-                    onTap: () async {
-                      
-                       await signOut(context);
-                    },
-                    child: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Material(
-                        borderRadius: BorderRadius.circular(10),
-                        elevation: 2.0,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            vertical: 15.0,
-                            horizontal: 10.0,
-                          ),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.logout,
-                                color: Colors.black,
-                              ),
-                              SizedBox(
-                                width: 20.0,
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "LogOut",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 20.0,
-                                        fontWeight: FontWeight.w600),
-                                  )
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
-                ],
-              ),
+                ),
+              ],
             ),
+    );
+  }
+}
+
+class ProfileTitle extends StatelessWidget {
+  final int profileCompletionCount;
+
+  const ProfileTitle({Key? key, required this.profileCompletionCount}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          "PROFILE",
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(width: 5),
+        Text(
+          "(${profileCompletionCount}/3)",
+          style: const TextStyle(
+            color: Colors.blue,
+          ),
+        ),
+      ],
     );
   }
 }

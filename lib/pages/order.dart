@@ -18,7 +18,7 @@ class _OrderState extends State<Order> {
   Stream? foodStream;
 
   void startTimer() {
-    Timer(Duration(seconds: 3), () {
+    Timer(const Duration(seconds: 3), () {
       setState(() {});
     });
   }
@@ -47,7 +47,7 @@ class _OrderState extends State<Order> {
       stream: foodStream,
       builder: (context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasData && snapshot.data.docs.isNotEmpty) {
           // Group items by name
@@ -78,7 +78,7 @@ class _OrderState extends State<Order> {
             total += itemTotal;
 
             itemWidgets.add(Container(
-              margin: EdgeInsets.only(left: 20.0, right: 20.0, bottom: 10.0),
+              margin: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 10.0),
               child: Material(
                 elevation: 5.0,
                 borderRadius: BorderRadius.circular(10),
@@ -92,16 +92,16 @@ class _OrderState extends State<Order> {
                     });
                   },
                   background: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     color: Colors.red,
                     alignment: AlignmentDirectional.centerEnd,
-                    child: Icon(Icons.delete, color: Colors.white),
+                    child: const Icon(Icons.delete, color: Colors.white),
                   ),
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    padding: EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(10),
                     child: Row(
                       children: [
                         ClipRRect(
@@ -113,7 +113,7 @@ class _OrderState extends State<Order> {
                             fit: BoxFit.cover,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 20.0,
                         ),
                         Column(
@@ -121,18 +121,23 @@ class _OrderState extends State<Order> {
                           children: [
                             Text(
                               name,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 18.0,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             Text(
                               quantity.toString(),
-                              style: TextStyle(fontSize: 16.0),
+                              style: const TextStyle(fontSize: 16.0),
                             ),
                             Text(
+<<<<<<< HEAD
                               "\u{20B9}" + itemTotal.toString(),
                               style: TextStyle(fontSize: 16.0),
+=======
+                              "\$" + itemTotal.toString(),
+                              style: const TextStyle(fontSize: 16.0),
+>>>>>>> a88ab7f2530e4000493dad9b03483a8d31145de9
                             ),
                           ],
                         ),
@@ -159,10 +164,15 @@ class _OrderState extends State<Order> {
                   width: 400,
                   height: 400,
                 ),
+<<<<<<< HEAD
                 SizedBox(
                   height: 10,
                 ),
                 Text(
+=======
+                const SizedBox(height: 10,),
+                const Text(
+>>>>>>> a88ab7f2530e4000493dad9b03483a8d31145de9
                   "Oops .....  Cart Is Empty.",
                   style: TextStyle(
                     fontSize: 18.0,
@@ -181,15 +191,15 @@ class _OrderState extends State<Order> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        padding: EdgeInsets.only(top: 60.0),
+        padding: const EdgeInsets.only(top: 60.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Material(
               elevation: 2.0,
               child: Container(
-                padding: EdgeInsets.only(bottom: 10.0),
-                child: Center(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: const Center(
                   child: Text(
                     "Food Cart",
                     style: TextStyle(
@@ -200,19 +210,19 @@ class _OrderState extends State<Order> {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20.0,
             ),
             Expanded(
               child: foodCart(),
             ),
-            Divider(),
+            const Divider(),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  const Text(
                     "Total Price",
                     style: TextStyle(
                       fontSize: 20.0,
@@ -220,8 +230,13 @@ class _OrderState extends State<Order> {
                     ),
                   ),
                   Text(
+<<<<<<< HEAD
                     "\u{20B9}" + total.toString(),
                     style: TextStyle(
+=======
+                    "\$" + total.toString(),
+                    style: const TextStyle(
+>>>>>>> a88ab7f2530e4000493dad9b03483a8d31145de9
                       fontSize: 20.0,
                       fontWeight: FontWeight.bold,
                     ),
@@ -229,7 +244,7 @@ class _OrderState extends State<Order> {
                 ],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20.0,
             ),
             GestureDetector(
@@ -242,23 +257,23 @@ class _OrderState extends State<Order> {
                   await SharedPreferenceHelper()
                       .saveUserWallet(amount.toString());
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Payment Successful!')),
+                    const SnackBar(content: Text('Payment Successful!')),
                   );
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Insufficient funds in wallet!')),
+                    const SnackBar(content: Text('Insufficient funds in wallet!')),
                   );
                 }
               },
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 15.0),
+                padding: const EdgeInsets.symmetric(vertical: 15.0),
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
                   color: Colors.black,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                margin: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-                child: Center(
+                margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                child: const Center(
                   child: Text(
                     "CheckOut",
                     style: TextStyle(
