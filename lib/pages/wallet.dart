@@ -88,7 +88,7 @@ class _WalletState extends State<Wallet> {
                               height: 5.0,
                             ),
                             Text(
-                              "\$" + wallet!,
+                              "\u{20B9}" + wallet!,
                               style: AppWidget.boldTextFeildStyle(),
                             )
                           ],
@@ -122,7 +122,7 @@ class _WalletState extends State<Wallet> {
                               border: Border.all(color: const Color(0xFFE9E2E2)),
                               borderRadius: BorderRadius.circular(5)),
                           child: Text(
-                            "\$" + "100",
+                            "\u{20B9}" + "100",
                             style: AppWidget.semiBoldTextFeildStyle(),
                           ),
                         ),
@@ -137,7 +137,7 @@ class _WalletState extends State<Wallet> {
                               border: Border.all(color: const Color(0xFFE9E2E2)),
                               borderRadius: BorderRadius.circular(5)),
                           child: Text(
-                            "\$" + "500",
+                            "\u{20B9}" + "500",
                             style: AppWidget.semiBoldTextFeildStyle(),
                           ),
                         ),
@@ -152,7 +152,7 @@ class _WalletState extends State<Wallet> {
                               border: Border.all(color: const Color(0xFFE9E2E2)),
                               borderRadius: BorderRadius.circular(5)),
                           child: Text(
-                            "\$" + "1000",
+                            "\u{20B9}" + "1000",
                             style: AppWidget.semiBoldTextFeildStyle(),
                           ),
                         ),
@@ -167,7 +167,7 @@ class _WalletState extends State<Wallet> {
                               border: Border.all(color: const Color(0xFFE9E2E2)),
                               borderRadius: BorderRadius.circular(5)),
                           child: Text(
-                            "\$" + "2000",
+                            "\u{20B9}" + "2000",
                             style: AppWidget.semiBoldTextFeildStyle(),
                           ),
                         ),
@@ -178,7 +178,7 @@ class _WalletState extends State<Wallet> {
                     height: 50.0,
                   ),
                   GestureDetector(
-                    onTap: (){
+                    onTap: () {
                       openEdit();
                     },
                     child: Container(
@@ -354,7 +354,7 @@ class _WalletState extends State<Wallet> {
                     ),
                     Center(
                       child: GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           Navigator.pop(context);
                           makePayment(amountcontroller.text);
                         },

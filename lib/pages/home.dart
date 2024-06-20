@@ -43,7 +43,8 @@ class _HomeState extends State<Home> {
   // Fetch food data from Firestore
   void fetchData() async {
     try {
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('foodItems').get();
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('foodItems').get();
       setState(() {
         foodItems = querySnapshot.docs;
         dataAvailable = foodItems.isNotEmpty;
@@ -145,11 +146,13 @@ class _HomeState extends State<Home> {
               ),
               SizedBox(height: 20.0),
               Text("Delicious Food",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0)),
+                  style:
+                      TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0)),
               Text("Discover and Get Great Food",
                   style: TextStyle(fontSize: 16.0)),
               SizedBox(height: 20.0),
-              Container(margin: EdgeInsets.only(right: 20.0), child: showItem()),
+              Container(
+                  margin: EdgeInsets.only(right: 20.0), child: showItem()),
               SizedBox(height: 30.0),
               dataAvailable
                   ? buildFoodItemsList()
@@ -196,7 +199,7 @@ class _HomeState extends State<Home> {
     BuildContext context,
     String title,
     String imagePath,
-    String price,
+    String $price,
   ) {
     return GestureDetector(
       onTap: () {
@@ -204,10 +207,11 @@ class _HomeState extends State<Home> {
           context,
           MaterialPageRoute(
             builder: (context) => Details(
-              detail: "", // Pass an empty string or null if not used in Details page
+              detail:
+                  "", // Pass an empty string or null if not used in Details page
               image: imagePath,
               name: title,
-              price: price,
+              price: $price,
             ),
           ),
         );
@@ -235,7 +239,7 @@ class _HomeState extends State<Home> {
                 ),
                 SizedBox(height: 5.0),
                 Text(
-                  price,
+                  '\u{20B9}' + $price,
                   style: AppWidget.semiBoldTextFeildStyle(),
                 ),
               ],
