@@ -1,9 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:foody_zidio/pages/home.dart';
+import 'package:foody_zidio/pages/order.dart';
+class Ordered extends StatefulWidget {
+  const Ordered({super.key});
 
-class CartPage extends StatelessWidget {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  @override
+  State<Ordered> createState() => _OrderedState();
+}
+
+class _OrderedState extends State<Ordered> {
+
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> placeOrder() async {
@@ -29,7 +38,8 @@ class CartPage extends StatelessWidget {
       // Add order to the orders collection
       WriteBatch batch = _firestore.batch();
       for (var item in orderItems) {
-        DocumentReference orderRef = _firestore.collection('orders').doc(item['orderId']);
+        DocumentReference orderRef =
+            _firestore.collection('orders').doc(item['orderId']);
         batch.set(orderRef, item);
       }
 
@@ -46,92 +56,23 @@ class CartPage extends StatelessWidget {
       print('Error placing order: $e');
     }
   }
-
+  
   @override
   Widget build(BuildContext context) {
-    User? user = _auth.currentUser;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Cart'),
-      ),
-      body: StreamBuilder(
-        stream: _firestore
-            .collection('cartItems')
-            .where('userId', isEqualTo: user?.uid)
-            .snapshots(),
-        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (!snapshot.hasData) {
-            return Center(child: CircularProgressIndicator());
-          }
-
-          var cartItems = snapshot.data!.docs;
-
-          return ListView.builder(
-            itemCount: cartItems.length,
-            itemBuilder: (context, index) {
-              var item = cartItems[index];
-              return ListTile(
-                title: Text(item['name']),
-                subtitle: Text(item['price'].toString()),
-              );
-            },
+    return Scaffold(floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (builder) => Order(),
+            ),
           );
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: placeOrder,
-        child: Icon(Icons.shopping_cart),
-      ),
-    );
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+        backgroundColor: Colors.grey[900],
+      ),);
   }
-}
-
-class OrdersPage extends StatelessWidget {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  @override
-  Widget build(BuildContext context) {
-    User? user = _auth.currentUser;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Orders'),
-      ),
-      body: StreamBuilder(
-        stream: _firestore
-            .collection('orders')
-            .where('userId', isEqualTo: user?.uid)
-            .snapshots(),
-        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (!snapshot.hasData) {
-            return Center(child: CircularProgressIndicator());
-          }
-
-          var orders = snapshot.data!.docs;
-
-          return ListView.builder(
-            itemCount: orders.length,
-            itemBuilder: (context, index) {
-              var order = orders[index];
-              return ListTile(
-                title: Text(order['name']),
-                subtitle: Text(order['price'].toString()),
-              );
-            },
-          );
-        },
-      ),
-    );
-  }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: CartPage(),
-    routes: {
-      '/orders': (context) => OrdersPage(),
-    },
-  ));
 }

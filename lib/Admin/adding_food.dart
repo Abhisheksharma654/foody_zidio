@@ -16,9 +16,9 @@ class AddFood extends StatefulWidget {
 class _AddFoodState extends State<AddFood> {
   final List<String> fooditems = ['Ice-cream', 'Burger', 'Salad', 'Pizza'];
   String? value;
-  TextEditingController namecontroller = new TextEditingController();
-  TextEditingController pricecontroller = new TextEditingController();
-  TextEditingController detailcontroller = new TextEditingController();
+  TextEditingController namecontroller =  TextEditingController();
+  TextEditingController pricecontroller =  TextEditingController();
+  TextEditingController detailcontroller =  TextEditingController();
   final ImagePicker _picker = ImagePicker();
   File? selectedImage;
 
@@ -49,7 +49,7 @@ class _AddFoodState extends State<AddFood> {
         "Detail": detailcontroller.text
       };
       await DatabaseMethods().addFoodItem(addItem, value!).then((value) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             backgroundColor: Colors.orangeAccent,
             content: Text(
               "Food Item has been added Successfully",
@@ -67,7 +67,7 @@ class _AddFoodState extends State<AddFood> {
             onTap: () {
               Navigator.pop(context);
             },
-            child: Icon(
+            child: const Icon(
               Icons.arrow_back_ios_new_outlined,
               color: Color(0xFF373866),
             )),
@@ -80,7 +80,7 @@ class _AddFoodState extends State<AddFood> {
       body: SingleChildScrollView(
         child: Container(
           margin:
-              EdgeInsets.only(left: 20.0, right: 20.0, top: 20.0, bottom: 50.0),
+              const EdgeInsets.only(left: 20.0, right: 20.0, top: 20.0, bottom: 50.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -88,7 +88,7 @@ class _AddFoodState extends State<AddFood> {
                 "Upload the Item Picture",
                 style: AppWidget.semiBoldTextFeildStyle(),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20.0,
               ),
               selectedImage == null
@@ -108,7 +108,7 @@ class _AddFoodState extends State<AddFood> {
                                   Border.all(color: Colors.black, width: 1.5),
                               borderRadius: BorderRadius.circular(20),
                             ),
-                            child: Icon(
+                            child: const Icon(
                               Icons.camera_alt_outlined,
                               color: Colors.black,
                             ),
@@ -137,21 +137,21 @@ class _AddFoodState extends State<AddFood> {
                         ),
                       ),
                     ),
-              SizedBox(
+              const SizedBox(
                 height: 30.0,
               ),
               Text(
                 "Item Name",
                 style: AppWidget.semiBoldTextFeildStyle(),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10.0,
               ),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
-                    color: Color(0xFFececf8),
+                    color: const Color(0xFFececf8),
                     borderRadius: BorderRadius.circular(10)),
                 child: TextField(
                   controller: namecontroller,
@@ -161,21 +161,21 @@ class _AddFoodState extends State<AddFood> {
                       hintStyle: AppWidget.LightTextFeildStyle()),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 30.0,
               ),
               Text(
                 "Item Price",
                 style: AppWidget.semiBoldTextFeildStyle(),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10.0,
               ),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
-                    color: Color(0xFFececf8),
+                    color: const Color(0xFFececf8),
                     borderRadius: BorderRadius.circular(10)),
                 child: TextField(
                   controller: pricecontroller,
@@ -185,21 +185,21 @@ class _AddFoodState extends State<AddFood> {
                       hintStyle: AppWidget.LightTextFeildStyle()),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 30.0,
               ),
               Text(
                 "Item Detail",
                 style: AppWidget.semiBoldTextFeildStyle(),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10.0,
               ),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
-                    color: Color(0xFFececf8),
+                    color: const Color(0xFFececf8),
                     borderRadius: BorderRadius.circular(10)),
                 child: TextField(
                   maxLines: 6,
@@ -210,21 +210,21 @@ class _AddFoodState extends State<AddFood> {
                       hintStyle: AppWidget.LightTextFeildStyle()),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20.0,
               ),
               Text(
                 "Select Category",
                 style: AppWidget.semiBoldTextFeildStyle(),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20.0,
               ),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
-                    color: Color(0xFFececf8),
+                    color: const Color(0xFFececf8),
                     borderRadius: BorderRadius.circular(10)),
                 child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
@@ -234,23 +234,23 @@ class _AddFoodState extends State<AddFood> {
                           child: Text(
                             item,
                             style:
-                                TextStyle(fontSize: 18.0, color: Colors.black),
+                                const TextStyle(fontSize: 18.0, color: Colors.black),
                           )))
                       .toList(),
                   onChanged: ((value) => setState(() {
                         this.value = value;
                       })),
                   dropdownColor: Colors.white,
-                  hint: Text("Select Category"),
+                  hint: const Text("Select Category"),
                   iconSize: 36,
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.arrow_drop_down,
                     color: Colors.black,
                   ),
                   value: value,
                 )),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 30.0,
               ),
               GestureDetector(
@@ -262,12 +262,12 @@ class _AddFoodState extends State<AddFood> {
                     elevation: 5.0,
                     borderRadius: BorderRadius.circular(10),
                     child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 5.0),
+                      padding: const EdgeInsets.symmetric(vertical: 5.0),
                       width: 150,
                       decoration: BoxDecoration(
                           color: Colors.black,
                           borderRadius: BorderRadius.circular(10)),
-                      child: Center(
+                      child: const Center(
                         child: Text(
                           "Add",
                           style: TextStyle(
