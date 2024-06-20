@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:foody_zidio/Content/bottom_nav.dart';
 import 'package:foody_zidio/Content/onboard.dart';
+import 'package:foody_zidio/pages/home.dart';
 import 'package:foody_zidio/service/app_constraint.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'pages/login.dart';

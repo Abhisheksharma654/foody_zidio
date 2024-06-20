@@ -61,12 +61,7 @@ class _OrderedState extends State<Ordered> {
   Widget build(BuildContext context) {
     return Scaffold(floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (builder) => Order(),
-            ),
-          );
+          Navigator.pop(context);
         },
         child: Icon(
           Icons.add,

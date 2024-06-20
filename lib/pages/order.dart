@@ -155,10 +155,10 @@ class _OrderState extends State<Order> {
               children: [
                 Image.asset(
                   'images/empty.png',
-                  width: 400,
-                  height: 400,
+                  width: 300, // Adjusted size to be similar to home_no_data.png
+                  height: 300, // Adjusted size to be similar to home_no_data.png
                 ),
-                const SizedBox(height: 10,),
+                const SizedBox(height: 10),
                 const Text(
                   "Oops .....  Cart Is Empty.",
                   style: TextStyle(
