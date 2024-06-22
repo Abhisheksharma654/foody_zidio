@@ -131,13 +131,8 @@ class _OrderState extends State<Order> {
                               style: const TextStyle(fontSize: 16.0),
                             ),
                             Text(
-<<<<<<< HEAD
                               "\u{20B9}" + itemTotal.toString(),
                               style: TextStyle(fontSize: 16.0),
-=======
-                              "\$" + itemTotal.toString(),
-                              style: const TextStyle(fontSize: 16.0),
->>>>>>> a88ab7f2530e4000493dad9b03483a8d31145de9
                             ),
                           ],
                         ),
@@ -164,15 +159,10 @@ class _OrderState extends State<Order> {
                   width: 300, // Adjusted size to be similar to home_no_data.png
                   height: 300, // Adjusted size to be similar to home_no_data.png
                 ),
-<<<<<<< HEAD
                 SizedBox(
                   height: 10,
                 ),
                 Text(
-=======
-                const SizedBox(height: 10,),
-                const Text(
->>>>>>> a88ab7f2530e4000493dad9b03483a8d31145de9
                   "Oops .....  Cart Is Empty.",
                   style: TextStyle(
                     fontSize: 18.0,
@@ -230,13 +220,8 @@ class _OrderState extends State<Order> {
                     ),
                   ),
                   Text(
-<<<<<<< HEAD
                     "\u{20B9}" + total.toString(),
                     style: TextStyle(
-=======
-                    "\$" + total.toString(),
-                    style: const TextStyle(
->>>>>>> a88ab7f2530e4000493dad9b03483a8d31145de9
                       fontSize: 20.0,
                       fontWeight: FontWeight.bold,
                     ),

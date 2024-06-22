@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:foody_zidio/pages/signup.dart';
 import 'package:foody_zidio/widget/content_model.dart';
 import 'package:foody_zidio/widget/widget_support.dart';
-
 class Onboard extends StatefulWidget {
   const Onboard({super.key});
 

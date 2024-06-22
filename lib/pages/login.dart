@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:foody_zidio/Admin/admin.dart'; // Import your admin page
 import 'package:foody_zidio/Content/bottom_nav.dart'; // Import your regular user page
 import 'package:foody_zidio/pages/forgetpassword.dart'; // Import your forgot password page
 import 'package:foody_zidio/pages/signup.dart'; // Import your signup page
 import 'package:foody_zidio/widget/widget_support.dart'; // Import your widget support
+import 'package:shared_preferences/shared_preferences.dart'; // Import shared_preferences package
 
 class LogIn extends StatefulWidget {
   const LogIn({super.key});
@@ -31,26 +31,16 @@ class _LogInState extends State<LogIn> {
   }
 
   userLogin() async {
-    setState(() {
-      email = useremailcontroller.text;
-      password = userpasswordcontroller.text;
-    });
-
-    if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          "Email and password cannot be empty",
-          style: TextStyle(fontSize: 18.0, color: Colors.black),
-        ),
-      ));
-      return;
-    }
-
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
+      await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-      print("Login successful: ${userCredential.user?.email}");
-      Navigator.push(context, MaterialPageRoute(builder: (context) => BottomNav()));
+      
+      // Save user email to SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('userEmail', email);
+
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => BottomNav()));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -64,14 +54,7 @@ class _LogInState extends State<LogIn> {
           "Wrong Password Provided by User",
           style: TextStyle(fontSize: 18.0, color: Colors.black),
         )));
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-          "Login failed. Please try again.",
-          style: TextStyle(fontSize: 18.0, color: Colors.black),
-        )));
       }
-      print("Login failed: ${e.code}");
     }
   }
 
@@ -246,7 +229,7 @@ class _LogInState extends State<LogIn> {
                         child: Text(
                           "Don't have an account? Sign up",
                           style: AppWidget.semiBoldTextFeildStyle(),
-                        ),),
+                        )),
                   ],
                 ),
               ),
@@ -257,3 +240,4 @@ class _LogInState extends State<LogIn> {
     );
   }
 }
+ 
