@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -16,41 +15,12 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   bool icecream = false, pizza = false, salad = false, burger = false;
-  bool dataAvailable = true;
-  late Timer timer;
-  late List<DocumentSnapshot> foodItems;
   String userName = "User";
 
   @override
   void initState() {
     super.initState();
-    foodItems = [];
-    timer = Timer(Duration(milliseconds: 500), () {
-      fetchData();
-    });
     onthisload();
-  }
-
-  @override
-  void dispose() {
-    timer.cancel();
-    super.dispose();
-  }
-
-  void fetchData() async {
-    try {
-      QuerySnapshot querySnapshot =
-          await FirebaseFirestore.instance.collection('foodItems').get();
-      setState(() {
-        foodItems = querySnapshot.docs;
-        dataAvailable = foodItems.isNotEmpty;
-      });
-    } catch (e) {
-      print('Error fetching food items: $e');
-      setState(() {
-        dataAvailable = false;
-      });
-    }
   }
 
   Future<void> fetchUserName() async {
@@ -81,7 +51,8 @@ class _HomeState extends State<Home> {
     setState(() {});
   }
 
-  List<DocumentSnapshot> getFilteredFoodItems() {
+  List<DocumentSnapshot> getFilteredFoodItems(
+      List<DocumentSnapshot> foodItems) {
     if (icecream) {
       return foodItems.where((doc) => doc['Category'] == 'Ice-Cream').toList();
     } else if (pizza) {
@@ -107,7 +78,8 @@ class _HomeState extends State<Home> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Hello $userName,", style: AppWidget.boldTextFeildStyle()),
+                  Text("Hello $userName,",
+                      style: AppWidget.boldTextFeildStyle()),
                   GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -131,22 +103,25 @@ class _HomeState extends State<Home> {
                   ),
                 ],
               ),
-              SizedBox(
-                height: 20.0,
-              ),
+              SizedBox(height: 20.0),
               Text("Delicious Food", style: AppWidget.HeadlineTextFeildStyle()),
               Text("Discover and Get Great Food",
                   style: AppWidget.LightTextFeildStyle()),
-              SizedBox(
-                height: 20.0,
-              ),
-              Container(margin: EdgeInsets.only(right: 20.0), child: showItem()),
-              SizedBox(
-                height: 30.0,
-              ),
-              dataAvailable
-                  ? buildListView()
-                  : Center(
+              SizedBox(height: 20.0),
+              Container(
+                  margin: EdgeInsets.only(right: 20.0), child: showItem()),
+              SizedBox(height: 30.0),
+              StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('foodItems')
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return Center(
                       child: Column(
                         children: [
                           Image.asset(
@@ -160,7 +135,13 @@ class _HomeState extends State<Home> {
                           ),
                         ],
                       ),
-                    ),
+                    );
+                  } else {
+                    List<DocumentSnapshot> foodItems = snapshot.data!.docs;
+                    return buildListView(foodItems);
+                  }
+                },
+              ),
             ],
           ),
         ),
@@ -168,8 +149,8 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget buildListView() {
-    List<DocumentSnapshot> filteredFoodItems = getFilteredFoodItems();
+  Widget buildListView(List<DocumentSnapshot> foodItems) {
+    List<DocumentSnapshot> filteredFoodItems = getFilteredFoodItems(foodItems);
     return Column(
       children: [
         SingleChildScrollView(
@@ -208,18 +189,12 @@ class _HomeState extends State<Home> {
                           ),
                           Text(foodItem['Name'],
                               style: AppWidget.semiBoldTextFeildStyle()),
-                          SizedBox(
-                            height: 5.0,
-                          ),
+                          SizedBox(height: 5.0),
                           Text(foodItem['Detail'],
                               style: AppWidget.LightTextFeildStyle()),
-                          SizedBox(
-                            height: 5.0,
-                          ),
-                          Text(
-                            '\u{20B9}${foodItem['Price']}',
-                            style: AppWidget.semiBoldTextFeildStyle(),
-                          )
+                          SizedBox(height: 5.0),
+                          Text('\u{20B9}${foodItem['Price']}',
+                              style: AppWidget.semiBoldTextFeildStyle())
                         ],
                       ),
                     ),
@@ -229,7 +204,7 @@ class _HomeState extends State<Home> {
             }).toList(),
           ),
         ),
-        SizedBox(height: 30.0),
+        SizedBox(height: 20.0),
         ...filteredFoodItems.map((foodItem) {
           return GestureDetector(
             onTap: () {
@@ -261,7 +236,7 @@ class _HomeState extends State<Home> {
                         width: 120,
                         fit: BoxFit.cover,
                       ),
-                      SizedBox(width: 20.0),
+                      SizedBox(width: 10.0),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -277,6 +252,8 @@ class _HomeState extends State<Home> {
                             width: MediaQuery.of(context).size.width / 2,
                             child: Text(
                               foodItem['Detail'],
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                               style: AppWidget.LightTextFeildStyle(),
                             ),
                           ),
