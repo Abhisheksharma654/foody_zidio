@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foody_zidio/pages/login.dart';
 import 'package:foody_zidio/pages/signup.dart';
 import 'package:foody_zidio/widget/content_model.dart';
 import 'package:foody_zidio/widget/widget_support.dart';
@@ -83,7 +84,7 @@ class _OnboardState extends State<Onboard> {
             onTap: () {
               if (currentIndex == contents.length - 1) {
                 Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (context) => SignUp()));
+                    context, MaterialPageRoute(builder: (context) => LogIn()));
               }
               _controller.nextPage(
                   duration: Duration(milliseconds: 100),

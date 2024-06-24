@@ -6,9 +6,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:foody_zidio/Content/bottom_nav.dart';
 import 'package:foody_zidio/Content/onboard.dart';
+import 'package:foody_zidio/Content/settings_updt.dart';
 import 'package:foody_zidio/pages/home.dart';
 import 'package:foody_zidio/pages/login.dart';
 import 'package:foody_zidio/service/shared_pref.dart';
+import 'package:foody_zidio/widget/widget_support.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:random_string/random_string.dart';
 
@@ -93,34 +95,45 @@ class _ProfileState extends State<Profile> {
     verifyUser();
   }
 
-  Future<void> signOut(BuildContext context) async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (builder)=>Onboard()));
-    } catch (e) {
-      print('Error signing out: $e');
-    }
+ Future<void> signOut(BuildContext context) async {
+  try {
+    await FirebaseAuth.instance.signOut();
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => Onboard()),
+      (route) => false, // This removes all routes from the stack
+    );
+  } catch (e) {
+    print('Error signing out: $e');
   }
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.black,
-        title: ProfileTitle(profileCompletionCount: (profileCompletion / 25).toInt()),
+  
+       backgroundColor: Colors.black,
+        title: ProfileTitle(
+            profileCompletionCount: (profileCompletion / 25).toInt(),),
         centerTitle: true,
         leading: IconButton(
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (builder)=> BottomNav()));
+            Navigator.push(
+                context, MaterialPageRoute(builder: (builder) => BottomNav()));
           },
           icon: const Icon(Icons.arrow_back),
+          color: Colors.white,
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (builder) => SettingsPage()));
+            },
             icon: const Icon(Icons.settings_rounded),
+            color: Colors.white,
           ),
         ],
       ),
@@ -140,7 +153,7 @@ class _ProfileState extends State<Profile> {
                             : (profile != null && profile!.isNotEmpty)
                                 ? NetworkImage(profile!)
                                 : const AssetImage("images/person.png")
-                                      as ImageProvider,
+                                    as ImageProvider,
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -191,21 +204,24 @@ class _ProfileState extends State<Profile> {
                     );
                   }),
                 ),
-
                 const SizedBox(height: 10),
                 Card(
                   elevation: 4,
-                  shadowColor: Colors.black12,
+                  color: Colors.white,
+                  
+                  shadowColor: Colors.black,
                   child: ListTile(
                     leading: const Icon(Icons.insights),
                     title: const Text("Activity"),
                     trailing: const Icon(Icons.chevron_right),
                   ),
+                  
                 ),
                 const SizedBox(height: 5),
                 Card(
                   elevation: 4,
-                  shadowColor: Colors.black12,
+                  color: Colors.white,
+                  shadowColor: Colors.black,
                   child: ListTile(
                     leading: const Icon(Icons.location_on_outlined),
                     title: const Text("Location"),
@@ -215,7 +231,8 @@ class _ProfileState extends State<Profile> {
                 const SizedBox(height: 5),
                 Card(
                   elevation: 4,
-                  shadowColor: Colors.black12,
+                  color: Colors.white,
+                  shadowColor: Colors.black,
                   child: ListTile(
                     leading: const Icon(CupertinoIcons.bell),
                     title: const Text("Notifications"),
@@ -225,13 +242,15 @@ class _ProfileState extends State<Profile> {
                 const SizedBox(height: 5),
                 Card(
                   elevation: 4,
-                  shadowColor: Colors.black12,
+                  shadowColor: Colors.black,
+                  color: Colors.white,
                   child: ListTile(
                     leading: const Icon(CupertinoIcons.arrow_right_arrow_left),
                     title: const Text("Logout"),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
-                      signOut(context); // Call the signOut method when Logout tile is tapped
+                      signOut(
+                          context); // Call the signOut method when Logout tile is tapped
                     },
                   ),
                 ),
@@ -244,7 +263,8 @@ class _ProfileState extends State<Profile> {
 class ProfileTitle extends StatelessWidget {
   final int profileCompletionCount;
 
-  const ProfileTitle({Key? key, required this.profileCompletionCount}) : super(key: key);
+  const ProfileTitle({Key? key, required this.profileCompletionCount})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -253,11 +273,8 @@ class ProfileTitle extends StatelessWidget {
       children: [
         Text(
           "PROFILE",
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
+          style:AppWidget.semiBoldWhiteTextFeildStyle()
+           
         ),
         const SizedBox(width: 5),
         Text(

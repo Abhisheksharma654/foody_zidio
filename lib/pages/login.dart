@@ -30,17 +30,12 @@ class _LogInState extends State<LogIn> {
     super.dispose();
   }
 
+ 
   userLogin() async {
     try {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-      
-      // Save user email to SharedPreferences
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('userEmail', email);
-
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => BottomNav()));
+          Navigator.push(context, MaterialPageRoute(builder: (context)=> BottomNav()));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -48,8 +43,8 @@ class _LogInState extends State<LogIn> {
           "No User Found for that Email",
           style: TextStyle(fontSize: 18.0, color: Colors.black),
         )));
-      } else if (e.code == 'wrong-password') {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      }else if(e.code=='wrong-password'){
+         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(
           "Wrong Password Provided by User",
           style: TextStyle(fontSize: 18.0, color: Colors.black),
@@ -137,13 +132,18 @@ class _LogInState extends State<LogIn> {
                                     hintText: 'Email',
                                     hintStyle:
                                         AppWidget.semiBoldTextFeildStyle(),
-                                    prefixIcon: Icon(Icons.email_outlined)),
+                                    prefixIcon: Icon(Icons.email_outlined),
+                
+                                     focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.black)),
+                                    ),
                               ),
                               SizedBox(
                                 height: 30.0,
                               ),
                               TextFormField(
                                 controller: userpasswordcontroller,
+                                cursorColor: Colors.black,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Please Enter Password';
@@ -155,7 +155,12 @@ class _LogInState extends State<LogIn> {
                                     hintText: 'Password',
                                     hintStyle:
                                         AppWidget.semiBoldTextFeildStyle(),
-                                    prefixIcon: Icon(Icons.password_outlined)),
+                                    prefixIcon: Icon(Icons.password_outlined),
+                                  
+                                    focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.black)),
+                                    ),
+                                    
                               ),
                               SizedBox(
                                 height: 20.0,
@@ -221,7 +226,7 @@ class _LogInState extends State<LogIn> {
                     ),
                     GestureDetector(
                         onTap: () {
-                          Navigator.push(
+                          Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => SignUp()));

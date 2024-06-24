@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:foody_zidio/service/shared_pref.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DatabaseMethods {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -99,6 +101,18 @@ class DatabaseMethods {
     userInfoMap['Id'] = newUserId.toString(); // Assuming ID is stored as a string
     await _firestore.collection('users').doc(newUserId.toString()).set(userInfoMap);
     print('User added to Firestore with ID: $newUserId');
+  }
+Future<void> updateUserProfile(String userId, String name, String email, String profile) async {
+    try {
+      await _firestore.collection('users').doc(userId).update({
+        'name': name,
+        'email': email,
+        'profile': profile,
+      });
+      print('User profile updated for user ID: $userId');
+    } catch (e) {
+      print('Error updating user profile: $e');
+    }
   }
 
 }

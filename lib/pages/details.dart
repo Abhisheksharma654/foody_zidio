@@ -18,18 +18,19 @@ class Details extends StatefulWidget {
 }
 
 class _DetailsState extends State<Details> {
-  int a = 1, total = 0;
-  String? id;
+  int quantity = 1, total = 0;
+  String? userId;
 
   @override
   void initState() {
     super.initState();
     getSharedPref();
-    total = int.parse(widget.price);
+    total = int.parse(widget.price); // Initialize total price based on the item's price
   }
 
+  // Fetch user ID from shared preferences
   void getSharedPref() async {
-    id = await SharedPreferenceHelper().getUserId();
+    userId = await SharedPreferenceHelper().getUserId();
     setState(() {});
   }
 
@@ -37,28 +38,31 @@ class _DetailsState extends State<Details> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        margin: const EdgeInsets.only(top: 50.0, left: 20.0, right: 20.0),
+        margin: EdgeInsets.only(top: 50.0, left: 20.0, right: 20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Back button
             GestureDetector(
               onTap: () {
                 Navigator.pop(context);
               },
-              child: const Icon(
+              child: Icon(
                 Icons.arrow_back_ios_new_outlined,
                 color: Colors.black,
               ),
             ),
+            // Display item image
             Image.network(
               widget.image,
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height / 2.5,
               fit: BoxFit.fill,
             ),
-            const SizedBox(
+            SizedBox(
               height: 15.0,
             ),
+            // Display item name and quantity control
             Row(
               children: [
                 Column(
@@ -70,12 +74,13 @@ class _DetailsState extends State<Details> {
                     ),
                   ],
                 ),
-                const Spacer(),
+                Spacer(),
+                // Decrease quantity button
                 GestureDetector(
                   onTap: () {
-                    if (a > 1) {
+                    if (quantity > 1) {
                       setState(() {
-                        --a;
+                        --quantity;
                         total -= int.parse(widget.price);
                       });
                     }
@@ -85,26 +90,28 @@ class _DetailsState extends State<Details> {
                       color: Colors.black,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.remove,
                       color: Colors.white,
                     ),
                   ),
                 ),
-                const SizedBox(
+                SizedBox(
                   width: 20.0,
                 ),
+                // Display current quantity
                 Text(
-                  a.toString(),
+                  quantity.toString(),
                   style: AppWidget.semiBoldTextFeildStyle(),
                 ),
-                const SizedBox(
+                SizedBox(
                   width: 20.0,
                 ),
+                // Increase quantity button
                 GestureDetector(
                   onTap: () {
                     setState(() {
-                      ++a;
+                      ++quantity;
                       total += int.parse(widget.price);
                     });
                   },
@@ -113,7 +120,7 @@ class _DetailsState extends State<Details> {
                       color: Colors.black,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.add,
                       color: Colors.white,
                     ),
@@ -121,31 +128,33 @@ class _DetailsState extends State<Details> {
                 ),
               ],
             ),
-            const SizedBox(
+            SizedBox(
               height: 20.0,
             ),
+            // Display item detail
             Text(
               widget.detail,
               maxLines: 4,
-              style: AppWidget.LightTextFeildStyle(),
+              style: AppWidget.semiBoldTextFeildStyle(),
             ),
-            const SizedBox(
+            SizedBox(
               height: 30.0,
             ),
+            // Display delivery time
             Row(
               children: [
                 Text(
                   "Delivery Time",
                   style: AppWidget.semiBoldTextFeildStyle(),
                 ),
-                const SizedBox(
+                SizedBox(
                   width: 25.0,
                 ),
-                const Icon(
+                Icon(
                   Icons.alarm,
                   color: Colors.black54,
                 ),
-                const SizedBox(
+                SizedBox(
                   width: 5.0,
                 ),
                 Text(
@@ -154,7 +163,8 @@ class _DetailsState extends State<Details> {
                 ),
               ],
             ),
-            const Spacer(),
+            Spacer(),
+            // Display total price and add to cart button
             Padding(
               padding: const EdgeInsets.only(bottom: 40.0),
               child: Row(
@@ -173,18 +183,19 @@ class _DetailsState extends State<Details> {
                       ),
                     ],
                   ),
+                  // Add to cart button
                   GestureDetector(
                     onTap: () async {
-                      if (id != null) {
+                      if (userId != null) {
                         Map<String, dynamic> addFoodtoCart = {
                           "Name": widget.name,
-                          "Quantity": a.toString(),
+                          "Quantity": quantity.toString(),
                           "Total": total.toString(),
                           "Image": widget.image,
                         };
-                        await DatabaseMethods().addFoodToCart(addFoodtoCart, id!);
+                        await DatabaseMethods().addFoodToCart(addFoodtoCart, userId!);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
+                          SnackBar(
                             backgroundColor: Colors.orangeAccent,
                             content: Text(
                               "Food Added to Cart",
@@ -196,7 +207,7 @@ class _DetailsState extends State<Details> {
                     },
                     child: Container(
                       width: MediaQuery.of(context).size.width / 2,
-                      padding: const EdgeInsets.all(8),
+                      padding: EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         color: Colors.black,
                         borderRadius: BorderRadius.circular(10),
@@ -204,7 +215,7 @@ class _DetailsState extends State<Details> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          const Text(
+                          Text(
                             "Add to cart",
                             style: TextStyle(
                               color: Colors.white,
@@ -212,21 +223,21 @@ class _DetailsState extends State<Details> {
                               fontFamily: 'Poppins',
                             ),
                           ),
-                          const SizedBox(
+                          SizedBox(
                             width: 30.0,
                           ),
-                        Container(
-                            padding: const EdgeInsets.all(3),
+                          Container(
+                            padding: EdgeInsets.all(3),
                             decoration: BoxDecoration(
                               color: Colors.grey,
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.shopping_cart_outlined,
                               color: Colors.white,
                             ),
                           ),
-                          const SizedBox(
+                          SizedBox(
                             width: 10.0,
                           ),
                         ],

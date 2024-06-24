@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:foody_zidio/pages/details.dart';
-import 'package:foody_zidio/pages/myorder.dart';
+import 'package:foody_zidio/pages/order_check.dart';
 import 'package:foody_zidio/service/shared_pref.dart';
 import 'package:foody_zidio/widget/widget_support.dart';
 
@@ -20,6 +20,7 @@ class _HomeState extends State<Home> {
   late Timer timer; // Timer for shimmer duration
   late List<DocumentSnapshot> foodItems; // List to store food items
   String userName = "User"; // Default user name
+  bool isCardView = true; // Flag to switch between card and list view
 
   @override
   void initState() {
@@ -92,7 +93,7 @@ class _HomeState extends State<Home> {
   // Filter food items based on the selected category
   List<DocumentSnapshot> getFilteredFoodItems() {
     if (icecream) {
-      return foodItems.where((doc) => doc['Category'] == 'Ice Cream').toList();
+      return foodItems.where((doc) => doc['Category'] == 'Ice-Cream').toList();
     } else if (pizza) {
       return foodItems.where((doc) => doc['Category'] == 'Pizza').toList();
     } else if (salad) {
@@ -108,92 +109,137 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Container(
-          margin: EdgeInsets.only(top: 50.0, left: 20.0, right: 20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: OrientationBuilder(
+        builder: (context, orientation) {
+          return SingleChildScrollView(
+            child: Container(
+              margin: EdgeInsets.only(top: 50.0, left: 20.0, right: 20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    "Hello, $userName", // Display dynamic username
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Ordered(), // Replace with your shopping cart page
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Hello, $userName", // Display dynamic username
+                        style:
+                            TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Ordered(), // Replace with your shopping cart page
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(3),
+                          decoration: BoxDecoration(
+                            color: Colors.black,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
+                            Icons.shopping_cart_outlined,
+                            color: Colors.white,
+                          ),
                         ),
-                      );
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(3),
-                      decoration: BoxDecoration(
-                        color: Colors.black,
-                        borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Icon(
-                        Icons.shopping_cart_outlined,
-                        color: Colors.white,
-                      ),
-                    ),
+                    ],
                   ),
+                  
+                  SizedBox(height: 20.0),
+                  Text("Delicious Food",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0)),
+                  Text("Discover and Get Great Food",
+                      style: TextStyle(fontSize: 16.0)),
+                  SizedBox(height: 20.0),
+                  Container(
+                    margin: EdgeInsets.only(right: 20.0),
+                    child: showItem(),
+                  ),
+                  SizedBox(height: 30.0),
+                  ToggleButtons(
+                    children: [
+                      Icon(Icons.view_agenda),
+                      Icon(Icons.view_module),
+                    ],
+                    isSelected: [!isCardView, isCardView],
+                    onPressed: (int newIndex) {
+                      setState(() {
+                        isCardView = newIndex == 1; // 1 is card view, 0 is list view
+                      });
+                    },
+                  ),
+                  SizedBox(height: 10.0),
+                  dataAvailable
+                      ? isCardView ? buildCardView() : buildListView(orientation)
+                      : Center(
+                          child: Column(
+                            children: [
+                              Image.asset(
+                                'images/no_data.png',
+                                width: 400,
+                                height: 400,
+                              ),
+                              Text(
+                                "Oops ..... \n There is no any type of item are available..",
+                                style: AppWidget.semiBoldTextFeildStyle(),
+                              ),
+                            ],
+                          ),
+                        ),
                 ],
               ),
-              
-              SizedBox(height: 20.0),
-              Text("Delicious Food",
-                  style:
-                      TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0)),
-              Text("Discover and Get Great Food",
-                  style: TextStyle(fontSize: 16.0)),
-              SizedBox(height: 20.0),
-              Container(
-                  margin: EdgeInsets.only(right: 20.0), child: showItem()),
-              SizedBox(height: 30.0),
-              dataAvailable
-                  ? buildFoodItemsList()
-                  : Center(
-                      child: Column(
-                        children: [
-                          Image.asset(
-                            'images/no_data.png',
-                            width: 400,
-                            height: 400,
-                          ),
-                          Text(
-                            "Oops ..... \n There is no any type of item are available..",
-                            style: AppWidget.semiBoldTextFeildStyle(),
-                          ),
-                        ],
-                      ),
-                    ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
 
-  Widget buildFoodItemsList() {
+  Widget buildCardView() {
     List<DocumentSnapshot> filteredFoodItems = getFilteredFoodItems();
     return Column(
       children: filteredFoodItems.map((doc) {
         String name = doc['Name'];
         String image = doc['Image'];
         String price = doc['Price'];
+        String detail = doc['Detail']; // Add detail
         return foodCard(
           context,
           name,
           image,
           price,
+          detail, // Pass detail
+          canNavigate: true, // Allow navigation in card view
         );
       }).toList(),
+    );
+  }
+
+  Widget buildListView(Orientation orientation) {
+    List<DocumentSnapshot> filteredFoodItems = getFilteredFoodItems();
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: filteredFoodItems.length,
+      itemBuilder: (context, index) {
+        String name = filteredFoodItems[index]['Name'];
+        String image = filteredFoodItems[index]['Image'];
+        String price = filteredFoodItems[index]['Price'];
+        String detail = filteredFoodItems[index]['Detail']; // Add detail
+        return foodCard(
+          context,
+          name,
+          image,
+          price,
+          detail, // Pass detail
+          canNavigate: orientation == Orientation.landscape, // Allow navigation in landscape orientation only
+        );
+      },
     );
   }
 
@@ -201,23 +247,26 @@ class _HomeState extends State<Home> {
     BuildContext context,
     String title,
     String imagePath,
-    String $price,
+    String price,
+    String detail, // Add detail parameter
+    {bool canNavigate = false} // New parameter to control navigation
   ) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Details(
-              detail:
-                  "", // Pass an empty string or null if not used in Details page
-              image: imagePath,
-              name: title,
-              price: $price,
-            ),
-          ),
-        );
-      },
+      onTap: canNavigate
+          ? () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Details(
+                    detail: detail, // Pass detail to Details page
+                    image: imagePath,
+                    name: title,
+                    price: price,
+                  ),
+                ),
+              );
+            }
+          : null, // Disable navigation if canNavigate is false
       child: Container(
         margin: EdgeInsets.all(4),
         child: Material(
@@ -241,7 +290,7 @@ class _HomeState extends State<Home> {
                 ),
                 SizedBox(height: 5.0),
                 Text(
-                  '\u{20B9}' + $price,
+                  '\u{20B9}$price',
                   style: AppWidget.semiBoldTextFeildStyle(),
                 ),
               ],
@@ -258,11 +307,12 @@ class _HomeState extends State<Home> {
       children: [
         GestureDetector(
           onTap: () {
-            icecream = true;
-            pizza = false;
-            salad = false;
-            burger = false;
-            setState(() {});
+            setState(() {
+              icecream = true;
+              pizza = false;
+              salad = false;
+              burger = false;
+            });
           },
           child: Material(
             elevation: 5.0,
@@ -284,11 +334,12 @@ class _HomeState extends State<Home> {
         ),
         GestureDetector(
           onTap: () {
-            icecream = false;
-            pizza = true;
-            salad = false;
-            burger = false;
-            setState(() {});
+            setState(() {
+              icecream = false;
+              pizza = true;
+              salad = false;
+              burger = false;
+            });
           },
           child: Material(
             elevation: 5.0,
@@ -310,11 +361,12 @@ class _HomeState extends State<Home> {
         ),
         GestureDetector(
           onTap: () {
-            icecream = false;
-            pizza = false;
-            salad = true;
-            burger = false;
-            setState(() {});
+            setState(() {
+              icecream = false;
+              pizza = false;
+              salad = true;
+              burger = false;
+            });
           },
           child: Material(
             elevation: 5.0,
@@ -336,11 +388,12 @@ class _HomeState extends State<Home> {
         ),
         GestureDetector(
           onTap: () {
-            icecream = false;
-            pizza = false;
-            salad = false;
-            burger = true;
-            setState(() {});
+            setState(() {
+              icecream = false;
+              pizza = false;
+              salad = false;
+              burger = true;
+            });
           },
           child: Material(
             elevation: 5.0,
