@@ -15,33 +15,28 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  late bool icecream = false, pizza = false, salad = false, burger = false;
-  bool dataAvailable = true; // Flag to check if data is available
-  late Timer timer; // Timer for shimmer duration
-  late List<DocumentSnapshot> foodItems; // List to store food items
-  String userName = "User"; // Default user name
-  bool isCardView = true; // Flag to switch between card and list view
+  bool icecream = false, pizza = false, salad = false, burger = false;
+  bool dataAvailable = true;
+  late Timer timer;
+  late List<DocumentSnapshot> foodItems;
+  String userName = "User";
 
   @override
   void initState() {
     super.initState();
-    // Initialize foodItems as an empty list
     foodItems = [];
-    // Simulate data loading delay for demonstration (you can replace with actual data loading logic)
     timer = Timer(Duration(milliseconds: 500), () {
       fetchData();
     });
-    // Fetch user name from shared preferences or Firestore
     onthisload();
   }
 
   @override
   void dispose() {
-    timer.cancel(); // Cancel timer to prevent memory leaks
+    timer.cancel();
     super.dispose();
   }
 
-  // Fetch food data from Firestore
   void fetchData() async {
     try {
       QuerySnapshot querySnapshot =
@@ -58,15 +53,12 @@ class _HomeState extends State<Home> {
     }
   }
 
-  // Fetch user name from shared preferences or Firestore
   Future<void> fetchUserName() async {
     try {
       User? currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser != null) {
-        // First, try to get the user name from shared preferences
         userName = await SharedPreferenceHelper().getUserName() ?? "User";
 
-        // If userName is still the default, fetch from Firestore
         if (userName == "User") {
           DocumentSnapshot userDoc = await FirebaseFirestore.instance
               .collection('User_data')
@@ -76,7 +68,6 @@ class _HomeState extends State<Home> {
             userName = userDoc['name'] ?? 'User';
           });
 
-          // Save the fetched name to shared preferences
           await SharedPreferenceHelper().saveUserName(userName);
         }
       }
@@ -90,7 +81,6 @@ class _HomeState extends State<Home> {
     setState(() {});
   }
 
-  // Filter food items based on the selected category
   List<DocumentSnapshot> getFilteredFoodItems() {
     if (icecream) {
       return foodItems.where((doc) => doc['Category'] == 'Ice-Cream').toList();
@@ -108,196 +98,206 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: OrientationBuilder(
-        builder: (context, orientation) {
-          return SingleChildScrollView(
-            child: Container(
-              margin: EdgeInsets.only(top: 50.0, left: 20.0, right: 20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      body: SingleChildScrollView(
+        child: Container(
+          margin: EdgeInsets.only(top: 50.0, left: 20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Hello, $userName", // Display dynamic username
-                        style:
-                            TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Ordered(), // Replace with your shopping cart page
-                            ),
-                          );
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(3),
-                          decoration: BoxDecoration(
-                            color: Colors.black,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            Icons.shopping_cart_outlined,
-                            color: Colors.white,
-                          ),
+                  Text("Hello $userName,", style: AppWidget.boldTextFeildStyle()),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Ordered(),
                         ),
-                      ),
-                    ],
-                  ),
-                  
-                  SizedBox(height: 20.0),
-                  Text("Delicious Food",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0)),
-                  Text("Discover and Get Great Food",
-                      style: TextStyle(fontSize: 16.0)),
-                  SizedBox(height: 20.0),
-                  Container(
-                    margin: EdgeInsets.only(right: 20.0),
-                    child: showItem(),
-                  ),
-                  SizedBox(height: 30.0),
-                  ToggleButtons(
-                    children: [
-                      Icon(Icons.view_agenda),
-                      Icon(Icons.view_module),
-                    ],
-                    isSelected: [!isCardView, isCardView],
-                    onPressed: (int newIndex) {
-                      setState(() {
-                        isCardView = newIndex == 1; // 1 is card view, 0 is list view
-                      });
+                      );
                     },
+                    child: Container(
+                      margin: EdgeInsets.only(right: 20.0),
+                      padding: EdgeInsets.all(3),
+                      decoration: BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(8)),
+                      child: Icon(
+                        Icons.shopping_cart_outlined,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
-                  SizedBox(height: 10.0),
-                  dataAvailable
-                      ? isCardView ? buildCardView() : buildListView(orientation)
-                      : Center(
-                          child: Column(
-                            children: [
-                              Image.asset(
-                                'images/no_data.png',
-                                width: 400,
-                                height: 400,
-                              ),
-                              Text(
-                                "Oops ..... \n There is no any type of item are available..",
-                                style: AppWidget.semiBoldTextFeildStyle(),
-                              ),
-                            ],
-                          ),
-                        ),
                 ],
               ),
-            ),
-          );
-        },
+              SizedBox(
+                height: 20.0,
+              ),
+              Text("Delicious Food", style: AppWidget.HeadlineTextFeildStyle()),
+              Text("Discover and Get Great Food",
+                  style: AppWidget.LightTextFeildStyle()),
+              SizedBox(
+                height: 20.0,
+              ),
+              Container(margin: EdgeInsets.only(right: 20.0), child: showItem()),
+              SizedBox(
+                height: 30.0,
+              ),
+              dataAvailable
+                  ? buildListView()
+                  : Center(
+                      child: Column(
+                        children: [
+                          Image.asset(
+                            'images/no_data.png',
+                            width: 400,
+                            height: 400,
+                          ),
+                          Text(
+                            "Oops ..... \n There is no any type of item are available..",
+                            style: AppWidget.semiBoldTextFeildStyle(),
+                          ),
+                        ],
+                      ),
+                    ),
+            ],
+          ),
+        ),
       ),
     );
   }
 
-  Widget buildCardView() {
+  Widget buildListView() {
     List<DocumentSnapshot> filteredFoodItems = getFilteredFoodItems();
     return Column(
-      children: filteredFoodItems.map((doc) {
-        String name = doc['Name'];
-        String image = doc['Image'];
-        String price = doc['Price'];
-        String detail = doc['Detail']; // Add detail
-        return foodCard(
-          context,
-          name,
-          image,
-          price,
-          detail, // Pass detail
-          canNavigate: true, // Allow navigation in card view
-        );
-      }).toList(),
-    );
-  }
-
-  Widget buildListView(Orientation orientation) {
-    List<DocumentSnapshot> filteredFoodItems = getFilteredFoodItems();
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      itemCount: filteredFoodItems.length,
-      itemBuilder: (context, index) {
-        String name = filteredFoodItems[index]['Name'];
-        String image = filteredFoodItems[index]['Image'];
-        String price = filteredFoodItems[index]['Price'];
-        String detail = filteredFoodItems[index]['Detail']; // Add detail
-        return foodCard(
-          context,
-          name,
-          image,
-          price,
-          detail, // Pass detail
-          canNavigate: orientation == Orientation.landscape, // Allow navigation in landscape orientation only
-        );
-      },
-    );
-  }
-
-  Widget foodCard(
-    BuildContext context,
-    String title,
-    String imagePath,
-    String price,
-    String detail, // Add detail parameter
-    {bool canNavigate = false} // New parameter to control navigation
-  ) {
-    return GestureDetector(
-      onTap: canNavigate
-          ? () {
+      children: [
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: filteredFoodItems.map((foodItem) {
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Details(
+                        detail: foodItem['Detail'],
+                        image: foodItem['Image'],
+                        name: foodItem['Name'],
+                        price: foodItem['Price'],
+                      ),
+                    ),
+                  );
+                },
+                child: Container(
+                  margin: EdgeInsets.all(4),
+                  child: Material(
+                    elevation: 5.0,
+                    borderRadius: BorderRadius.circular(20),
+                    child: Container(
+                      padding: EdgeInsets.all(14),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Image.network(
+                            foodItem['Image'],
+                            height: 150,
+                            width: 150,
+                            fit: BoxFit.cover,
+                          ),
+                          Text(foodItem['Name'],
+                              style: AppWidget.semiBoldTextFeildStyle()),
+                          SizedBox(
+                            height: 5.0,
+                          ),
+                          Text(foodItem['Detail'],
+                              style: AppWidget.LightTextFeildStyle()),
+                          SizedBox(
+                            height: 5.0,
+                          ),
+                          Text(
+                            '\u{20B9}${foodItem['Price']}',
+                            style: AppWidget.semiBoldTextFeildStyle(),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+        SizedBox(height: 30.0),
+        ...filteredFoodItems.map((foodItem) {
+          return GestureDetector(
+            onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => Details(
-                    detail: detail, // Pass detail to Details page
-                    image: imagePath,
-                    name: title,
-                    price: price,
+                    detail: foodItem['Detail'],
+                    image: foodItem['Image'],
+                    name: foodItem['Name'],
+                    price: foodItem['Price'],
                   ),
                 ),
               );
-            }
-          : null, // Disable navigation if canNavigate is false
-      child: Container(
-        margin: EdgeInsets.all(4),
-        child: Material(
-          elevation: 5.0,
-          borderRadius: BorderRadius.circular(20),
-          child: Container(
-            padding: EdgeInsets.all(14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Image.network(
-                  imagePath,
-                  height: 150,
-                  width: 150,
-                  fit: BoxFit.cover,
+            },
+            child: Container(
+              margin: EdgeInsets.only(right: 20.0, bottom: 30.0),
+              child: Material(
+                elevation: 5.0,
+                borderRadius: BorderRadius.circular(20),
+                child: Container(
+                  padding: EdgeInsets.all(5),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Image.network(
+                        foodItem['Image'],
+                        height: 120,
+                        width: 120,
+                        fit: BoxFit.cover,
+                      ),
+                      SizedBox(width: 20.0),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: MediaQuery.of(context).size.width / 2,
+                            child: Text(
+                              foodItem['Name'],
+                              style: AppWidget.semiBoldTextFeildStyle(),
+                            ),
+                          ),
+                          SizedBox(height: 5.0),
+                          Container(
+                            width: MediaQuery.of(context).size.width / 2,
+                            child: Text(
+                              foodItem['Detail'],
+                              style: AppWidget.LightTextFeildStyle(),
+                            ),
+                          ),
+                          SizedBox(height: 5.0),
+                          Container(
+                            width: MediaQuery.of(context).size.width / 2,
+                            child: Text(
+                              '\u{20B9}${foodItem['Price']}',
+                              style: AppWidget.semiBoldTextFeildStyle(),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-                SizedBox(height: 10.0),
-                Text(
-                  title,
-                  style: AppWidget.semiBoldTextFeildStyle(),
-                ),
-                SizedBox(height: 5.0),
-                Text(
-                  '\u{20B9}$price',
-                  style: AppWidget.semiBoldTextFeildStyle(),
-                ),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
+          );
+        }).toList(),
+      ],
     );
   }
 
