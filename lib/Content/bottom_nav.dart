@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:foody_zidio/pages/home.dart';
-import 'package:foody_zidio/pages/order.dart';
+import 'package:foody_zidio/pages/myorder.dart';
 import 'package:foody_zidio/pages/profile.dart';
 import 'package:foody_zidio/pages/wallet.dart';
 
@@ -19,13 +19,13 @@ class _BottomNavState extends State<BottomNav> {
   late Widget currentPage;
   late Home homepage;
   late Profile profile;
-  late Order order;
+  late Ordered order;
   late Wallet wallet;
 
   @override
   void initState() {
     homepage = Home();
-    order = Order();
+    order = Ordered();
     profile = Profile();
     wallet = Wallet();
     pages = [homepage, order, wallet, profile];

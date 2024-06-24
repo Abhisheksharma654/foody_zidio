@@ -1,10 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:foody_zidio/pages/details.dart';
-import 'package:foody_zidio/pages/order_check.dart';
+import 'package:foody_zidio/pages/myorder.dart';
+import 'package:foody_zidio/pages/order_check.dart'; // Ensure this import is correct
 import 'package:foody_zidio/service/shared_pref.dart';
 import 'package:foody_zidio/widget/widget_support.dart';
+import '';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -72,7 +74,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200], // Set background color here
+      backgroundColor: Colors.grey[200],
       body: SingleChildScrollView(
         child: Container(
           margin: EdgeInsets.only(top: 50.0, left: 20.0),
@@ -86,12 +88,8 @@ class _HomeState extends State<Home> {
                       style: AppWidget.boldTextFeildStyle()),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Ordered(),
-                        ),
-                      );
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (builder) => Ordered()));
                     },
                     child: Container(
                       margin: EdgeInsets.only(right: 20.0),
@@ -181,7 +179,6 @@ class _HomeState extends State<Home> {
                     elevation: 5.0,
                     borderRadius: BorderRadius.circular(20),
                     child: Container(
-                      // Set background color to white
                       padding: EdgeInsets.all(14),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -231,7 +228,6 @@ class _HomeState extends State<Home> {
                 elevation: 5.0,
                 borderRadius: BorderRadius.circular(20),
                 child: Container(
-                   // Set background color to white
                   padding: EdgeInsets.all(5),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -299,13 +295,13 @@ class _HomeState extends State<Home> {
           },
           child: Material(
             elevation: 5.0,
-            borderRadius: BorderRadius.circular(25), // Circular border radius
+            borderRadius: BorderRadius.circular(25),
             child: Container(
-              height: 50, // Ensure height and width are equal
-              width: 50, // Ensure height and width are equal
+              height: 50,
+              width: 50,
               decoration: BoxDecoration(
                   color: icecream ? Colors.black : Colors.white,
-                  borderRadius: BorderRadius.circular(25)), // Circular border radius
+                  borderRadius: BorderRadius.circular(25)),
               padding: EdgeInsets.all(8),
               child: Image.asset(
                 "images/ice-cream.png",
@@ -326,13 +322,13 @@ class _HomeState extends State<Home> {
           },
           child: Material(
             elevation: 5.0,
-            borderRadius: BorderRadius.circular(25), // Circular border radius
+            borderRadius: BorderRadius.circular(25),
             child: Container(
-              height: 50, // Ensure height and width are equal
-              width: 50, // Ensure height and width are equal
+              height: 50,
+              width: 50,
               decoration: BoxDecoration(
                   color: pizza ? Colors.black : Colors.white,
-                  borderRadius: BorderRadius.circular(25)), // Circular border radius
+                  borderRadius: BorderRadius.circular(25)),
               padding: EdgeInsets.all(8),
               child: Image.asset(
                 "images/pizza.png",
@@ -353,13 +349,13 @@ class _HomeState extends State<Home> {
           },
           child: Material(
             elevation: 5.0,
-            borderRadius: BorderRadius.circular(25), // Circular border radius
+            borderRadius: BorderRadius.circular(25),
             child: Container(
-              height: 50, // Ensure height and width are equal
-              width: 50, // Ensure height and width are equal
+              height: 50,
+              width: 50,
               decoration: BoxDecoration(
                   color: salad ? Colors.black : Colors.white,
-                  borderRadius: BorderRadius.circular(25)), // Circular border radius
+                  borderRadius: BorderRadius.circular(25)),
               padding: EdgeInsets.all(8),
               child: Image.asset(
                 "images/salad.png",
@@ -380,13 +376,13 @@ class _HomeState extends State<Home> {
           },
           child: Material(
             elevation: 5.0,
-            borderRadius: BorderRadius.circular(25), // Circular border radius
+            borderRadius: BorderRadius.circular(25),
             child: Container(
-              height: 50, // Ensure height and width are equal
-              width: 50, // Ensure height and width are equal
+              height: 50,
+              width: 50,
               decoration: BoxDecoration(
                   color: burger ? Colors.black : Colors.white,
-                  borderRadius: BorderRadius.circular(25)), // Circular border radius
+                  borderRadius: BorderRadius.circular(25)),
               padding: EdgeInsets.all(8),
               child: Image.asset(
                 "images/burger.png",

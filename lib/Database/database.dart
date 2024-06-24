@@ -114,5 +114,22 @@ Future<void> updateUserProfile(String userId, String name, String email, String 
       print('Error updating user profile: $e');
     }
   }
+Future<void> clearCartItems(String userId) async {
+    try {
+      QuerySnapshot cartItems = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('cart')
+          .get();
 
+      for (QueryDocumentSnapshot doc in cartItems.docs) {
+        await doc.reference.delete();
+      }
+    } catch (e) {
+      print('Error clearing cart items: $e');
+      throw e;
+    }
+  }
+
+  
 }

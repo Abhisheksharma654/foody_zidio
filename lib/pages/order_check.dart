@@ -1,84 +1,94 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Ordered extends StatefulWidget {
-  const Ordered({Key? key}) : super(key: key);
+class ShoppingList extends StatefulWidget {
+  final String userId;
+
+  const ShoppingList({required this.userId, Key? key}) : super(key: key);
 
   @override
-  State<Ordered> createState() => _OrderedState();
+  _ShoppingListState createState() => _ShoppingListState();
 }
 
-class _OrderedState extends State<Ordered> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  // State variables
-  bool isLoading = true;
-  late List<DocumentSnapshot> orders;
+class _ShoppingListState extends State<ShoppingList> {
+  late Stream<QuerySnapshot> paymentHistoryStream;
 
   @override
   void initState() {
     super.initState();
-    fetchOrders();
+    loadPaymentHistory();
   }
 
-  // Fetch orders placed by the current user
-  void fetchOrders() async {
-    try {
-      User? user = _auth.currentUser;
-      if (user == null) {
-        throw Exception("User not logged in");
-      }
-
-      QuerySnapshot querySnapshot = await _firestore
-          .collection('orders')
-          .where('userId', isEqualTo: user.uid)
-          .get();
-
-      setState(() {
-        orders = querySnapshot.docs;
-        isLoading = false;
-      });
-    } catch (e) {
-      print('Error fetching orders: $e');
-      setState(() {
-        isLoading = false;
-      });
-    }
+  void loadPaymentHistory() {
+    paymentHistoryStream = FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.userId)
+        .collection('payment_history')
+        .orderBy('Timestamp', descending: true)
+        .snapshots();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Ordered Items'),
+        title: Text('My Shopping List'),
       ),
-      body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : orders.isEmpty
-              ? Center(child: Text('No orders placed yet.'))
-              : ListView.builder(
-                  itemCount: orders.length,
-                  itemBuilder: (context, index) {
-                    DocumentSnapshot order = orders[index];
-                    return ListTile(
-                      title: Text(order['itemName']),
-                      subtitle: Text('Price: ${order['itemPrice']}'),
-                      trailing: Text('Quantity: ${order['itemQuantity']}'),
-                      // Add more details as needed (e.g., date, status)
-                    );
-                  },
+      body: StreamBuilder<QuerySnapshot>(
+        stream: paymentHistoryStream,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.shopping_bag_outlined, size: 100, color: Colors.grey),
+                  SizedBox(height: 20),
+                  Text(
+                    "No shopping history available.",
+                    style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return ListView.builder(
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (context, index) {
+              var data = snapshot.data!.docs[index].data() as Map<String, dynamic>;
+
+              return ListTile(
+                leading: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(
+                    data["Image"],
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.cover,
+                  ),
                 ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pop(context);
+                title: Text(data["Name"]),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Quantity: ${data["Quantity"]}"),
+                    Text("\u{20B9}${data["Total"]}"),
+                    Text(
+                      "Date: ${(data["Timestamp"] as Timestamp).toDate().toString()}",
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                  ],
+                ),
+                trailing: Icon(Icons.check_circle, color: Colors.green),
+              );
+            },
+          );
         },
-        child: Icon(
-          Icons.add,
-          color: Colors.white,
-        ),
-        backgroundColor: Colors.grey[900],
       ),
     );
   }

@@ -1,8 +1,9 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:foody_zidio/pages/home.dart';
-import 'package:foody_zidio/pages/order.dart';
+import 'package:foody_zidio/Database/database.dart';
+import 'package:foody_zidio/service/shared_pref.dart';
+import 'package:foody_zidio/widget/widget_support.dart';
 
 class Ordered extends StatefulWidget {
   const Ordered({super.key});
@@ -12,68 +13,269 @@ class Ordered extends StatefulWidget {
 }
 
 class _OrderedState extends State<Ordered> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  String? id, wallet;
+  int total = 0;
+  Stream? foodStream;
 
-  Future<void> placeOrder() async {
-    try {
-      User? user = _auth.currentUser;
-      if (user == null) {
-        throw Exception("User not logged in");
-      }
+  void startTimer() {
+    Timer(const Duration(seconds: 3), () {
+      setState(() {});
+    });
+  }
 
-      // Fetch cart items
-      QuerySnapshot cartSnapshot = await _firestore
-          .collection('cartItems')
-          .where('userId', isEqualTo: user.uid)
-          .get();
+  getthesharedpref() async {
+    id = await SharedPreferenceHelper().getUserId();
+    wallet = await SharedPreferenceHelper().getUserWallet();
+    setState(() {});
+  }
 
-      // Prepare order data
-      List<Map<String, dynamic>> orderItems = cartSnapshot.docs.map((doc) {
-        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        data['orderId'] = _firestore.collection('orders').doc().id;
-        return data;
-      }).toList();
+  ontheload() async {
+    await getthesharedpref();
+    foodStream = await DatabaseMethods().getFoodCart(id!);
+    setState(() {});
+  }
 
-      // Add order to the orders collection
-      WriteBatch batch = _firestore.batch();
-      for (var item in orderItems) {
-        DocumentReference orderRef =
-            _firestore.collection('orders').doc(item['orderId']);
-        batch.set(orderRef, item);
-      }
+  @override
+  void initState() {
+    ontheload();
+    startTimer();
+    super.initState();
+  }
 
-      // Remove items from cart
-      for (var doc in cartSnapshot.docs) {
-        batch.delete(doc.reference);
-      }
+  Widget foodCart() {
+    return StreamBuilder(
+      stream: foodStream,
+      builder: (context, AsyncSnapshot snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasData && snapshot.data.docs.isNotEmpty) {
+          // Group items by name
+          Map<String, List<DocumentSnapshot>> groupedItems = {};
+          for (var doc in snapshot.data.docs) {
+            String name = doc['Name'];
+            if (groupedItems.containsKey(name)) {
+              groupedItems[name]!.add(doc);
+            } else {
+              groupedItems[name] = [doc];
+            }
+          }
 
-      await batch.commit();
+          total = 0; // Reset total before recalculating
+          List<Widget> itemWidgets = [];
+          groupedItems.forEach((name, docs) {
+            int quantity =
+                docs.fold(0, (sum, doc) => sum + int.parse(doc["Quantity"]));
+            int itemTotal = docs.fold(0, (sum, doc) {
+              var data = doc.data() as Map<String, dynamic>;
+              if (data.containsKey("Total")) {
+                return sum + int.parse(data["Total"].toString());
+              } else {
+                return sum;
+              }
+            });
 
-      // Notify user
-      print('Order placed successfully');
-    } catch (e) {
-      print('Error placing order: $e');
-    }
+            total += itemTotal;
+
+            itemWidgets.add(Container(
+              margin:
+                  const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 10.0),
+              child: Material(
+                elevation: 5.0,
+                borderRadius: BorderRadius.circular(10),
+                child: Dismissible(
+                  key: Key(docs.first.id),
+                  direction: DismissDirection.endToStart,
+                  onDismissed: (direction) async {
+                    await DatabaseMethods().deleteCartItem(id!, docs.first.id);
+                    setState(() {
+                      total -= itemTotal;
+                    });
+                  },
+                  background: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    color: Colors.red,
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: const Icon(Icons.delete, color: Colors.white),
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.all(10),
+                    child: Row(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(60),
+                          child: Image.network(
+                            docs.first["Image"],
+                            height: 90,
+                            width: 90,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 20.0,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              name,
+                              style: const TextStyle(
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              quantity.toString(),
+                              style: const TextStyle(fontSize: 16.0),
+                            ),
+                            Text(
+                              "\u{20B9}" + itemTotal.toString(),
+                              style: TextStyle(fontSize: 16.0),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ));
+          });
+
+          return ListView(
+            padding: EdgeInsets.zero,
+            shrinkWrap: true,
+            scrollDirection: Axis.vertical,
+            children: itemWidgets,
+          );
+        } else {
+          return Center(
+            child: Column(
+              children: [
+                Image.asset(
+                  'images/empty.png',
+                  width: 300, // Adjusted size to be similar to home_no_data.png
+                  height:
+                      300, // Adjusted size to be similar to home_no_data.png
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  "Oops .....  Cart Is Empty.",
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (builder) => Ordered(),
+      body: Container(
+        padding: const EdgeInsets.only(top: 60.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Material(
+              elevation: 2.0,
+              child: Container(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: const Center(
+                  child: Text(
+                    "Food Cart",
+                    style: TextStyle(
+                      fontSize: 24.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
             ),
-          );
-        },
-        child: Icon(
-          Icons.add,
-          color: Colors.white,
+            const SizedBox(
+              height: 20.0,
+            ),
+            Expanded(
+              child: foodCart(),
+            ),
+            const Divider(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Total Price",
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    "\u{20B9}" + total.toString(),
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(
+              height: 20.0,
+            ),
+            GestureDetector(
+              onTap: () async {
+                int walletAmount = int.parse(wallet!);
+                if (walletAmount >= total) {
+                  int amount = walletAmount - total;
+                  await DatabaseMethods()
+                      .updateUserWallet(id!, amount.toString());
+                  await SharedPreferenceHelper()
+                      .saveUserWallet(amount.toString());
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Payment Successful!')),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('Insufficient funds in wallet!')),
+                  );
+                }
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 15.0),
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                margin: const EdgeInsets.symmetric(
+                    horizontal: 20.0, vertical: 10.0),
+                child: const Center(
+                  child: Text(
+                    "CheckOut",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
-        backgroundColor: Colors.grey[900],
       ),
     );
   }
