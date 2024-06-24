@@ -57,9 +57,12 @@ class _HomeState extends State<Home> {
     try {
       User? currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser != null) {
-        userName = await SharedPreferenceHelper().getUserName() ?? "User";
-
-        if (userName == "User") {
+        String? prefUserName = await SharedPreferenceHelper().getUserName();
+        if (prefUserName != null) {
+          setState(() {
+            userName = prefUserName;
+          });
+        } else {
           DocumentSnapshot userDoc = await FirebaseFirestore.instance
               .collection('User_data')
               .doc(currentUser.uid)
@@ -98,6 +101,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[200], // Set background color here
       body: SingleChildScrollView(
         child: Container(
           margin: EdgeInsets.only(top: 50.0, left: 20.0),
@@ -196,6 +200,7 @@ class _HomeState extends State<Home> {
                     elevation: 5.0,
                     borderRadius: BorderRadius.circular(20),
                     child: Container(
+                      // Set background color to white
                       padding: EdgeInsets.all(14),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -251,6 +256,7 @@ class _HomeState extends State<Home> {
                 elevation: 5.0,
                 borderRadius: BorderRadius.circular(20),
                 child: Container(
+                   // Set background color to white
                   padding: EdgeInsets.all(5),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -316,16 +322,16 @@ class _HomeState extends State<Home> {
           },
           child: Material(
             elevation: 5.0,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(25), // Circular border radius
             child: Container(
+              height: 50, // Ensure height and width are equal
+              width: 50, // Ensure height and width are equal
               decoration: BoxDecoration(
                   color: icecream ? Colors.black : Colors.white,
-                  borderRadius: BorderRadius.circular(10)),
+                  borderRadius: BorderRadius.circular(25)), // Circular border radius
               padding: EdgeInsets.all(8),
               child: Image.asset(
                 "images/ice-cream.png",
-                height: 40,
-                width: 40,
                 fit: BoxFit.cover,
                 color: icecream ? Colors.white : Colors.black,
               ),
@@ -343,16 +349,16 @@ class _HomeState extends State<Home> {
           },
           child: Material(
             elevation: 5.0,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(25), // Circular border radius
             child: Container(
+              height: 50, // Ensure height and width are equal
+              width: 50, // Ensure height and width are equal
               decoration: BoxDecoration(
                   color: pizza ? Colors.black : Colors.white,
-                  borderRadius: BorderRadius.circular(10)),
+                  borderRadius: BorderRadius.circular(25)), // Circular border radius
               padding: EdgeInsets.all(8),
               child: Image.asset(
                 "images/pizza.png",
-                height: 40,
-                width: 40,
                 fit: BoxFit.cover,
                 color: pizza ? Colors.white : Colors.black,
               ),
@@ -370,16 +376,16 @@ class _HomeState extends State<Home> {
           },
           child: Material(
             elevation: 5.0,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(25), // Circular border radius
             child: Container(
+              height: 50, // Ensure height and width are equal
+              width: 50, // Ensure height and width are equal
               decoration: BoxDecoration(
                   color: salad ? Colors.black : Colors.white,
-                  borderRadius: BorderRadius.circular(10)),
+                  borderRadius: BorderRadius.circular(25)), // Circular border radius
               padding: EdgeInsets.all(8),
               child: Image.asset(
                 "images/salad.png",
-                height: 40,
-                width: 40,
                 fit: BoxFit.cover,
                 color: salad ? Colors.white : Colors.black,
               ),
@@ -397,16 +403,16 @@ class _HomeState extends State<Home> {
           },
           child: Material(
             elevation: 5.0,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(25), // Circular border radius
             child: Container(
+              height: 50, // Ensure height and width are equal
+              width: 50, // Ensure height and width are equal
               decoration: BoxDecoration(
                   color: burger ? Colors.black : Colors.white,
-                  borderRadius: BorderRadius.circular(10)),
+                  borderRadius: BorderRadius.circular(25)), // Circular border radius
               padding: EdgeInsets.all(8),
               child: Image.asset(
                 "images/burger.png",
-                height: 40,
-                width: 40,
                 fit: BoxFit.cover,
                 color: burger ? Colors.white : Colors.black,
               ),
