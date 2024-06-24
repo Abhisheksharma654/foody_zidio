@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:foody_zidio/pages/home.dart';
 import 'package:foody_zidio/pages/order.dart';
+
 class Ordered extends StatefulWidget {
   const Ordered({super.key});
 
@@ -11,8 +12,7 @@ class Ordered extends StatefulWidget {
 }
 
 class _OrderedState extends State<Ordered> {
-
-    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> placeOrder() async {
@@ -56,15 +56,16 @@ class _OrderedState extends State<Ordered> {
       print('Error placing order: $e');
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(floatingActionButton: FloatingActionButton(
+    return Scaffold(
+      floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (builder) => Order(),
+              builder: (builder) => Ordered(),
             ),
           );
         },
@@ -73,6 +74,7 @@ class _OrderedState extends State<Ordered> {
           color: Colors.white,
         ),
         backgroundColor: Colors.grey[900],
-      ),);
+      ),
+    );
   }
 }

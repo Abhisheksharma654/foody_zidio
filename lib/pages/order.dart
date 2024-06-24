@@ -64,7 +64,8 @@ class _OrderState extends State<Order> {
           total = 0; // Reset total before recalculating
           List<Widget> itemWidgets = [];
           groupedItems.forEach((name, docs) {
-            int quantity = docs.fold(0, (sum, doc) => sum + int.parse(doc["Quantity"]));
+            int quantity =
+                docs.fold(0, (sum, doc) => sum + int.parse(doc["Quantity"]));
             int itemTotal = docs.fold(0, (sum, doc) {
               var data = doc.data() as Map<String, dynamic>;
               if (data.containsKey("Total")) {
@@ -77,7 +78,8 @@ class _OrderState extends State<Order> {
             total += itemTotal;
 
             itemWidgets.add(Container(
-              margin: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 10.0),
+              margin:
+                  const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 10.0),
               child: Material(
                 elevation: 5.0,
                 borderRadius: BorderRadius.circular(10),
@@ -156,9 +158,12 @@ class _OrderState extends State<Order> {
                 Image.asset(
                   'images/empty.png',
                   width: 300, // Adjusted size to be similar to home_no_data.png
-                  height: 300, // Adjusted size to be similar to home_no_data.png
+                  height:
+                      300, // Adjusted size to be similar to home_no_data.png
                 ),
-                const SizedBox(height: 10,),
+                const SizedBox(
+                  height: 10,
+                ),
                 const Text(
                   "Oops .....  Cart Is Empty.",
                   style: TextStyle(
@@ -234,14 +239,17 @@ class _OrderState extends State<Order> {
                 int walletAmount = int.parse(wallet!);
                 if (walletAmount >= total) {
                   int amount = walletAmount - total;
-                  await DatabaseMethods().updateUserWallet(id!, amount.toString());
-                  await SharedPreferenceHelper().saveUserWallet(amount.toString());
+                  await DatabaseMethods()
+                      .updateUserWallet(id!, amount.toString());
+                  await SharedPreferenceHelper()
+                      .saveUserWallet(amount.toString());
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Payment Successful!')),
                   );
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Insufficient funds in wallet!')),
+                    const SnackBar(
+                        content: Text('Insufficient funds in wallet!')),
                   );
                 }
               },
@@ -252,7 +260,8 @@ class _OrderState extends State<Order> {
                   color: Colors.black,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                margin: const EdgeInsets.symmetric(
+                    horizontal: 20.0, vertical: 10.0),
                 child: const Center(
                   child: Text(
                     "CheckOut",
