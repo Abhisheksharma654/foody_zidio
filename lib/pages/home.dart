@@ -254,7 +254,7 @@ class _HomeState extends State<Home> {
         ),
         SizedBox(height: 20.0),
         Text(
-          "Other Items",
+          "Salad and Ice Cream Items",
           style: AppWidget.semiBoldTextFeildStyle(),
         ),
         SizedBox(height: 10.0),
