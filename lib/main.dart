@@ -5,7 +5,7 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:foody_zidio/Content/bottom_nav.dart';
 import 'package:foody_zidio/service/app_constraint.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'pages/login.dart';
+import '../login.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
