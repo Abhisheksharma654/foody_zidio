@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class DatabaseMethods {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> addUserDetail(
-      Map<String, dynamic> userInfoMap, String id) async {
+  Future<void> addUserDetail(Map<String, dynamic> userInfoMap, String id) async {
     try {
       await _firestore.collection('users').doc(id).set(userInfoMap);
       print('User added to Firestore with ID: $id');
@@ -49,7 +49,6 @@ class DatabaseMethods {
       print('Cart item quantity updated for user ID: $userId');
     } catch (e) {
       print('Error updating cart item quantity: $e');
-      // Handle error as needed
     }
   }
 
@@ -59,7 +58,6 @@ class DatabaseMethods {
       print('Cart item deleted for user ID: $userId');
     } catch (e) {
       print('Error deleting cart item: $e');
-      // Handle error as needed
     }
   }
 
@@ -70,4 +68,37 @@ class DatabaseMethods {
   Future<Stream<QuerySnapshot>> getFoodItems() async {
     return _firestore.collection('foodItems').snapshots();
   }
+    // Method to get the current value of the user ID counter
+  Future<int> getLastUserId() async {
+    DocumentSnapshot counterDoc = await _firestore.collection('counters').doc('userCounter').get();
+    if (counterDoc.exists) {
+      return counterDoc['lastUserId'];
+    } else {
+      return 0; // Initial value if the document doesn't exist
+    }
+  }
+
+  // Method to increment the user ID counter
+  Future<void> incrementUserIdCounter() async {
+    DocumentReference counterRef = _firestore.collection('counters').doc('userCounter');
+    await _firestore.runTransaction((transaction) async {
+      DocumentSnapshot snapshot = await transaction.get(counterRef);
+      if (snapshot.exists) {
+        int newUserId = snapshot['lastUserId'] + 1;
+        transaction.update(counterRef, {'lastUserId': newUserId});
+      } else {
+        transaction.set(counterRef, {'lastUserId': 1});
+      }
+    });
+  }
+
+  // Add user details with auto-increment ID
+  Future<void> addUserDetailWithAutoIncrement(Map<String, dynamic> userInfoMap) async {
+    int newUserId = await getLastUserId() + 1;
+    await incrementUserIdCounter();
+    userInfoMap['Id'] = newUserId.toString(); // Assuming ID is stored as a string
+    await _firestore.collection('users').doc(newUserId.toString()).set(userInfoMap);
+    print('User added to Firestore with ID: $newUserId');
+  }
+
 }
