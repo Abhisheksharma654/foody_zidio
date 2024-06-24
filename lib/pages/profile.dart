@@ -7,11 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:foody_zidio/Content/bottom_nav.dart';
 import 'package:foody_zidio/Content/onboard.dart';
 import 'package:foody_zidio/pages/home.dart';
+import 'package:foody_zidio/pages/login.dart';
 import 'package:foody_zidio/service/shared_pref.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:random_string/random_string.dart';
-
-
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -32,7 +31,7 @@ class _ProfileState extends State<Profile> {
 
     if (image != null) {
       setState(() {
-        selectedImage = File(image!.path);
+        selectedImage = File(image.path);
       });
       await uploadItem();
     }
@@ -71,19 +70,33 @@ class _ProfileState extends State<Profile> {
     setState(() {});
   }
 
+  Future<void> verifyUser() async {
+    User? currentUser = _auth.currentUser;
+    if (currentUser != null) {
+      String? storedEmail = await SharedPreferenceHelper().getUserEmail();
+      if (currentUser.email != storedEmail) {
+        await signOut(context);
+      } else {
+        await getSharedPrefs();
+      }
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Onboard()),
+      );
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    getSharedPrefs();
+    verifyUser();
   }
 
   Future<void> signOut(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signOut();
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => Onboard()),
-      );
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (builder)=>Onboard()));
     } catch (e) {
       print('Error signing out: $e');
     }

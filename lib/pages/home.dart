@@ -107,6 +107,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Container(
           margin: EdgeInsets.only(top: 50.0, left: 20.0, right: 20.0),
@@ -123,6 +124,7 @@ class _HomeState extends State<Home> {
                   ),
                 ],
               ),
+              
               SizedBox(height: 20.0),
               Text("Delicious Food",
                   style:
