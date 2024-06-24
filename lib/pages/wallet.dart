@@ -42,6 +42,16 @@ class _WalletState extends State<Wallet> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
+       appBar: AppBar(
+        backgroundColor: Colors.black, // Make app bar transparent
+        elevation: 0, // Remove elevation
+        title: Text(
+          "Wallet",
+          style: AppWidget.semiBoldWhiteTextFeildStyle()
+        ),
+        centerTitle: true,
+      ),
       body: wallet == null
           ? const CircularProgressIndicator()
           : Container(
@@ -49,18 +59,7 @@ class _WalletState extends State<Wallet> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Material(
-                      elevation: 2.0,
-                      child: Container(
-                          padding: const EdgeInsets.only(bottom: 10.0),
-                          child: Center(
-                              child: Text(
-                            "Wallet",
-                            style: AppWidget.HeadlineTextFeildStyle(),
-                          )))),
-                  const SizedBox(
-                    height: 30.0,
-                  ),
+            
                   Container(
                     padding:
                         const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
@@ -78,7 +77,7 @@ class _WalletState extends State<Wallet> {
                           width: 40.0,
                         ),
                         Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               "Your Wallet",

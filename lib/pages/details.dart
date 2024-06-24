@@ -37,27 +37,36 @@ class _DetailsState extends State<Details> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text("Add To Cart",style: AppWidget.semiBoldWhiteTextFeildStyle(),),
+        centerTitle: true,
+        backgroundColor: Colors.black, // Make app bar transparent
+        elevation: 0, // Remove elevation
+        leading: GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Icon(
+            Icons.arrow_back_ios_new_outlined,
+            color: Colors.white,
+          ),
+        ),
+      ),
       body: Container(
-        margin: EdgeInsets.only(top: 50.0, left: 20.0, right: 20.0),
+        margin: EdgeInsets.only(top: 10.0, left: 20.0, right: 20.0), // Adjust top margin
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Back button
-            GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: Icon(
-                Icons.arrow_back_ios_new_outlined,
-                color: Colors.black,
-              ),
-            ),
             // Display item image
-            Image.network(
-              widget.image,
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height / 2.5,
-              fit: BoxFit.fill,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20.0),
+              child: Image.network(
+                widget.image,
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height / 3,
+                fit: BoxFit.cover,
+              ),
             ),
             SizedBox(
               height: 15.0,
@@ -65,98 +74,71 @@ class _DetailsState extends State<Details> {
             // Display item name and quantity control
             Row(
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.name,
-                      style: AppWidget.semiBoldTextFeildStyle(),
-                    ),
-                  ],
-                ),
-                Spacer(),
-                // Decrease quantity button
-                GestureDetector(
-                  onTap: () {
-                    if (quantity > 1) {
-                      setState(() {
-                        --quantity;
-                        total -= int.parse(widget.price);
-                      });
-                    }
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(
-                      Icons.remove,
-                      color: Colors.white,
-                    ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.name,
+                        style: AppWidget.semiBoldTextFeildStyle(),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        widget.detail,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppWidget.semiBoldTextFeildStyle(),
+                      ),
+                    ],
                   ),
                 ),
-                SizedBox(
-                  width: 20.0,
-                ),
-                // Display current quantity
-                Text(
-                  quantity.toString(),
-                  style: AppWidget.semiBoldTextFeildStyle(),
-                ),
-                SizedBox(
-                  width: 20.0,
-                ),
-                // Increase quantity button
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      ++quantity;
-                      total += int.parse(widget.price);
-                    });
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(
-                      Icons.add,
-                      color: Colors.white,
-                    ),
+                SizedBox(width: 10),
+                // Quantity control buttons
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.grey.shade400),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          if (quantity > 1) {
+                            setState(() {
+                              --quantity;
+                              total -= int.parse(widget.price);
+                            });
+                          }
+                        },
+                        icon: Icon(Icons.remove),
+                        color: Colors.black,
+                      ),
+                      Text(
+                        quantity.toString(),
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            ++quantity;
+                            total += int.parse(widget.price);
+                          });
+                        },
+                        icon: Icon(Icons.add),
+                        color: Colors.black,
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-            SizedBox(
-              height: 20.0,
-            ),
-            // Display item detail
-            Text(
-              widget.detail,
-              maxLines: 4,
-              style: AppWidget.semiBoldTextFeildStyle(),
-            ),
-            SizedBox(
-              height: 30.0,
-            ),
+            SizedBox(height: 20),
             // Display delivery time
             Row(
               children: [
-                Text(
-                  "Delivery Time",
-                  style: AppWidget.semiBoldTextFeildStyle(),
-                ),
-                SizedBox(
-                  width: 25.0,
-                ),
-                Icon(
-                  Icons.alarm,
-                  color: Colors.black54,
-                ),
-                SizedBox(
-                  width: 5.0,
-                ),
+                Icon(Icons.alarm, color: Colors.black54),
+                SizedBox(width: 5),
                 Text(
                   "30 min",
                   style: AppWidget.semiBoldTextFeildStyle(),
@@ -206,39 +188,26 @@ class _DetailsState extends State<Details> {
                       }
                     },
                     child: Container(
-                      width: MediaQuery.of(context).size.width / 2,
-                      padding: EdgeInsets.all(8),
+                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       decoration: BoxDecoration(
                         color: Colors.black,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "Add to cart",
+                            "Add to Cart",
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: 16.0,
+                              fontSize: 16,
                               fontFamily: 'Poppins',
                             ),
                           ),
-                          SizedBox(
-                            width: 30.0,
-                          ),
-                          Container(
-                            padding: EdgeInsets.all(3),
-                            decoration: BoxDecoration(
-                              color: Colors.grey,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Icon(
-                              Icons.shopping_cart_outlined,
-                              color: Colors.white,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 10.0,
+                          SizedBox(width: 10),
+                          Icon(
+                            Icons.shopping_cart_outlined,
+                            color: Colors.white,
                           ),
                         ],
                       ),

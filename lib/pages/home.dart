@@ -73,37 +73,45 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      appBar: AppBar(
+        backgroundColor: Colors.black, // Make app bar transparent
+        elevation: 0, // Remove elevation
+        title: Text(
+          "Foody Zidio",
+          style: AppWidget.semiBoldWhiteTextFeildStyle()
+        ),
+        actions: [
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Ordered()),
+              );
+            },
+            child: Container(
+              margin: EdgeInsets.only(right: 20.0),
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                Icons.shopping_cart_outlined,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Container(
-          margin: EdgeInsets.only(top: 50.0, left: 20.0),
+          margin: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text("Hello $userName,",
-                      style: AppWidget.boldTextFeildStyle()),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (builder) => Ordered()));
-                    },
-                    child: Container(
-                      margin: EdgeInsets.only(right: 20.0),
-                      padding: EdgeInsets.all(3),
-                      decoration: BoxDecoration(
-                          color: Colors.black,
-                          borderRadius: BorderRadius.circular(8)),
-                      child: Icon(
-                        Icons.shopping_cart_outlined,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              Text("Hello $userName🥰",
+                  style: AppWidget.boldTextFeildStyle()),
               SizedBox(height: 20.0),
               Text("Delicious Food", style: AppWidget.HeadlineTextFeildStyle()),
               Text("Discover and Get Great Food",
@@ -193,7 +201,7 @@ class _HomeState extends State<Home> {
                   width: 180,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: Colors.white,
+                    color: Colors.white, // Background color set to white
                     boxShadow: [
                       BoxShadow(
                         color: Colors.grey.withOpacity(0.5),
@@ -203,41 +211,41 @@ class _HomeState extends State<Home> {
                       ),
                     ],
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                        child: Image.network(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Image.network(
                           foodItem['Image'],
                           height: 120,
                           width: 180,
                           fit: BoxFit.cover,
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              foodItem['Name'],
-                              style: AppWidget.semiBoldTextFeildStyle(),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              foodItem['Detail'],
-                              style: AppWidget.LightTextFeildStyle(),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              '\u{20B9}${foodItem['Price']}',
-                              style: AppWidget.semiBoldTextFeildStyle(),
-                            ),
-                          ],
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                foodItem['Name'],
+                                style: AppWidget.semiBoldTextFeildStyle(),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                foodItem['Detail'],
+                                style: AppWidget.LightTextFeildStyle(),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                '\u{20B9}${foodItem['Price']}',
+                                style: AppWidget.semiBoldTextFeildStyle(),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -273,6 +281,7 @@ class _HomeState extends State<Home> {
                   borderRadius: BorderRadius.circular(20),
                   child: Container(
                     padding: EdgeInsets.all(10),
+                    color: Colors.white, // Background color set to white
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -328,10 +337,10 @@ class _HomeState extends State<Home> {
         GestureDetector(
           onTap: () {
             setState(() {
-              icecream = false;
+              icecream = true;
               pizza = false;
               salad = false;
-              burger = true;
+              burger = false;
             });
           },
           child: Material(
@@ -341,13 +350,14 @@ class _HomeState extends State<Home> {
               height: 50,
               width: 50,
               decoration: BoxDecoration(
-                  color: burger ? Colors.black : Colors.white,
-                  borderRadius: BorderRadius.circular(25)),
+                color: icecream ? Colors.black : Colors.white,
+                borderRadius: BorderRadius.circular(25),
+              ),
               padding: EdgeInsets.all(8),
               child: Image.asset(
-                "images/burger.png",
+                "images/ice-cream.png",
                 fit: BoxFit.cover,
-                color: burger ? Colors.white : Colors.black,
+                color: icecream ? Colors.white : Colors.black,
               ),
             ),
           ),
@@ -368,40 +378,14 @@ class _HomeState extends State<Home> {
               height: 50,
               width: 50,
               decoration: BoxDecoration(
-                  color: pizza ? Colors.black : Colors.white,
-                  borderRadius: BorderRadius.circular(25)),
+                color: pizza ? Colors.black : Colors.white,
+                borderRadius: BorderRadius.circular(25),
+              ),
               padding: EdgeInsets.all(8),
               child: Image.asset(
                 "images/pizza.png",
                 fit: BoxFit.cover,
                 color: pizza ? Colors.white : Colors.black,
-              ),
-            ),
-          ),
-        ),
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              icecream = true;
-              pizza = false;
-              salad = false;
-              burger = false;
-            });
-          },
-          child: Material(
-            elevation: 5.0,
-            borderRadius: BorderRadius.circular(25),
-            child: Container(
-              height: 50,
-              width: 50,
-              decoration: BoxDecoration(
-                  color: icecream ? Colors.black : Colors.white,
-                  borderRadius: BorderRadius.circular(25)),
-              padding: EdgeInsets.all(8),
-              child: Image.asset(
-                "images/ice-cream.png",
-                fit: BoxFit.cover,
-                color: icecream ? Colors.white : Colors.black,
               ),
             ),
           ),
@@ -422,13 +406,42 @@ class _HomeState extends State<Home> {
               height: 50,
               width: 50,
               decoration: BoxDecoration(
-                  color: salad ? Colors.black : Colors.white,
-                  borderRadius: BorderRadius.circular(25)),
+                color: salad ? Colors.black : Colors.white,
+                borderRadius: BorderRadius.circular(25),
+              ),
               padding: EdgeInsets.all(8),
               child: Image.asset(
                 "images/salad.png",
                 fit: BoxFit.cover,
                 color: salad ? Colors.white : Colors.black,
+              ),
+            ),
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            setState(() {
+              icecream = false;
+              pizza = false;
+              salad = false;
+              burger = true;
+            });
+          },
+          child: Material(
+            elevation: 5.0,
+            borderRadius: BorderRadius.circular(25),
+            child: Container(
+              height: 50,
+              width: 50,
+              decoration: BoxDecoration(
+                color: burger ? Colors.black : Colors.white,
+                borderRadius: BorderRadius.circular(25),
+              ),
+              padding: EdgeInsets.all(8),
+              child: Image.asset(
+                "images/burger.png",
+                fit: BoxFit.cover,
+                color: burger ? Colors.white : Colors.black,
               ),
             ),
           ),

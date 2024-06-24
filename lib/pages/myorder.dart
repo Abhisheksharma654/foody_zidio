@@ -182,29 +182,21 @@ class _OrderedState extends State<Ordered> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
+       appBar: AppBar(
+        backgroundColor: Colors.black, // Make app bar transparent
+        elevation: 0, // Remove elevation
+        title: Text(
+          "Food Cart",
+          style: AppWidget.semiBoldWhiteTextFeildStyle()
+        ),
+        centerTitle: true,
+      ),
       body: Container(
         padding: const EdgeInsets.only(top: 60.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Material(
-              elevation: 2.0,
-              child: Container(
-                padding: const EdgeInsets.only(bottom: 10.0),
-                child: const Center(
-                  child: Text(
-                    "Food Cart",
-                    style: TextStyle(
-                      fontSize: 24.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 20.0,
-            ),
             Expanded(
               child: foodCart(),
             ),

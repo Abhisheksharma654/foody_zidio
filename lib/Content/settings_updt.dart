@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -74,6 +73,14 @@ class _SettingsPageState extends State<SettingsPage> {
         setState(() {
           profileImageUrl = downloadURL;
         });
+
+        // Show SnackBar after successful update
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Profile updated successfully'),
+            duration: Duration(seconds: 2),
+          ),
+        );
       } catch (e) {
         print('Error uploading profile image: $e');
       }
@@ -99,6 +106,14 @@ class _SettingsPageState extends State<SettingsPage> {
       name = newName;
       email = newEmail;
     });
+
+    // Show SnackBar after successful update
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Profile updated successfully'),
+        duration: Duration(seconds: 2),
+      ),
+    );
   }
 
   @override
