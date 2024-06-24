@@ -109,93 +109,74 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: OrientationBuilder(
-        builder: (context, orientation) {
-          return SingleChildScrollView(
-            child: Container(
-              margin: EdgeInsets.only(top: 50.0, left: 20.0, right: 20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      body: SingleChildScrollView(
+        child: Container(
+          margin: EdgeInsets.only(top: 50.0, left: 20.0, right: 20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Hello, $userName", // Display dynamic username
-                        style:
-                            TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Ordered(), // Replace with your shopping cart page
-                            ),
-                          );
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(3),
-                          decoration: BoxDecoration(
-                            color: Colors.black,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            Icons.shopping_cart_outlined,
-                            color: Colors.white,
-                          ),
+                  Text(
+                    "Hello, $userName", // Display dynamic username
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Ordered(), // Replace with your shopping cart page
                         ),
-                      ),
-                    ],
-                  ),
-                  
-                  SizedBox(height: 20.0),
-                  Text("Delicious Food",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0)),
-                  Text("Discover and Get Great Food",
-                      style: TextStyle(fontSize: 16.0)),
-                  SizedBox(height: 20.0),
-                  Container(
-                    margin: EdgeInsets.only(right: 20.0),
-                    child: showItem(),
-                  ),
-                  SizedBox(height: 30.0),
-                  ToggleButtons(
-                    children: [
-                      Icon(Icons.view_agenda),
-                      Icon(Icons.view_module),
-                    ],
-                    isSelected: [!isCardView, isCardView],
-                    onPressed: (int newIndex) {
-                      setState(() {
-                        isCardView = newIndex == 1; // 1 is card view, 0 is list view
-                      });
+                      );
                     },
+                    child: Container(
+                      padding: EdgeInsets.all(3),
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(
+                        Icons.shopping_cart_outlined,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
-                  SizedBox(height: 10.0),
-                  dataAvailable
-                      ? isCardView ? buildCardView() : buildListView(orientation)
-                      : Center(
-                          child: Column(
-                            children: [
-                              Image.asset(
-                                'images/no_data.png',
-                                width: 400,
-                                height: 400,
-                              ),
-                              Text(
-                                "Oops ..... \n There is no any type of item are available..",
-                                style: AppWidget.semiBoldTextFeildStyle(),
-                              ),
-                            ],
-                          ),
-                        ),
                 ],
               ),
-            ),
-          );
-        },
+              
+              SizedBox(height: 20.0),
+              Text("Delicious Food",
+                  style:
+                      TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0)),
+              Text("Discover and Get Great Food",
+                  style: TextStyle(fontSize: 16.0)),
+              SizedBox(height: 20.0),
+              Container(
+                  margin: EdgeInsets.only(right: 20.0), child: showItem()),
+              SizedBox(height: 30.0),
+              dataAvailable
+                  ? buildFoodItemsList()
+                  : Center(
+                      child: Column(
+                        children: [
+                          Image.asset(
+                            'images/no_data.png',
+                            width: 400,
+                            height: 400,
+                          ),
+                          Text(
+                            "Oops ..... \n There is no any type of item are available..",
+                            style: AppWidget.semiBoldTextFeildStyle(),
+                          ),
+                        ],
+                      ),
+                    ),
+            ],
+          ),
+        ),
       ),
     );
   }

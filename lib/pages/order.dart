@@ -78,7 +78,8 @@ class _OrderState extends State<Order> {
             total += itemTotal;
 
             itemWidgets.add(Container(
-              margin: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 10.0),
+              margin:
+                  const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 10.0),
               child: Material(
                 elevation: 5.0,
                 borderRadius: BorderRadius.circular(10),
@@ -131,8 +132,13 @@ class _OrderState extends State<Order> {
                               style: const TextStyle(fontSize: 16.0),
                             ),
                             Text(
+<<<<<<< HEAD
                               "\u{20B9}" + itemTotal.toString(),
                               style: TextStyle(fontSize: 16.0),
+=======
+                              "\$" + itemTotal.toString(),
+                              style: const TextStyle(fontSize: 16.0),
+>>>>>>> a88ab7f2530e4000493dad9b03483a8d31145de9
                             ),
                           ],
                         ),
@@ -157,12 +163,18 @@ class _OrderState extends State<Order> {
                 Image.asset(
                   'images/empty.png',
                   width: 300, // Adjusted size to be similar to home_no_data.png
-                  height: 300, // Adjusted size to be similar to home_no_data.png
+                  height:
+                      300, // Adjusted size to be similar to home_no_data.png
                 ),
+<<<<<<< HEAD
                 SizedBox(
                   height: 10,
                 ),
                 Text(
+=======
+                const SizedBox(height: 10,),
+                const Text(
+>>>>>>> a88ab7f2530e4000493dad9b03483a8d31145de9
                   "Oops .....  Cart Is Empty.",
                   style: TextStyle(
                     fontSize: 18.0,
@@ -220,8 +232,13 @@ class _OrderState extends State<Order> {
                     ),
                   ),
                   Text(
+<<<<<<< HEAD
                     "\u{20B9}" + total.toString(),
                     style: TextStyle(
+=======
+                    "\$" + total.toString(),
+                    style: const TextStyle(
+>>>>>>> a88ab7f2530e4000493dad9b03483a8d31145de9
                       fontSize: 20.0,
                       fontWeight: FontWeight.bold,
                     ),
@@ -246,7 +263,8 @@ class _OrderState extends State<Order> {
                   );
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Insufficient funds in wallet!')),
+                    const SnackBar(
+                        content: Text('Insufficient funds in wallet!')),
                   );
                 }
               },
@@ -257,7 +275,8 @@ class _OrderState extends State<Order> {
                   color: Colors.black,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                margin: const EdgeInsets.symmetric(
+                    horizontal: 20.0, vertical: 10.0),
                 child: const Center(
                   child: Text(
                     "CheckOut",
