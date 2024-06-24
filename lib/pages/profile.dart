@@ -34,7 +34,7 @@ class _ProfileState extends State<Profile> {
     if (image != null) {
       setState(() {
         selectedImage = File(image.path);
-      });
+      });  
       await uploadItem();
     }
   }
