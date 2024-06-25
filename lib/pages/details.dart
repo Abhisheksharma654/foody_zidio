@@ -38,7 +38,7 @@ class _DetailsState extends State<Details> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[900],
       appBar: AppBar(
         title: Text(
           "Add To Cart",
@@ -85,14 +85,14 @@ class _DetailsState extends State<Details> {
                     children: [
                       Text(
                         widget.name,
-                        style: AppWidget.semiBoldTextFeildStyle(),
+                        style: AppWidget.semiBoldWhiteTextFeildStyle(),
                       ),
                       SizedBox(height: 8),
                       Text(
                         widget.detail,
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
-                        style: AppWidget.semiBoldTextFeildStyle(),
+                        style: AppWidget.semiBoldWhite1TextFeildStyle(),
                       ),
                     ],
                   ),
@@ -117,11 +117,11 @@ class _DetailsState extends State<Details> {
                           }
                         },
                         icon: Icon(Icons.remove),
-                        color: Colors.black,
+                        color: Colors.white,
                       ),
                       Text(
                         quantity.toString(),
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(fontSize: 16,color: Colors.white),
                       ),
                       IconButton(
                         onPressed: () {
@@ -131,7 +131,7 @@ class _DetailsState extends State<Details> {
                           });
                         },
                         icon: Icon(Icons.add),
-                        color: Colors.black,
+                        color: Colors.white,
                       ),
                     ],
                   ),
@@ -142,11 +142,11 @@ class _DetailsState extends State<Details> {
             // Display delivery time
             Row(
               children: [
-                Icon(Icons.alarm, color: Colors.black54),
+                Icon(Icons.alarm, color: Colors.white),
                 SizedBox(width: 5),
                 Text(
                   "30 min",
-                  style: AppWidget.semiBoldTextFeildStyle(),
+                  style: AppWidget.semiBoldWhite1TextFeildStyle(),
                 ),
               ],
             ),
@@ -162,7 +162,7 @@ class _DetailsState extends State<Details> {
                     children: [
                       Text(
                         "Total Price",
-                        style: AppWidget.semiBoldTextFeildStyle(),
+                        style: AppWidget.semiBoldWhite1TextFeildStyle(),
                       ),
                       Text(
                         "\u{20B9}" + total.toString(),
