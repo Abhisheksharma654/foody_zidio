@@ -3,9 +3,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:foody_zidio/Content/bottom_nav.dart';
+import 'package:foody_zidio/Content/splash_screen.dart';
 import 'package:foody_zidio/service/app_constraint.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../login.dart';
+import 'pages/login.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class SplashScreen extends StatelessWidget {
+class Checkuser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(

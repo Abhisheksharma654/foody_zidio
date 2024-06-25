@@ -7,63 +7,95 @@ import 'package:foody_zidio/pages/forgetpassword.dart';
 import 'package:foody_zidio/pages/login.dart';
 import 'package:foody_zidio/service/shared_pref.dart';
 import 'package:foody_zidio/widget/widget_support.dart';
-import 'package:random_string/random_string.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class SignUp extends StatefulWidget {
-  const SignUp({super.key});
+  const SignUp({Key? key}) : super(key: key);
 
   @override
   State<SignUp> createState() => _SignUpState();
 }
 
 class _SignUpState extends State<SignUp> {
-  String email = "", password = "",name ="";
+  String email = "", password = "", name = "", profileImageUrl = "";
+  File? _image;
+  final _formKey = GlobalKey<FormState>();
 
-  final _formkey = GlobalKey<FormState>();
-TextEditingController usernamecontroller = TextEditingController();
-  TextEditingController useremailcontroller = TextEditingController();
-  TextEditingController userpasswordcontroller = TextEditingController();
+  TextEditingController usernameController = TextEditingController();
+  TextEditingController useremailController = TextEditingController();
+  TextEditingController userpasswordController = TextEditingController();
 
-  userSignUp() async {
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  Future<String> _uploadProfileImage() async {
+    if (_image == null) return "";
+
+    String fileName = 'profile_${DateTime.now().millisecondsSinceEpoch}.jpg';
+    Reference firebaseStorageRef = FirebaseStorage.instance.ref().child(fileName);
+    UploadTask uploadTask = firebaseStorageRef.putFile(_image!);
+    TaskSnapshot taskSnapshot = await uploadTask;
+    return await taskSnapshot.ref.getDownloadURL();
+  }
+
+  Future<void> userSignUp() async {
     try {
-      await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
-      ScaffoldMessenger.of(context).showSnackBar((SnackBar(
-            backgroundColor: Colors.redAccent,
-            content: Text(
-              "Registered Successfully",
-              style: TextStyle(fontSize: 20.0),
-            ))));
-        String Id = randomAlphaNumeric(10);
-        Map<String, dynamic> addUserInfo = {
-          "Name": usernamecontroller.text,
-          "Email": useremailcontroller.text,
-          "Wallet": "0",
-          "Id": Id,
-        };
-        await DatabaseMethods().addUserDetail(addUserInfo, Id);
-        await SharedPreferenceHelper().saveUserName(usernamecontroller.text);
-        await SharedPreferenceHelper().saveUserEmail(useremailcontroller.text);
-        await SharedPreferenceHelper().saveUserWallet('0');
-        await SharedPreferenceHelper().saveUserId(Id);
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.redAccent,
+        content: Text(
+          "Registered Successfully",
+          style: TextStyle(fontSize: 20.0),
+        ),
+      ));
 
+      String profileUrl = await _uploadProfileImage();
 
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => LogIn()));
+      Map<String, dynamic> addUserInfo = {
+        "Name": usernameController.text,
+        "Email": useremailController.text,
+        "Wallet": "0",
+        "ProfileImageUrl": profileUrl,
+      };
+
+      await DatabaseMethods().addUserDetailWithAutoIncrement(addUserInfo);
+      await SharedPreferenceHelper().saveUserName(usernameController.text);
+      await SharedPreferenceHelper().saveUserEmail(useremailController.text);
+      await SharedPreferenceHelper().saveUserWallet('0');
+      await SharedPreferenceHelper().saveUserProfile(profileUrl);
+      await SharedPreferenceHelper().saveUserId(addUserInfo['Id']);
+
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LogIn()));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-          "The password provided is too weak.",
-          style: TextStyle(fontSize: 18.0, color: Colors.black),
-        )));
+          content: Text(
+            "The password provided is too weak.",
+            style: TextStyle(fontSize: 18.0, color: Colors.black),
+          ),
+        ));
       } else if (e.code == 'email-already-in-use') {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-          "The account already exists for that email.",
-          style: TextStyle(fontSize: 18.0, color: Colors.black),
-        )));
+          content: Text(
+            "The account already exists for that email.",
+            style: TextStyle(fontSize: 18.0, color: Colors.black),
+          ),
+        ));
       }
+    } catch (e) {
+      print('Error signing up: $e');
     }
   }
 
@@ -75,26 +107,26 @@ TextEditingController usernamecontroller = TextEditingController();
           children: [
             Container(
               width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height ,
+              height: MediaQuery.of(context).size.height,
               decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                    Color(0xFFff5c30),
-                    Color(0xFFe74b1a),
-                  ])),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFFff5c30), Color(0xFFe74b1a)],
+                ),
+              ),
             ),
             Container(
-              margin:
-                  EdgeInsets.only(top: MediaQuery.of(context).size.height / 3),
-              height: MediaQuery.of(context).size.height ,
+              margin: EdgeInsets.only(top: MediaQuery.of(context).size.height / 3),
+              height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(40),
-                      topRight: Radius.circular(40))),
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(40),
+                  topRight: Radius.circular(40),
+                ),
+              ),
               child: Text(""),
             ),
             Container(
@@ -103,14 +135,23 @@ TextEditingController usernamecontroller = TextEditingController();
                 child: Column(
                   children: [
                     Center(
-                        child: Image.asset(
-                      "images/logo.png",
-                      width: MediaQuery.of(context).size.width /1.5,
-                      fit: BoxFit.cover,
-                    )),
-                    SizedBox(
-                      height: 90.0,
+                      child: Image.asset(
+                        "images/logo.png",
+                        width: MediaQuery.of(context).size.width / 1.5,
+                        fit: BoxFit.cover,
+                      ),
                     ),
+                    SizedBox(height: 30.0),
+                    GestureDetector(
+                      onTap: _pickImage,
+                      child: CircleAvatar(
+                        radius: 40,
+                        backgroundColor: Colors.grey[200],
+                        backgroundImage: _image != null ? FileImage(_image!) : null,
+                        child: _image == null ? Icon(Icons.add_a_photo, size: 40, color: Colors.grey[700]) : null,
+                      ),
+                    ),
+                    SizedBox(height: 30.0),
                     Material(
                       elevation: 5.0,
                       borderRadius: BorderRadius.circular(20),
@@ -118,25 +159,21 @@ TextEditingController usernamecontroller = TextEditingController();
                         padding: EdgeInsets.all(20.0),
                         width: MediaQuery.of(context).size.width,
                         decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20)),
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
                         child: Form(
-                          key: _formkey,
+                          key: _formKey,
                           child: Column(
                             children: [
-                              SizedBox(
-                                height: 30.0,
-                              ),
+                              SizedBox(height: 30.0),
                               Text(
                                 "Sign Up",
-                                style: AppWidget.HeadlineTextFeildStyle(),
+                                style: AppWidget.HeadlineText1FeildStyle(),
                               ),
-                              SizedBox(
-                                height: 30.0,
-                              ),
-                             
+                              SizedBox(height: 30.0),
                               TextFormField(
-                                controller: usernamecontroller,
+                                controller: usernameController,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Please Enter name';
@@ -144,15 +181,14 @@ TextEditingController usernamecontroller = TextEditingController();
                                   return null;
                                 },
                                 decoration: InputDecoration(
-                                    hintText: 'Name',
-                                    hintStyle: AppWidget.semiBoldTextFeildStyle(),
-                                    prefixIcon: Icon(Icons.person)),
+                                  hintText: 'Name',
+                                  hintStyle: AppWidget.semiBoldTextFeildStyle(),
+                                  prefixIcon: Icon(Icons.person),
+                                ),
                               ),
-                              SizedBox(
-                                height: 30.0,
-                              ),
+                              SizedBox(height: 30.0),
                               TextFormField(
-                                controller: useremailcontroller,
+                                controller: useremailController,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Please Enter Email';
@@ -160,15 +196,14 @@ TextEditingController usernamecontroller = TextEditingController();
                                   return null;
                                 },
                                 decoration: InputDecoration(
-                                    hintText: 'Email',
-                                    hintStyle: AppWidget.semiBoldTextFeildStyle(),
-                                    prefixIcon: Icon(Icons.email_outlined)),
+                                  hintText: 'Email',
+                                  hintStyle: AppWidget.semiBoldTextFeildStyle(),
+                                  prefixIcon: Icon(Icons.email_outlined),
+                                ),
                               ),
-                              SizedBox(
-                                height: 30.0,
-                              ),
+                              SizedBox(height: 30.0),
                               TextFormField(
-                                controller: userpasswordcontroller,
+                                controller: userpasswordController,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Please Enter Password';
@@ -177,21 +212,20 @@ TextEditingController usernamecontroller = TextEditingController();
                                 },
                                 obscureText: true,
                                 decoration: InputDecoration(
-                                    hintText: 'Password',
-                                    hintStyle: AppWidget.semiBoldTextFeildStyle(),
-                                    prefixIcon: Icon(Icons.password_outlined)),
+                                  hintText: 'Password',
+                                  hintStyle: AppWidget.semiBoldTextFeildStyle(),
+                                  prefixIcon: Icon(Icons.lock),
+                                ),
                               ),
-                              SizedBox(
-                                height: 20.0,
-                              ),
+                              SizedBox(height: 30.0),
                               GestureDetector(
                                 onTap: () {
-                                  if (_formkey.currentState!.validate()) {
+                                  if (_formKey.currentState!.validate()) {
                                     setState(() {
-                                      email = useremailcontroller.text;
-                                      password = userpasswordcontroller.text;
+                                      email = useremailController.text;
+                                      password = userpasswordController.text;
                                     });
-                                    userSignUp();
+                                    userSignUp(); // Call userSignUp method here
                                   }
                                 },
                                 child: Material(
@@ -201,18 +235,34 @@ TextEditingController usernamecontroller = TextEditingController();
                                     padding: EdgeInsets.symmetric(vertical: 15.0),
                                     width: double.infinity,
                                     decoration: BoxDecoration(
-                                        color: Color(0xffff5722),
-                                        borderRadius: BorderRadius.circular(20)),
+                                      color: Color(0Xffff5722),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
                                     child: Center(
-                                        child: Text(
-                                      "SIGN UP",
-                                      style: TextStyle(
+                                      child: Text(
+                                        "SIGNUP",
+                                        style: TextStyle(
                                           color: Colors.white,
                                           fontSize: 18.0,
                                           fontFamily: 'Poppins1',
-                                          fontWeight: FontWeight.bold),
-                                    )),
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
                                   ),
+                                ),
+                              ),
+                              SizedBox(height: 20.0),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => LogIn()),
+                                  );
+                                },
+                                child: Text(
+                                  "Have an account? Login",
+                                  style: AppWidget.semiBoldTextFeildStyle(),
                                 ),
                               ),
                             ],
@@ -220,24 +270,10 @@ TextEditingController usernamecontroller = TextEditingController();
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: 30.0,
-                    ),
-                    GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => LogIn()));
-                        },
-                        child: Text(
-                          "Already have an account? Log in",
-                          style: AppWidget.semiBoldTextFeildStyle(),
-                        ))
                   ],
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

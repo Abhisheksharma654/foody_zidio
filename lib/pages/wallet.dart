@@ -42,6 +42,24 @@ class _WalletState extends State<Wallet> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[900],
+       appBar: AppBar(
+        backgroundColor: Colors.black, // Make app bar transparent
+        elevation: 0, // Remove elevation
+        title: Text(
+          "Wallet",
+          style: AppWidget.semiBoldWhiteTextFeildStyle()
+        ),
+        centerTitle: true,
+
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(Icons.arrow_back),
+          color: Colors.white,
+        ),
+      ),
       body: wallet == null
           ? const CircularProgressIndicator()
           : Container(
@@ -49,23 +67,12 @@ class _WalletState extends State<Wallet> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Material(
-                      elevation: 2.0,
-                      child: Container(
-                          padding: const EdgeInsets.only(bottom: 10.0),
-                          child: Center(
-                              child: Text(
-                            "Wallet",
-                            style: AppWidget.HeadlineTextFeildStyle(),
-                          )))),
-                  const SizedBox(
-                    height: 30.0,
-                  ),
+            
                   Container(
                     padding:
                         const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
                     width: MediaQuery.of(context).size.width,
-                    decoration: const BoxDecoration(color: Color(0xFFF2F2F2)),
+                    decoration: const BoxDecoration(color: Colors.transparent),
                     child: Row(
                       children: [
                         Image.asset(
@@ -78,7 +85,7 @@ class _WalletState extends State<Wallet> {
                           width: 40.0,
                         ),
                         Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               "Your Wallet",
@@ -103,7 +110,7 @@ class _WalletState extends State<Wallet> {
                     padding: const EdgeInsets.only(left: 20.0),
                     child: Text(
                       "Add money",
-                      style: AppWidget.semiBoldTextFeildStyle(),
+                      style: AppWidget.semiBoldWhiteTextFeildStyle(),
                     ),
                   ),
                   const SizedBox(
@@ -123,7 +130,7 @@ class _WalletState extends State<Wallet> {
                               borderRadius: BorderRadius.circular(5)),
                           child: Text(
                             "\u{20B9}" + "100",
-                            style: AppWidget.semiBoldTextFeildStyle(),
+                            style: AppWidget.semiBoldWhiteTextFeildStyle(),
                           ),
                         ),
                       ),
@@ -138,7 +145,7 @@ class _WalletState extends State<Wallet> {
                               borderRadius: BorderRadius.circular(5)),
                           child: Text(
                             "\u{20B9}" + "500",
-                            style: AppWidget.semiBoldTextFeildStyle(),
+                            style: AppWidget.semiBoldWhiteTextFeildStyle(),
                           ),
                         ),
                       ),
@@ -153,7 +160,7 @@ class _WalletState extends State<Wallet> {
                               borderRadius: BorderRadius.circular(5)),
                           child: Text(
                             "\u{20B9}" + "1000",
-                            style: AppWidget.semiBoldTextFeildStyle(),
+                            style: AppWidget.semiBoldWhiteTextFeildStyle(),
                           ),
                         ),
                       ),
@@ -168,7 +175,7 @@ class _WalletState extends State<Wallet> {
                               borderRadius: BorderRadius.circular(5)),
                           child: Text(
                             "\u{20B9}" + "2000",
-                            style: AppWidget.semiBoldTextFeildStyle(),
+                            style: AppWidget.semiBoldWhiteTextFeildStyle(),
                           ),
                         ),
                       )

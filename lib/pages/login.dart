@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:foody_zidio/Admin/admin.dart'; // Import your admin page
 import 'package:foody_zidio/Content/bottom_nav.dart'; // Import your regular user page
 import 'package:foody_zidio/pages/forgetpassword.dart'; // Import your forgot password page
 import 'package:foody_zidio/pages/signup.dart'; // Import your signup page
 import 'package:foody_zidio/widget/widget_support.dart'; // Import your widget support
+import 'package:shared_preferences/shared_preferences.dart'; // Import shared_preferences package
 
 class LogIn extends StatefulWidget {
   const LogIn({super.key});
@@ -30,27 +30,12 @@ class _LogInState extends State<LogIn> {
     super.dispose();
   }
 
+ 
   userLogin() async {
-    setState(() {
-      email = useremailcontroller.text;
-      password = userpasswordcontroller.text;
-    });
-
-    if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          "Email and password cannot be empty",
-          style: TextStyle(fontSize: 18.0, color: Colors.black),
-        ),
-      ));
-      return;
-    }
-
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
+      await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-      print("Login successful: ${userCredential.user?.email}");
-      Navigator.push(context, MaterialPageRoute(builder: (context) => BottomNav()));
+          Navigator.push(context, MaterialPageRoute(builder: (context)=> BottomNav()));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -58,20 +43,13 @@ class _LogInState extends State<LogIn> {
           "No User Found for that Email",
           style: TextStyle(fontSize: 18.0, color: Colors.black),
         )));
-      } else if (e.code == 'wrong-password') {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      }else if(e.code=='wrong-password'){
+         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(
           "Wrong Password Provided by User",
           style: TextStyle(fontSize: 18.0, color: Colors.black),
         )));
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-          "Login failed. Please try again.",
-          style: TextStyle(fontSize: 18.0, color: Colors.black),
-        )));
       }
-      print("Login failed: ${e.code}");
     }
   }
 
@@ -137,7 +115,7 @@ class _LogInState extends State<LogIn> {
                               ),
                               Text(
                                 "Login",
-                                style: AppWidget.HeadlineTextFeildStyle(),
+                                style: AppWidget.HeadlineText1FeildStyle(),
                               ),
                               SizedBox(
                                 height: 30.0,
@@ -154,13 +132,18 @@ class _LogInState extends State<LogIn> {
                                     hintText: 'Email',
                                     hintStyle:
                                         AppWidget.semiBoldTextFeildStyle(),
-                                    prefixIcon: Icon(Icons.email_outlined)),
+                                    prefixIcon: Icon(Icons.email_outlined),
+                
+                                     focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.black)),
+                                    ),
                               ),
                               SizedBox(
                                 height: 30.0,
                               ),
                               TextFormField(
                                 controller: userpasswordcontroller,
+                                cursorColor: Colors.black,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Please Enter Password';
@@ -172,7 +155,12 @@ class _LogInState extends State<LogIn> {
                                     hintText: 'Password',
                                     hintStyle:
                                         AppWidget.semiBoldTextFeildStyle(),
-                                    prefixIcon: Icon(Icons.password_outlined)),
+                                    prefixIcon: Icon(Icons.password_outlined),
+                                  
+                                    focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.black)),
+                                    ),
+                                    
                               ),
                               SizedBox(
                                 height: 20.0,
@@ -238,7 +226,7 @@ class _LogInState extends State<LogIn> {
                     ),
                     GestureDetector(
                         onTap: () {
-                          Navigator.push(
+                          Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => SignUp()));
@@ -246,7 +234,7 @@ class _LogInState extends State<LogIn> {
                         child: Text(
                           "Don't have an account? Sign up",
                           style: AppWidget.semiBoldTextFeildStyle(),
-                        ),),
+                        )),
                   ],
                 ),
               ),
@@ -257,3 +245,4 @@ class _LogInState extends State<LogIn> {
     );
   }
 }
+ 

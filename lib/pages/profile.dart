@@ -6,12 +6,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:foody_zidio/Content/bottom_nav.dart';
 import 'package:foody_zidio/Content/onboard.dart';
-import 'package:foody_zidio/pages/home.dart';
+import 'package:foody_zidio/Content/settings_updt.dart';
 import 'package:foody_zidio/service/shared_pref.dart';
+import 'package:foody_zidio/widget/widget_support.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:random_string/random_string.dart';
-
-
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -32,8 +32,8 @@ class _ProfileState extends State<Profile> {
 
     if (image != null) {
       setState(() {
-        selectedImage = File(image!.path);
-      });
+        selectedImage = File(image.path);
+      });  
       await uploadItem();
     }
   }
@@ -71,158 +71,199 @@ class _ProfileState extends State<Profile> {
     setState(() {});
   }
 
-  @override
-  void initState() {
-    super.initState();
-    getSharedPrefs();
+  Future<void> verifyUser() async {
+    User? currentUser = _auth.currentUser;
+    if (currentUser != null) {
+      String? storedEmail = await SharedPreferenceHelper().getUserEmail();
+      if (currentUser.email != storedEmail) {
+        await signOut(context);
+      } else {
+        await getSharedPrefs();
+      }
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Onboard()),
+      );
+    }
   }
 
   Future<void> signOut(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signOut();
-      Navigator.pushReplacement(
+      Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => Onboard()),
+        (route) => false, // This removes all routes from the stack
       );
     } catch (e) {
       print('Error signing out: $e');
     }
   }
 
+  Future<void> _refreshProfile() async {
+    await getSharedPrefs();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    verifyUser();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[900],
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.black,
+        backgroundColor: Colors.black,
         title: ProfileTitle(profileCompletionCount: (profileCompletion / 25).toInt()),
         centerTitle: true,
         leading: IconButton(
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (builder)=> BottomNav()));
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (builder) => BottomNav()),
+            );
           },
           icon: const Icon(Icons.arrow_back),
+          color: Colors.white,
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (builder) => SettingsPage()));
+            },
             icon: const Icon(Icons.settings_rounded),
+            color: Colors.white,
           ),
         ],
       ),
       body: name == null
           ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.all(10),
-              children: [
-                Column(
-                  children: [
-                    GestureDetector(
-                      onTap: getImage,
-                      child: CircleAvatar(
-                        radius: 50,
-                        backgroundImage: selectedImage != null
-                            ? FileImage(selectedImage!)
-                            : (profile != null && profile!.isNotEmpty)
-                                ? NetworkImage(profile!)
-                                : const AssetImage("images/person.png")
+          : LiquidPullToRefresh(
+              onRefresh: _refreshProfile,
+              color: Colors.white,
+              backgroundColor: Colors.black,
+              showChildOpacityTransition: false,
+              child: ListView(
+                padding: const EdgeInsets.all(10),
+                children: [
+                  Column(
+                    children: [
+                      GestureDetector(
+                        onTap: getImage,
+                        child: CircleAvatar(
+                          radius: 50,
+                          backgroundImage: selectedImage != null
+                              ? FileImage(selectedImage!)
+                              : (profile != null && profile!.isNotEmpty)
+                                  ? NetworkImage(profile!)
+                                  : const AssetImage("images/person.png")
                                       as ImageProvider,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      name ?? "Name not set",
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(email ?? "Email not set"),
-                  ],
-                ),
-                const SizedBox(height: 25),
-                Row(
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(right: 5),
-                      child: Text(
-                        "Complete your profile",
-                        style: TextStyle(
+                      const SizedBox(height: 10),
+                      Text(
+                        name ?? "Name not set",
+                        style: const TextStyle(
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
+                          color: Colors.white
                         ),
                       ),
-                    ),
-                    Text(
-                      "(${(profileCompletion / 25).toInt()}/3)",
-                      style: const TextStyle(
-                        color: Colors.blue,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: List.generate(3, (index) {
-                    return Expanded(
-                      child: Container(
-                        height: 7,
-                        margin: EdgeInsets.only(right: index == 2 ? 0 : 6),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: index < (profileCompletion / 25).toInt()
-                              ? Colors.blue
-                              : Colors.black12,
+                      Text(email ?? "Email not set",style: TextStyle(color: Colors.white),),
+                    ],
+                  ),
+                  const SizedBox(height: 25),
+                  Row(
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(right: 5),
+                        child: Text(
+                          "Complete your profile",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white
+                          ),
                         ),
                       ),
-                    );
-                  }),
-                ),
-
-                const SizedBox(height: 10),
-                Card(
-                  elevation: 4,
-                  shadowColor: Colors.black12,
-                  child: ListTile(
-                    leading: const Icon(Icons.insights),
-                    title: const Text("Activity"),
-                    trailing: const Icon(Icons.chevron_right),
+                      Text(
+                        "(${(profileCompletion / 25).toInt()}/3)",
+                        style: const TextStyle(
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 5),
-                Card(
-                  elevation: 4,
-                  shadowColor: Colors.black12,
-                  child: ListTile(
-                    leading: const Icon(Icons.location_on_outlined),
-                    title: const Text("Location"),
-                    trailing: const Icon(Icons.chevron_right),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: List.generate(3, (index) {
+                      return Expanded(
+                        child: Container(
+                          height: 7,
+                          margin: EdgeInsets.only(right: index == 2 ? 0 : 6),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: index < (profileCompletion / 25).toInt()
+                                ? Colors.blue
+                                : Colors.black12,
+                          ),
+                        ),
+                      );
+                    }),
                   ),
-                ),
-                const SizedBox(height: 5),
-                Card(
-                  elevation: 4,
-                  shadowColor: Colors.black12,
-                  child: ListTile(
-                    leading: const Icon(CupertinoIcons.bell),
-                    title: const Text("Notifications"),
-                    trailing: const Icon(Icons.chevron_right),
+                  const SizedBox(height: 10),
+                  Card(
+                    elevation: 4,
+                    color: Colors.grey[800],
+                    shadowColor: Colors.black,
+                    child: ListTile(
+                      leading: const Icon(Icons.insights,color: Colors.white,),
+                      title: const Text("Activity",style: TextStyle(color: Colors.white),),
+                      trailing: const Icon(Icons.chevron_right),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 5),
-                Card(
-                  elevation: 4,
-                  shadowColor: Colors.black12,
-                  child: ListTile(
-                    leading: const Icon(CupertinoIcons.arrow_right_arrow_left),
-                    title: const Text("Logout"),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () {
-                      signOut(context); // Call the signOut method when Logout tile is tapped
-                    },
+                  const SizedBox(height: 5),
+                  Card(
+                    elevation: 4,
+                    color: Colors.grey[800],
+                    shadowColor: Colors.black,
+                    child: ListTile(
+                      leading: const Icon(Icons.location_on_outlined,color: Colors.white,),
+                      title: const Text("Location",style: TextStyle(color: Colors.white),),
+                      trailing: const Icon(Icons.chevron_right),
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 5),
+                  Card(
+                    elevation: 4,
+                    color: Colors.grey[800],
+                    shadowColor: Colors.black,
+                    child: ListTile(
+                      leading: const Icon(CupertinoIcons.bell,color: Colors.white,),
+                      title: const Text("Notifications",style: TextStyle(color: Colors.white),),
+                      trailing: const Icon(Icons.chevron_right,),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Card(
+                    elevation: 4,
+                    shadowColor: Colors.black,
+                    color: Colors.grey[800],
+                    child: ListTile(
+                      leading: const Icon(CupertinoIcons.arrow_right_arrow_left,color: Colors.white,),
+                      title: const Text("Logout",style: TextStyle(color: Colors.white),),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        signOut(
+                            context); // Call the signOut method when Logout tile is tapped
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
     );
   }
@@ -231,7 +272,8 @@ class _ProfileState extends State<Profile> {
 class ProfileTitle extends StatelessWidget {
   final int profileCompletionCount;
 
-  const ProfileTitle({Key? key, required this.profileCompletionCount}) : super(key: key);
+  const ProfileTitle({Key? key, required this.profileCompletionCount})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -240,11 +282,7 @@ class ProfileTitle extends StatelessWidget {
       children: [
         Text(
           "PROFILE",
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
+          style: AppWidget.semiBoldWhiteTextFeildStyle(),
         ),
         const SizedBox(width: 5),
         Text(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foody_zidio/pages/login.dart';
 import 'package:foody_zidio/pages/signup.dart';
 import 'package:foody_zidio/widget/content_model.dart';
 import 'package:foody_zidio/widget/widget_support.dart';
@@ -17,7 +18,6 @@ class _OnboardState extends State<Onboard> {
   @override
   void initState() {
     _controller = PageController(initialPage: 0);
-
     super.initState();
   }
 
@@ -30,53 +30,57 @@ class _OnboardState extends State<Onboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[900],
       body: Column(
         children: [
           Expanded(
             child: PageView.builder(
-                controller: _controller,
-                itemCount: contents.length,
-                onPageChanged: (int index) {
-                  setState(() {
-                    currentIndex = index;
-                  });
-                },
-                itemBuilder: (_, i) {
-                  return Padding(
-                    padding: EdgeInsets.only(top: 40.0, left: 20.0, right: 20.0),
-                    child: Column(
-                      children: [
-                        Image.asset(
+              controller: _controller,
+              itemCount: contents.length,
+              onPageChanged: (int index) {
+                setState(() {
+                  currentIndex = index;
+                });
+              },
+              itemBuilder: (_, i) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Image.asset(
                           contents[i].image,
-                          height: 450,
-                          width: MediaQuery.of(context).size.width ,
-                          fit: BoxFit.fill,
+                          height: MediaQuery.of(context).size.height * 0.5,
+                          width: MediaQuery.of(context).size.width,
+                          fit: BoxFit.contain,
                         ),
-                        SizedBox(
-                          height: 40.0,
-                        ),
-                        Text(
-                          contents[i].title,
-                          style: AppWidget.HeadlineTextFeildStyle(),
-                        ),
-                        SizedBox(
-                          height: 20.0,
-                        ),
-                        Text(
-                          contents[i].description,
-                          style: AppWidget.LightTextFeildStyle(),
-                        )
-                      ],
-                    ),
-                  );
-                }),
+                      ),
+                      SizedBox(height: 40.0),
+                      Text(
+                        contents[i].title,
+                        style: AppWidget.HeadlineTextFeildStyle(),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 20.0),
+                      Text(
+                        contents[i].description,
+                        style: AppWidget.LightTextFeildStyle(),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
           ),
-          Container(
+          Padding(
+            padding: const EdgeInsets.all(20.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(
                 contents.length,
-                (index) => buildDot(index, context),
+                (index) => buildDot(index),
               ),
             ),
           ),
@@ -84,37 +88,50 @@ class _OnboardState extends State<Onboard> {
             onTap: () {
               if (currentIndex == contents.length - 1) {
                 Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (context) => SignUp()));
+                  context,
+                  MaterialPageRoute(builder: (context) => LogIn()),
+                );
+              } else {
+                _controller.nextPage(
+                  duration: Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
               }
-              _controller.nextPage(
-                  duration: Duration(milliseconds: 100),
-                  curve: Curves.bounceIn);
             },
             child: Container(
-              decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(20)),
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.circular(20),
+              ),
               height: 60,
               margin: EdgeInsets.all(40),
               width: double.infinity,
               child: Center(
                 child: Text(
-                 currentIndex == contents.length - 1?"Start": "Next",
-                  style: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.bold),
+                  currentIndex == contents.length - 1 ? "Start" : "Next",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );
   }
 
-  Container buildDot(int index, BuildContext context) {
+  Container buildDot(int index) {
     return Container(
       height: 10.0,
       width: currentIndex == index ? 18 : 7,
       margin: EdgeInsets.only(right: 5),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(6), color: Colors.black38),
+        borderRadius: BorderRadius.circular(6),
+        color: Colors.black38,
+      ),
     );
   }
 }
