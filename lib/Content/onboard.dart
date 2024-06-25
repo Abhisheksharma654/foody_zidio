@@ -100,7 +100,7 @@ class _OnboardState extends State<Onboard> {
             },
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.red,
+                color: Colors.grey,
                 borderRadius: BorderRadius.circular(20),
               ),
               height: 60,
@@ -110,7 +110,7 @@ class _OnboardState extends State<Onboard> {
                 child: Text(
                   currentIndex == contents.length - 1 ? "Start" : "Next",
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.black54,
                     fontSize: 20.0,
                     fontWeight: FontWeight.bold,
                   ),
@@ -126,11 +126,11 @@ class _OnboardState extends State<Onboard> {
   Container buildDot(int index) {
     return Container(
       height: 10.0,
-      width: currentIndex == index ? 18 : 7,
-      margin: EdgeInsets.only(right: 5),
+      width: currentIndex == index ? 10 : 20,
+      margin: EdgeInsets.only(right: 8),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(6),
-        color: Colors.black38,
+        borderRadius: BorderRadius.circular(5),
+        color: Colors.grey,
       ),
     );
   }

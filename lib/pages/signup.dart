@@ -22,6 +22,7 @@ class _SignUpState extends State<SignUp> {
   String email = "", password = "", name = "", profileImageUrl = "";
   File? _image;
   final _formKey = GlobalKey<FormState>();
+  bool isTapped = false;
 
   TextEditingController usernameController = TextEditingController();
   TextEditingController useremailController = TextEditingController();
@@ -112,7 +113,10 @@ class _SignUpState extends State<SignUp> {
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [Color(0xFFff5c30), Color(0xFFe74b1a)],
+                  colors: [
+                    Color.fromARGB(255, 8, 8, 8),
+                    Color.fromARGB(255, 5, 5, 5),
+                  ],
                 ),
               ),
             ),
@@ -121,7 +125,7 @@ class _SignUpState extends State<SignUp> {
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Colors.grey,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(40),
                   topRight: Radius.circular(40),
@@ -130,7 +134,7 @@ class _SignUpState extends State<SignUp> {
               child: Text(""),
             ),
             Container(
-              margin: EdgeInsets.only(top: 60.0, left: 20.0, right: 20.0),
+              margin: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
               child: SingleChildScrollView(
                 child: Column(
                   children: [
@@ -142,16 +146,6 @@ class _SignUpState extends State<SignUp> {
                       ),
                     ),
                     SizedBox(height: 30.0),
-                    GestureDetector(
-                      onTap: _pickImage,
-                      child: CircleAvatar(
-                        radius: 40,
-                        backgroundColor: Colors.grey[200],
-                        backgroundImage: _image != null ? FileImage(_image!) : null,
-                        child: _image == null ? Icon(Icons.add_a_photo, size: 40, color: Colors.grey[700]) : null,
-                      ),
-                    ),
-                    SizedBox(height: 30.0),
                     Material(
                       elevation: 5.0,
                       borderRadius: BorderRadius.circular(20),
@@ -159,7 +153,7 @@ class _SignUpState extends State<SignUp> {
                         padding: EdgeInsets.all(20.0),
                         width: MediaQuery.of(context).size.width,
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Colors.white70,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Form(
@@ -217,6 +211,7 @@ class _SignUpState extends State<SignUp> {
                                   prefixIcon: Icon(Icons.lock),
                                 ),
                               ),
+                            
                               SizedBox(height: 30.0),
                               GestureDetector(
                                 onTap: () {
@@ -225,24 +220,40 @@ class _SignUpState extends State<SignUp> {
                                       email = useremailController.text;
                                       password = userpasswordController.text;
                                     });
-                                    userSignUp(); // Call userSignUp method here
+                                    userSignUp();
                                   }
+                                },
+                                onTapDown: (_) {
+                                  setState(() {
+                                    isTapped = true;
+                                  });
+                                },
+                                onTapUp: (_) {
+                                  setState(() {
+                                    isTapped = false;
+                                  });
+                                },
+                                onTapCancel: () {
+                                  setState(() {
+                                    isTapped = false;
+                                  });
                                 },
                                 child: Material(
                                   elevation: 5.0,
                                   borderRadius: BorderRadius.circular(20),
-                                  child: Container(
+                                  child: AnimatedContainer(
+                                    duration: const Duration(milliseconds: 200),
                                     padding: EdgeInsets.symmetric(vertical: 15.0),
                                     width: double.infinity,
                                     decoration: BoxDecoration(
-                                      color: Color(0Xffff5722),
+                                      color: isTapped ? Colors.grey[400] : Colors.grey,
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                     child: Center(
                                       child: Text(
                                         "SIGNUP",
                                         style: TextStyle(
-                                          color: Colors.white,
+                                          color: Colors.black54,
                                           fontSize: 18.0,
                                           fontFamily: 'Poppins1',
                                           fontWeight: FontWeight.bold,

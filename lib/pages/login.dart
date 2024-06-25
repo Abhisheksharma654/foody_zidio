@@ -17,6 +17,7 @@ class LogIn extends StatefulWidget {
 class _LogInState extends State<LogIn> {
   String email = "";
   String password = "";
+  bool isTapped = false;
 
   final _formkey = GlobalKey<FormState>();
 
@@ -30,12 +31,12 @@ class _LogInState extends State<LogIn> {
     super.dispose();
   }
 
- 
   userLogin() async {
     try {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-          Navigator.push(context, MaterialPageRoute(builder: (context)=> BottomNav()));
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => BottomNav()));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -43,8 +44,8 @@ class _LogInState extends State<LogIn> {
           "No User Found for that Email",
           style: TextStyle(fontSize: 18.0, color: Colors.black),
         )));
-      }else if(e.code=='wrong-password'){
-         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      } else if (e.code == 'wrong-password') {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(
           "Wrong Password Provided by User",
           style: TextStyle(fontSize: 18.0, color: Colors.black),
@@ -57,34 +58,48 @@ class _LogInState extends State<LogIn> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Colors.grey[300]!,
+              Colors.grey[900]!,
+            ],
+          ),
+        ),
         child: Stack(
           children: [
             Container(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height / 2.5,
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                    Color(0xFFff5c30),
-                    Color(0xFFe74b1a),
-                  ])),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color.fromARGB(255, 8, 8, 8),
+                    Color.fromARGB(255, 5, 5, 5),
+                  ],
+                ),
+              ),
             ),
             Container(
               margin:
                   EdgeInsets.only(top: MediaQuery.of(context).size.height / 3),
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(40),
-                      topRight: Radius.circular(40))),
-              child: Text(""),
+              decoration: const BoxDecoration(
+                color: Colors.grey,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(40),
+                  topRight: Radius.circular(40),
+                ),
+              ),
+              child: const Text(""),
             ),
             Container(
-              margin: EdgeInsets.only(top: 60.0, left: 20.0, right: 20.0),
+              margin: const EdgeInsets.only(top: 60.0, left: 20.0, right: 20.0),
               child: SingleChildScrollView(
                 child: Column(
                   children: [
@@ -94,30 +109,31 @@ class _LogInState extends State<LogIn> {
                       width: MediaQuery.of(context).size.width / 1.5,
                       fit: BoxFit.cover,
                     )),
-                    SizedBox(
-                      height: 90.0,
+                    const SizedBox(
+                      height: 40.0,
                     ),
                     Material(
                       elevation: 5.0,
                       borderRadius: BorderRadius.circular(20),
                       child: Container(
-                        padding: EdgeInsets.all(20.0),
+                        padding: const EdgeInsets.all(20.0),
                         width: MediaQuery.of(context).size.width,
                         decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20)),
+                          color: Colors.white70,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
                         child: Form(
                           key: _formkey,
                           child: Column(
                             children: [
-                              SizedBox(
+                              const SizedBox(
                                 height: 30.0,
                               ),
                               Text(
                                 "Login",
                                 style: AppWidget.HeadlineText1FeildStyle(),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 30.0,
                               ),
                               TextFormField(
@@ -129,16 +145,15 @@ class _LogInState extends State<LogIn> {
                                   return null;
                                 },
                                 decoration: InputDecoration(
-                                    hintText: 'Email',
-                                    hintStyle:
-                                        AppWidget.semiBoldTextFeildStyle(),
-                                    prefixIcon: Icon(Icons.email_outlined),
-                
-                                     focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.black)),
-                                    ),
+                                  hintText: 'Email',
+                                  hintStyle: AppWidget.semiBoldTextFeildStyle(),
+                                  prefixIcon: const Icon(Icons.email_outlined),
+                                  focusedBorder: const UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.black),
+                                  ),
+                                ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 30.0,
                               ),
                               TextFormField(
@@ -152,17 +167,15 @@ class _LogInState extends State<LogIn> {
                                 },
                                 obscureText: true,
                                 decoration: InputDecoration(
-                                    hintText: 'Password',
-                                    hintStyle:
-                                        AppWidget.semiBoldTextFeildStyle(),
-                                    prefixIcon: Icon(Icons.password_outlined),
-                                  
-                                    focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.black)),
-                                    ),
-                                    
+                                  hintText: 'Password',
+                                  hintStyle: AppWidget.semiBoldTextFeildStyle(),
+                                  prefixIcon: const Icon(Icons.password_outlined),
+                                  focusedBorder: const UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.black),
+                                  ),
+                                ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 20.0,
                               ),
                               GestureDetector(
@@ -174,13 +187,14 @@ class _LogInState extends State<LogIn> {
                                               ForgotPassword()));
                                 },
                                 child: Container(
-                                    alignment: Alignment.topRight,
-                                    child: Text(
-                                      "Forgot Password?",
-                                      style: AppWidget.semiBoldTextFeildStyle(),
-                                    )),
+                                  alignment: Alignment.topRight,
+                                  child: Text(
+                                    "Forgot Password?",
+                                    style: AppWidget.semiBoldTextFeildStyle(),
+                                  ),
+                                ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 80.0,
                               ),
                               GestureDetector(
@@ -193,26 +207,45 @@ class _LogInState extends State<LogIn> {
                                     userLogin();
                                   }
                                 },
+                                onTapDown: (_) {
+                                  setState(() {
+                                    isTapped = true;
+                                  });
+                                },
+                                onTapUp: (_) {
+                                  setState(() {
+                                    isTapped = false;
+                                  });
+                                },
+                                onTapCancel: () {
+                                  setState(() {
+                                    isTapped = false;
+                                  });
+                                },
                                 child: Material(
                                   elevation: 5.0,
                                   borderRadius: BorderRadius.circular(20),
-                                  child: Container(
-                                    padding:
-                                        EdgeInsets.symmetric(vertical: 15.0),
+                                  child: AnimatedContainer(
+                                    duration: const Duration(milliseconds: 200),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 15.0),
                                     width: double.infinity,
                                     decoration: BoxDecoration(
-                                        color: Color(0Xffff5722),
-                                        borderRadius:
-                                            BorderRadius.circular(20)),
-                                    child: Center(
-                                        child: Text(
-                                      "LOGIN",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 18.0,
-                                          fontFamily: 'Poppins1',
-                                          fontWeight: FontWeight.bold),
-                                    )),
+                                      color: isTapped
+                                          ? Colors.grey[400]
+                                          : Colors.grey,
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: const Center(
+                                      child: Text(
+                                        "LOGIN",
+                                        style: TextStyle(
+                                            color: Colors.black54,
+                                            fontSize: 18.0,
+                                            fontFamily: 'Poppins1',
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -221,28 +254,28 @@ class _LogInState extends State<LogIn> {
                         ),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 30.0,
                     ),
                     GestureDetector(
-                        onTap: () {
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SignUp()));
-                        },
-                        child: Text(
-                          "Don't have an account? Sign up",
-                          style: AppWidget.semiBoldTextFeildStyle(),
-                        )),
+                      onTap: () {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SignUp()));
+                      },
+                      child: Text(
+                        "Don't have an account? Sign up",
+                        style: AppWidget.semiBoldTextFeildStyle(),
+                      ),
+                    ),
                   ],
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
     );
   }
 }
- 
