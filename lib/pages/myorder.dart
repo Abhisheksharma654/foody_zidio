@@ -84,6 +84,7 @@ class _OrderedState extends State<Ordered> {
               child: Material(
                 elevation: 5.0,
                 borderRadius: BorderRadius.circular(10),
+                color: Colors.grey[900], // Match the background color
                 child: Dismissible(
                   key: Key(docs.first.id),
                   direction: DismissDirection.endToStart,
@@ -94,7 +95,6 @@ class _OrderedState extends State<Ordered> {
                     });
                   },
                   background: Container(
-                    
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     color: Colors.red,
                     alignment: AlignmentDirectional.centerEnd,
@@ -103,6 +103,7 @@ class _OrderedState extends State<Ordered> {
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
+                      color: Colors.grey[800], // Match the background color
                     ),
                     padding: const EdgeInsets.all(10),
                     child: Row(
@@ -127,15 +128,16 @@ class _OrderedState extends State<Ordered> {
                               style: const TextStyle(
                                 fontSize: 18.0,
                                 fontWeight: FontWeight.bold,
+                                color: Colors.white
                               ),
                             ),
                             Text(
                               quantity.toString(),
-                              style: const TextStyle(fontSize: 16.0),
+                              style: const TextStyle(fontSize: 16.0, color: Colors.white),
                             ),
                             Text(
                               "\u{20B9}" + itemTotal.toString(),
-                              style: TextStyle(fontSize: 16.0),
+                              style: const TextStyle(fontSize: 16.0, color: Colors.white),
                             ),
                           ],
                         ),
@@ -160,18 +162,17 @@ class _OrderedState extends State<Ordered> {
                 Image.asset(
                   'images/empty.png',
                   width: 300, // Adjusted size to be similar to home_no_data.png
-                  height:
-                      300, // Adjusted size to be similar to home_no_data.png
+                  height: 300, // Adjusted size to be similar to home_no_data.png
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
-                Text(
+                const Text(
                   "Oops .....  Cart Is Empty.",
                   style: TextStyle(
                     fontSize: 18.0,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white
+                    color: Colors.white,
                   ),
                 ),
               ],
@@ -189,10 +190,9 @@ class _OrderedState extends State<Ordered> {
       appBar: AppBar(
         backgroundColor: Colors.black, // Make app bar transparent
         elevation: 0, // Remove elevation
-        title:
-            Text("Food Cart", style: AppWidget.semiBoldWhiteTextFeildStyle()),
+        title: Text("Food Cart", style: AppWidget.semiBoldWhiteTextFeildStyle()),
         centerTitle: true,
-         leading: IconButton(
+        leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
           },
@@ -219,15 +219,15 @@ class _OrderedState extends State<Ordered> {
                     style: TextStyle(
                       fontSize: 20.0,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white
+                      color: Colors.white,
                     ),
                   ),
                   Text(
                     "\u{20B9}" + total.toString(),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 20.0,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white
+                      color: Colors.white,
                     ),
                   ),
                 ],
@@ -241,7 +241,7 @@ class _OrderedState extends State<Ordered> {
                 if (total == 0) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     backgroundColor: Colors.redAccent,
-                    content: Text(
+                    content: const Text(
                       "Please add some items to the cart!",
                       style: TextStyle(fontSize: 20.0),
                     ),
@@ -265,7 +265,7 @@ class _OrderedState extends State<Ordered> {
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       backgroundColor: Colors.redAccent,
-                      content: Text(
+                      content: const Text(
                         "Insufficient funds in wallet!",
                         style: TextStyle(fontSize: 20.0),
                       ),
