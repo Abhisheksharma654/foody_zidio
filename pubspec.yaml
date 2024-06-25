@@ -53,6 +53,8 @@ dependencies:
   lottie: ^3.1.2
   liquid_pull_to_refresh: ^3.0.1
   intl: ^0.19.0
+  liquid_pull_refresh: ^1.0.6
+  firebase_database: ^11.0.1
 
  
 dev_dependencies:
@@ -85,6 +87,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - images/
+    - images/Payment_success.json
     - images/Loder_foody.json
 
   # An image asset can refer to one or more resolution-specific "variants", see

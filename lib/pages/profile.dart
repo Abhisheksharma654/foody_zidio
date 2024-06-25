@@ -114,7 +114,7 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[900],
       appBar: AppBar(
         backgroundColor: Colors.black,
         title: ProfileTitle(profileCompletionCount: (profileCompletion / 25).toInt()),
@@ -170,9 +170,10 @@ class _ProfileState extends State<Profile> {
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
+                          color: Colors.white
                         ),
                       ),
-                      Text(email ?? "Email not set"),
+                      Text(email ?? "Email not set",style: TextStyle(color: Colors.white),),
                     ],
                   ),
                   const SizedBox(height: 25),
@@ -184,6 +185,7 @@ class _ProfileState extends State<Profile> {
                           "Complete your profile",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
+                            color: Colors.white
                           ),
                         ),
                       ),
@@ -215,44 +217,44 @@ class _ProfileState extends State<Profile> {
                   const SizedBox(height: 10),
                   Card(
                     elevation: 4,
-                    color: Colors.white,
+                    color: Colors.grey[800],
                     shadowColor: Colors.black,
                     child: ListTile(
-                      leading: const Icon(Icons.insights),
-                      title: const Text("Activity"),
+                      leading: const Icon(Icons.insights,color: Colors.white,),
+                      title: const Text("Activity",style: TextStyle(color: Colors.white),),
                       trailing: const Icon(Icons.chevron_right),
                     ),
                   ),
                   const SizedBox(height: 5),
                   Card(
                     elevation: 4,
-                    color: Colors.white,
+                    color: Colors.grey[800],
                     shadowColor: Colors.black,
                     child: ListTile(
-                      leading: const Icon(Icons.location_on_outlined),
-                      title: const Text("Location"),
+                      leading: const Icon(Icons.location_on_outlined,color: Colors.white,),
+                      title: const Text("Location",style: TextStyle(color: Colors.white),),
                       trailing: const Icon(Icons.chevron_right),
                     ),
                   ),
                   const SizedBox(height: 5),
                   Card(
                     elevation: 4,
-                    color: Colors.white,
+                    color: Colors.grey[800],
                     shadowColor: Colors.black,
                     child: ListTile(
-                      leading: const Icon(CupertinoIcons.bell),
-                      title: const Text("Notifications"),
-                      trailing: const Icon(Icons.chevron_right),
+                      leading: const Icon(CupertinoIcons.bell,color: Colors.white,),
+                      title: const Text("Notifications",style: TextStyle(color: Colors.white),),
+                      trailing: const Icon(Icons.chevron_right,),
                     ),
                   ),
                   const SizedBox(height: 5),
                   Card(
                     elevation: 4,
                     shadowColor: Colors.black,
-                    color: Colors.white,
+                    color: Colors.grey[800],
                     child: ListTile(
-                      leading: const Icon(CupertinoIcons.arrow_right_arrow_left),
-                      title: const Text("Logout"),
+                      leading: const Icon(CupertinoIcons.arrow_right_arrow_left,color: Colors.white,),
+                      title: const Text("Logout",style: TextStyle(color: Colors.white),),
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () {
                         signOut(

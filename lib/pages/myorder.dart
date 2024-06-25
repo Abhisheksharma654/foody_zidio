@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:foody_zidio/Data/payment_successfull.dart';
 import 'package:foody_zidio/Database/database.dart';
 import 'package:foody_zidio/service/shared_pref.dart';
 import 'package:foody_zidio/widget/widget_support.dart';
@@ -93,6 +94,7 @@ class _OrderedState extends State<Ordered> {
                     });
                   },
                   background: Container(
+                    
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     color: Colors.red,
                     alignment: AlignmentDirectional.centerEnd,
@@ -169,6 +171,7 @@ class _OrderedState extends State<Ordered> {
                   style: TextStyle(
                     fontSize: 18.0,
                     fontWeight: FontWeight.bold,
+                    color: Colors.white
                   ),
                 ),
               ],
@@ -182,15 +185,20 @@ class _OrderedState extends State<Ordered> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-       appBar: AppBar(
+      backgroundColor: Colors.grey[900],
+      appBar: AppBar(
         backgroundColor: Colors.black, // Make app bar transparent
         elevation: 0, // Remove elevation
-        title: Text(
-          "Food Cart",
-          style: AppWidget.semiBoldWhiteTextFeildStyle()
-        ),
+        title:
+            Text("Food Cart", style: AppWidget.semiBoldWhiteTextFeildStyle()),
         centerTitle: true,
+         leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(Icons.arrow_back),
+          color: Colors.white,
+        ),
       ),
       body: Container(
         padding: const EdgeInsets.only(top: 60.0),
@@ -211,6 +219,7 @@ class _OrderedState extends State<Ordered> {
                     style: TextStyle(
                       fontSize: 20.0,
                       fontWeight: FontWeight.bold,
+                      color: Colors.white
                     ),
                   ),
                   Text(
@@ -218,6 +227,7 @@ class _OrderedState extends State<Ordered> {
                     style: TextStyle(
                       fontSize: 20.0,
                       fontWeight: FontWeight.bold,
+                      color: Colors.white
                     ),
                   ),
                 ],
@@ -228,21 +238,39 @@ class _OrderedState extends State<Ordered> {
             ),
             GestureDetector(
               onTap: () async {
-                int walletAmount = int.parse(wallet!);
-                if (walletAmount >= total) {
-                  int amount = walletAmount - total;
-                  await DatabaseMethods()
-                      .updateUserWallet(id!, amount.toString());
-                  await SharedPreferenceHelper()
-                      .saveUserWallet(amount.toString());
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Payment Successful!')),
-                  );
+                if (total == 0) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    backgroundColor: Colors.redAccent,
+                    content: Text(
+                      "Please add some items to the cart!",
+                      style: TextStyle(fontSize: 20.0),
+                    ),
+                  ));
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Insufficient funds in wallet!')),
-                  );
+                  int walletAmount = int.parse(wallet!);
+                  if (walletAmount >= total) {
+                    int amount = walletAmount - total;
+                    await DatabaseMethods()
+                        .updateUserWallet(id!, amount.toString());
+                    await SharedPreferenceHelper()
+                        .saveUserWallet(amount.toString());
+
+                    // Navigate to PaymentSuccessfull screen after successful payment
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PaymentSuccessfull(),
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      backgroundColor: Colors.redAccent,
+                      content: Text(
+                        "Insufficient funds in wallet!",
+                        style: TextStyle(fontSize: 20.0),
+                      ),
+                    ));
+                  }
                 }
               },
               child: Container(

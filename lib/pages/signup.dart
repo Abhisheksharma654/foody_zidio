@@ -169,7 +169,7 @@ class _SignUpState extends State<SignUp> {
                               SizedBox(height: 30.0),
                               Text(
                                 "Sign Up",
-                                style: AppWidget.HeadlineTextFeildStyle(),
+                                style: AppWidget.HeadlineText1FeildStyle(),
                               ),
                               SizedBox(height: 30.0),
                               TextFormField(
