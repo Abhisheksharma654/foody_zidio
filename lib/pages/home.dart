@@ -130,19 +130,24 @@ class _HomeState extends State<Home> {
               children: [
                 Text("Hello $userName🥰", style: AppWidget.semiBoldWhiteTextFeildStyle()),
                 SizedBox(height: 10.0),
-                Text("Delicious Food", style: AppWidget.HeadlineTextFeildStyle()),
-                Text("Discover and Get Great Food", style: AppWidget.LightTextFeildStyle()),
+                Text("Delicious Food",
+                    style: AppWidget.HeadlineTextFeildStyle()),
+                Text("Discover and Get Great Food",
+                    style: AppWidget.LightTextFeildStyle()),
                 SizedBox(height: 20.0),
                 showItem(), // Updated to use showItem() widget
                 SizedBox(height: 30.0),
                 StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance.collection('foodItems').snapshots(),
+                  stream: FirebaseFirestore.instance
+                      .collection('foodItems')
+                      .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
-                    } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    } else if (!snapshot.hasData ||
+                        snapshot.data!.docs.isEmpty) {
                       return Center(
                         child: Column(
                           children: [
@@ -176,11 +181,13 @@ class _HomeState extends State<Home> {
     List<DocumentSnapshot> filteredFoodItems = getFilteredFoodItems(foodItems);
 
     List<DocumentSnapshot> burgerPizzaItems = filteredFoodItems
-        .where((doc) => doc['Category'] == 'Burger' || doc['Category'] == 'Pizza')
+        .where(
+            (doc) => doc['Category'] == 'Burger' || doc['Category'] == 'Pizza')
         .toList();
 
     List<DocumentSnapshot> otherItems = filteredFoodItems
-        .where((doc) => doc['Category'] != 'Burger' && doc['Category'] != 'Pizza')
+        .where(
+            (doc) => doc['Category'] != 'Burger' && doc['Category'] != 'Pizza')
         .toList();
 
     return Column(

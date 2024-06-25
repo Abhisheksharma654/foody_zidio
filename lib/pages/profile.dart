@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
@@ -33,7 +32,7 @@ class _ProfileState extends State<Profile> {
     if (image != null) {
       setState(() {
         selectedImage = File(image.path);
-      });  
+      });
       await uploadItem();
     }
   }
@@ -117,7 +116,8 @@ class _ProfileState extends State<Profile> {
       backgroundColor: Colors.grey[900],
       appBar: AppBar(
         backgroundColor: Colors.black,
-        title: ProfileTitle(profileCompletionCount: (profileCompletion / 25).toInt()),
+        title: ProfileTitle(
+            profileCompletionCount: (profileCompletion / 25).toInt()),
         centerTitle: true,
         leading: IconButton(
           onPressed: () {
