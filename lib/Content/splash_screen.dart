@@ -28,7 +28,7 @@ class SplashScreen extends StatelessWidget {
       ),
       nextScreen: Checkuser(),
       splashIconSize: 300,
-      backgroundColor: Colors.grey,
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
     );
   }
 }

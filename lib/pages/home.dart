@@ -50,6 +50,10 @@ class _HomeState extends State<Home> {
     }
   }
 
+  Future<void> _handleRefresh() async {
+    await onthisload();
+  }
+
   Future<void> onthisload() async {
     await fetchUserName();
     setState(() {});
@@ -74,12 +78,20 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black, // Make app bar transparent
-        elevation: 0, // Remove elevation
-        title: Text(
-          "Foody Zidio",
-          style: AppWidget.semiBoldWhiteTextFeildStyle()
+        leading: IconButton(
+          icon: Icon(
+            Icons.home,
+            color: Colors.white,
+          ),
+          onPressed: () {},
         ),
+        backgroundColor: Colors.black, // Make app bar transparent
+        elevation: 0,
+
+        // Remove elevation
+        title:
+            Text("Foody Zidio", style: AppWidget.semiBoldWhiteTextFeildStyle()),
+
         actions: [
           GestureDetector(
             onTap: () {
@@ -104,56 +116,62 @@ class _HomeState extends State<Home> {
         ],
       ),
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Container(
-          margin: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("Hello $userName🥰",
-                  style: AppWidget.boldTextFeildStyle()),
-              SizedBox(height: 20.0),
-              Text("Delicious Food", style: AppWidget.HeadlineTextFeildStyle()),
-              Text("Discover and Get Great Food",
-                  style: AppWidget.LightTextFeildStyle()),
-              SizedBox(height: 20.0),
-              Container(
-                margin: EdgeInsets.only(right: 20.0),
-                child: showItem(),
-              ),
-              SizedBox(height: 30.0),
-              StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('foodItems')
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return Center(
-                      child: Column(
-                        children: [
-                          Image.asset(
-                            'images/no_data.png',
-                            width: 400,
-                            height: 400,
-                          ),
-                          Text(
-                            "Oops ..... \n There is no any type of item are available..",
-                            style: AppWidget.semiBoldTextFeildStyle(),
-                          ),
-                        ],
-                      ),
-                    );
-                  } else {
-                    List<DocumentSnapshot> foodItems = snapshot.data!.docs;
-                    return buildListView(foodItems);
-                  }
-                },
-              ),
-            ],
+      body: RefreshIndicator(
+        onRefresh: _handleRefresh,
+        child: SingleChildScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
+          child: Container(
+            margin: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Hello $userName🥰",
+                    style: AppWidget.boldTextFeildStyle()),
+                SizedBox(height: 10.0),
+                Text("Delicious Food",
+                    style: AppWidget.HeadlineTextFeildStyle()),
+                Text("Discover and Get Great Food",
+                    style: AppWidget.LightTextFeildStyle()),
+                SizedBox(height: 20.0),
+                Container(
+                  margin: EdgeInsets.only(right: 20.0),
+                  child: showItem(),
+                ),
+                SizedBox(height: 30.0),
+                StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('foodItems')
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (!snapshot.hasData ||
+                        snapshot.data!.docs.isEmpty) {
+                      return Center(
+                        child: Column(
+                          children: [
+                            Image.asset(
+                              'images/no_data.png',
+                              width: 400,
+                              height: 400,
+                            ),
+                            Text(
+                              "Oops ..... \n There is no any type of item are available..",
+                              style: AppWidget.semiBoldTextFeildStyle(),
+                            ),
+                          ],
+                        ),
+                      );
+                    } else {
+                      List<DocumentSnapshot> foodItems = snapshot.data!.docs;
+                      return buildListView(foodItems);
+                    }
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -164,11 +182,14 @@ class _HomeState extends State<Home> {
     List<DocumentSnapshot> filteredFoodItems = getFilteredFoodItems(foodItems);
 
     List<DocumentSnapshot> burgerPizzaItems = filteredFoodItems
-        .where((doc) => doc['Category'] == 'Burger' || doc['Category'] == 'Pizza')
+        .where(
+            (doc) => doc['Category'] == 'Burger' || doc['Category'] == 'Pizza')
         .toList();
 
-    List<DocumentSnapshot> otherItems =
-        filteredFoodItems.where((doc) => doc['Category'] != 'Burger' && doc['Category'] != 'Pizza').toList();
+    List<DocumentSnapshot> otherItems = filteredFoodItems
+        .where(
+            (doc) => doc['Category'] != 'Burger' && doc['Category'] != 'Pizza')
+        .toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

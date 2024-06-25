@@ -25,7 +25,8 @@ class _DetailsState extends State<Details> {
   void initState() {
     super.initState();
     getSharedPref();
-    total = int.parse(widget.price); // Initialize total price based on the item's price
+    total = int.parse(
+        widget.price); // Initialize total price based on the item's price
   }
 
   // Fetch user ID from shared preferences
@@ -39,7 +40,10 @@ class _DetailsState extends State<Details> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("Add To Cart",style: AppWidget.semiBoldWhiteTextFeildStyle(),),
+        title: Text(
+          "Add To Cart",
+          style: AppWidget.semiBoldWhiteTextFeildStyle(),
+        ),
         centerTitle: true,
         backgroundColor: Colors.black, // Make app bar transparent
         elevation: 0, // Remove elevation
@@ -54,7 +58,8 @@ class _DetailsState extends State<Details> {
         ),
       ),
       body: Container(
-        margin: EdgeInsets.only(top: 10.0, left: 20.0, right: 20.0), // Adjust top margin
+        margin: EdgeInsets.only(
+            top: 10.0, left: 20.0, right: 20.0), // Adjust top margin
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -160,7 +165,7 @@ class _DetailsState extends State<Details> {
                         style: AppWidget.semiBoldTextFeildStyle(),
                       ),
                       Text(
-                        "\$" + total.toString(),
+                        "\u{20B9}" + total.toString(),
                         style: AppWidget.HeadlineTextFeildStyle(),
                       ),
                     ],
@@ -175,7 +180,8 @@ class _DetailsState extends State<Details> {
                           "Total": total.toString(),
                           "Image": widget.image,
                         };
-                        await DatabaseMethods().addFoodToCart(addFoodtoCart, userId!);
+                        await DatabaseMethods()
+                            .addFoodToCart(addFoodtoCart, userId!);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             backgroundColor: Colors.orangeAccent,
@@ -188,7 +194,8 @@ class _DetailsState extends State<Details> {
                       }
                     },
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       decoration: BoxDecoration(
                         color: Colors.black,
                         borderRadius: BorderRadius.circular(10),
