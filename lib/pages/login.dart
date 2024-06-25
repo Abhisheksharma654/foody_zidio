@@ -115,7 +115,7 @@ class _LogInState extends State<LogIn> {
                               ),
                               Text(
                                 "Login",
-                                style: AppWidget.HeadlineTextFeildStyle(),
+                                style: AppWidget.HeadlineText1FeildStyle(),
                               ),
                               SizedBox(
                                 height: 30.0,

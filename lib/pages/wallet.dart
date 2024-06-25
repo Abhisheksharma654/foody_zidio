@@ -42,7 +42,7 @@ class _WalletState extends State<Wallet> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[900],
        appBar: AppBar(
         backgroundColor: Colors.black, // Make app bar transparent
         elevation: 0, // Remove elevation
@@ -51,6 +51,14 @@ class _WalletState extends State<Wallet> {
           style: AppWidget.semiBoldWhiteTextFeildStyle()
         ),
         centerTitle: true,
+
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(Icons.arrow_back),
+          color: Colors.white,
+        ),
       ),
       body: wallet == null
           ? const CircularProgressIndicator()
@@ -64,7 +72,7 @@ class _WalletState extends State<Wallet> {
                     padding:
                         const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
                     width: MediaQuery.of(context).size.width,
-                    decoration: const BoxDecoration(color: Color(0xFFF2F2F2)),
+                    decoration: const BoxDecoration(color: Colors.transparent),
                     child: Row(
                       children: [
                         Image.asset(
@@ -102,7 +110,7 @@ class _WalletState extends State<Wallet> {
                     padding: const EdgeInsets.only(left: 20.0),
                     child: Text(
                       "Add money",
-                      style: AppWidget.semiBoldTextFeildStyle(),
+                      style: AppWidget.semiBoldWhiteTextFeildStyle(),
                     ),
                   ),
                   const SizedBox(
@@ -122,7 +130,7 @@ class _WalletState extends State<Wallet> {
                               borderRadius: BorderRadius.circular(5)),
                           child: Text(
                             "\u{20B9}" + "100",
-                            style: AppWidget.semiBoldTextFeildStyle(),
+                            style: AppWidget.semiBoldWhiteTextFeildStyle(),
                           ),
                         ),
                       ),
@@ -137,7 +145,7 @@ class _WalletState extends State<Wallet> {
                               borderRadius: BorderRadius.circular(5)),
                           child: Text(
                             "\u{20B9}" + "500",
-                            style: AppWidget.semiBoldTextFeildStyle(),
+                            style: AppWidget.semiBoldWhiteTextFeildStyle(),
                           ),
                         ),
                       ),
@@ -152,7 +160,7 @@ class _WalletState extends State<Wallet> {
                               borderRadius: BorderRadius.circular(5)),
                           child: Text(
                             "\u{20B9}" + "1000",
-                            style: AppWidget.semiBoldTextFeildStyle(),
+                            style: AppWidget.semiBoldWhiteTextFeildStyle(),
                           ),
                         ),
                       ),
@@ -167,7 +175,7 @@ class _WalletState extends State<Wallet> {
                               borderRadius: BorderRadius.circular(5)),
                           child: Text(
                             "\u{20B9}" + "2000",
-                            style: AppWidget.semiBoldTextFeildStyle(),
+                            style: AppWidget.semiBoldWhiteTextFeildStyle(),
                           ),
                         ),
                       )
