@@ -11,6 +11,7 @@ import 'package:foody_zidio/service/shared_pref.dart';
 import 'package:foody_zidio/widget/widget_support.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:random_string/random_string.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -141,8 +142,11 @@ class _ProfileState extends State<Profile> {
       ),
       body: name == null
           ? const Center(child: CircularProgressIndicator())
-          : RefreshIndicator(
+          : LiquidPullToRefresh(
               onRefresh: _refreshProfile,
+              color: Colors.white,
+              backgroundColor: Colors.black,
+              showChildOpacityTransition: false,
               child: ListView(
                 padding: const EdgeInsets.all(10),
                 children: [

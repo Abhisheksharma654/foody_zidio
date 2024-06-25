@@ -6,6 +6,7 @@ import 'package:foody_zidio/pages/myorder.dart';
 import 'package:foody_zidio/pages/order_check.dart'; // Ensure this import is correct
 import 'package:foody_zidio/service/shared_pref.dart';
 import 'package:foody_zidio/widget/widget_support.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -85,13 +86,9 @@ class _HomeState extends State<Home> {
           ),
           onPressed: () {},
         ),
-        backgroundColor: Colors.black, // Make app bar transparent
+        backgroundColor: Colors.black,
         elevation: 0,
-
-        // Remove elevation
-        title:
-            Text("Foody Zidio", style: AppWidget.semiBoldWhiteTextFeildStyle()),
-
+        title: Text("Foody Zidio", style: AppWidget.semiBoldWhiteTextFeildStyle()),
         actions: [
           GestureDetector(
             onTap: () {
@@ -116,8 +113,11 @@ class _HomeState extends State<Home> {
         ],
       ),
       backgroundColor: Colors.white,
-      body: RefreshIndicator(
+      body: LiquidPullToRefresh(
         onRefresh: _handleRefresh,
+        showChildOpacityTransition: false,
+        color: Colors.white,
+        backgroundColor: Colors.black,
         child: SingleChildScrollView(
           physics: AlwaysScrollableScrollPhysics(),
           child: Container(
@@ -125,13 +125,10 @@ class _HomeState extends State<Home> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Hello $userName🥰",
-                    style: AppWidget.boldTextFeildStyle()),
+                Text("Hello $userName🥰", style: AppWidget.boldTextFeildStyle()),
                 SizedBox(height: 10.0),
-                Text("Delicious Food",
-                    style: AppWidget.HeadlineTextFeildStyle()),
-                Text("Discover and Get Great Food",
-                    style: AppWidget.LightTextFeildStyle()),
+                Text("Delicious Food", style: AppWidget.HeadlineTextFeildStyle()),
+                Text("Discover and Get Great Food", style: AppWidget.LightTextFeildStyle()),
                 SizedBox(height: 20.0),
                 Container(
                   margin: EdgeInsets.only(right: 20.0),
@@ -139,16 +136,13 @@ class _HomeState extends State<Home> {
                 ),
                 SizedBox(height: 30.0),
                 StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('foodItems')
-                      .snapshots(),
+                  stream: FirebaseFirestore.instance.collection('foodItems').snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
-                    } else if (!snapshot.hasData ||
-                        snapshot.data!.docs.isEmpty) {
+                    } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                       return Center(
                         child: Column(
                           children: [
@@ -182,22 +176,17 @@ class _HomeState extends State<Home> {
     List<DocumentSnapshot> filteredFoodItems = getFilteredFoodItems(foodItems);
 
     List<DocumentSnapshot> burgerPizzaItems = filteredFoodItems
-        .where(
-            (doc) => doc['Category'] == 'Burger' || doc['Category'] == 'Pizza')
+        .where((doc) => doc['Category'] == 'Burger' || doc['Category'] == 'Pizza')
         .toList();
 
     List<DocumentSnapshot> otherItems = filteredFoodItems
-        .where(
-            (doc) => doc['Category'] != 'Burger' && doc['Category'] != 'Pizza')
+        .where((doc) => doc['Category'] != 'Burger' && doc['Category'] != 'Pizza')
         .toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "Burger and Pizza Items",
-          style: AppWidget.semiBoldTextFeildStyle(),
-        ),
+        Text("Burger and Pizza Items", style: AppWidget.semiBoldTextFeildStyle()),
         SizedBox(height: 10.0),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -222,7 +211,7 @@ class _HomeState extends State<Home> {
                   width: 180,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: Colors.white, // Background color set to white
+                    color: Colors.white,
                     boxShadow: [
                       BoxShadow(
                         color: Colors.grey.withOpacity(0.5),
@@ -248,20 +237,11 @@ class _HomeState extends State<Home> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                foodItem['Name'],
-                                style: AppWidget.semiBoldTextFeildStyle(),
-                              ),
+                              Text(foodItem['Name'], style: AppWidget.semiBoldTextFeildStyle()),
                               SizedBox(height: 4),
-                              Text(
-                                foodItem['Detail'],
-                                style: AppWidget.LightTextFeildStyle(),
-                              ),
+                              Text(foodItem['Detail'], style: AppWidget.LightTextFeildStyle()),
                               SizedBox(height: 4),
-                              Text(
-                                '\u{20B9}${foodItem['Price']}',
-                                style: AppWidget.semiBoldTextFeildStyle(),
-                              ),
+                              Text('\u{20B9}${foodItem['Price']}', style: AppWidget.semiBoldTextFeildStyle()),
                             ],
                           ),
                         ),
@@ -274,10 +254,7 @@ class _HomeState extends State<Home> {
           ),
         ),
         SizedBox(height: 20.0),
-        Text(
-          "Salad and Ice Cream Items",
-          style: AppWidget.semiBoldTextFeildStyle(),
-        ),
+        Text("Salad and Ice Cream Items", style: AppWidget.semiBoldTextFeildStyle()),
         SizedBox(height: 10.0),
         Column(
           children: otherItems.map((foodItem) {
@@ -302,7 +279,7 @@ class _HomeState extends State<Home> {
                   borderRadius: BorderRadius.circular(20),
                   child: Container(
                     padding: EdgeInsets.all(10),
-                    color: Colors.white, // Background color set to white
+                    color: Colors.white,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -320,22 +297,11 @@ class _HomeState extends State<Home> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                foodItem['Name'],
-                                style: AppWidget.semiBoldTextFeildStyle(),
-                              ),
+                              Text(foodItem['Name'], style: AppWidget.semiBoldTextFeildStyle()),
                               SizedBox(height: 4),
-                              Text(
-                                foodItem['Detail'],
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: AppWidget.LightTextFeildStyle(),
-                              ),
+                              Text(foodItem['Detail'], maxLines: 2, overflow: TextOverflow.ellipsis, style: AppWidget.LightTextFeildStyle()),
                               SizedBox(height: 4),
-                              Text(
-                                '\u{20B9}${foodItem['Price']}',
-                                style: AppWidget.semiBoldTextFeildStyle(),
-                              ),
+                              Text('\u{20B9}${foodItem['Price']}', style: AppWidget.semiBoldTextFeildStyle()),
                             ],
                           ),
                         ),
