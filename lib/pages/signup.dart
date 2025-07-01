@@ -1,15 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:foody_zidio/Content/bottom_nav.dart';
-import 'package:foody_zidio/Database/database.dart';
-import 'package:foody_zidio/main.dart';
-import 'package:foody_zidio/pages/forgetpassword.dart';
 import 'package:foody_zidio/pages/login.dart';
-import 'package:foody_zidio/service/shared_pref.dart';
-import 'package:foody_zidio/widget/widget_support.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:foody_zidio/services/database.dart';
+import 'package:foody_zidio/services/local_cache.dart';
+import 'package:foody_zidio/services/widget_support.dart';
+import 'package:lottie/lottie.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -19,275 +15,306 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  String email = "", password = "", name = "", profileImageUrl = "";
-  File? _image;
-  final _formKey = GlobalKey<FormState>();
+  String email = "", password = "", name = "";
   bool isTapped = false;
+  bool isLoading = false;
+  TextEditingController userNameController = TextEditingController();
+  TextEditingController userEmailController = TextEditingController();
+  TextEditingController userPasswordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final DatabaseMethods _databaseMethods = DatabaseMethods();
+  final LocalCacheService _cacheService = LocalCacheService();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  TextEditingController usernameController = TextEditingController();
-  TextEditingController useremailController = TextEditingController();
-  TextEditingController userpasswordController = TextEditingController();
+  Future<void> signUp() async {
+    if (!_formKey.currentState!.validate()) return;
 
-  final ImagePicker _picker = ImagePicker();
-
-  Future<void> _pickImage() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-      } else {
-        print('No image selected.');
-      }
+      isLoading = true;
     });
-  }
 
-  Future<String> _uploadProfileImage() async {
-    if (_image == null) return "";
-
-    String fileName = 'profile_${DateTime.now().millisecondsSinceEpoch}.jpg';
-    Reference firebaseStorageRef = FirebaseStorage.instance.ref().child(fileName);
-    UploadTask uploadTask = firebaseStorageRef.putFile(_image!);
-    TaskSnapshot taskSnapshot = await uploadTask;
-    return await taskSnapshot.ref.getDownloadURL();
-  }
-
-  Future<void> userSignUp() async {
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        backgroundColor: Colors.redAccent,
-        content: Text(
-          "Registered Successfully",
-          style: TextStyle(fontSize: 20.0),
-        ),
-      ));
+      UserCredential credential = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      User? user = credential.user;
+      if (user != null) {
+        Map<String, dynamic> userData = {
+          'Name': name,
+          'Email': email,
+          'Wallet': '0',
+          'Profile': '',
+        };
+        await _databaseMethods.addUserDetail(userData, user.uid);
+        await _cacheService.saveUserData(
+          id: user.uid,
+          name: name,
+          email: email,
+          wallet: '0',
+          profile: '',
+        );
 
-      String profileUrl = await _uploadProfileImage();
-
-      Map<String, dynamic> addUserInfo = {
-        "Name": usernameController.text,
-        "Email": useremailController.text,
-        "Wallet": "0",
-        "ProfileImageUrl": profileUrl,
-      };
-
-      await DatabaseMethods().addUserDetailWithAutoIncrement(addUserInfo);
-      await SharedPreferenceHelper().saveUserName(usernameController.text);
-      await SharedPreferenceHelper().saveUserEmail(useremailController.text);
-      await SharedPreferenceHelper().saveUserWallet('0');
-      await SharedPreferenceHelper().saveUserProfile(profileUrl);
-      await SharedPreferenceHelper().saveUserId(addUserInfo['Id']);
-
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LogIn()));
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.greenAccent,
+              content: Text("Signed Up Successfully", style: TextStyle(fontSize: 20.0)),
+            ),
+          );
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const BottomNav()),
+            (Route<dynamic> route) => false, // Clear navigation stack
+          );
+        }
+      }
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-            "The password provided is too weak.",
-            style: TextStyle(fontSize: 18.0, color: Colors.black),
+      String message = "An error occurred";
+      if (e.code == 'email-already-in-use') {
+        message = "The email address is already in use.";
+      } else if (e.code == 'weak-password') {
+        message = "The password is too weak.";
+      } else {
+        message = e.message ?? message;
+      }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.redAccent,
+            content: Text(message, style: const TextStyle(fontSize: 20.0)),
           ),
-        ));
-      } else if (e.code == 'email-already-in-use') {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-            "The account already exists for that email.",
-            style: TextStyle(fontSize: 18.0, color: Colors.black),
-          ),
-        ));
+        );
       }
     } catch (e) {
-      print('Error signing up: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.redAccent,
+            content: Text("Error signing up: $e", style: const TextStyle(fontSize: 20.0)),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        child: Stack(
-          children: [
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color.fromARGB(255, 8, 8, 8),
-                    Color.fromARGB(255, 5, 5, 5),
-                  ],
-                ),
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.only(top: MediaQuery.of(context).size.height / 3),
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(40),
-                  topRight: Radius.circular(40),
-                ),
-              ),
-              child: Text(""),
-            ),
-            Container(
-              margin: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Center(
-                      child: Image.asset(
-                        "images/logo.png",
-                        width: MediaQuery.of(context).size.width / 1.5,
-                        fit: BoxFit.cover,
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Container(
+              child: Stack(
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color.fromARGB(255, 8, 8, 8),
+                          Color.fromARGB(255, 5, 5, 5),
+                        ],
                       ),
                     ),
-                    SizedBox(height: 30.0),
-                    Material(
-                      elevation: 5.0,
-                      borderRadius: BorderRadius.circular(20),
-                      child: Container(
-                        padding: EdgeInsets.all(20.0),
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                          color: Colors.white70,
-                          borderRadius: BorderRadius.circular(20),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: MediaQuery.of(context).size.height / 3),
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width,
+                    decoration: const BoxDecoration(
+                      color: Colors.grey,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(40),
+                        topRight: Radius.circular(40),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 60.0, left: 20.0, right: 20.0),
+                    child: Column(
+                      children: [
+                        Center(
+                          child: Image.asset(
+                            "images/logo.png",
+                            width: MediaQuery.of(context).size.width / 1.5,
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            children: [
-                              SizedBox(height: 30.0),
-                              Text(
-                                "Sign Up",
-                                style: AppWidget.HeadlineText1FeildStyle(),
-                              ),
-                              SizedBox(height: 30.0),
-                              TextFormField(
-                                controller: usernameController,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please Enter name';
-                                  }
-                                  return null;
-                                },
-                                decoration: InputDecoration(
-                                  hintText: 'Name',
-                                  hintStyle: AppWidget.semiBoldTextFeildStyle(),
-                                  prefixIcon: Icon(Icons.person),
-                                ),
-                              ),
-                              SizedBox(height: 30.0),
-                              TextFormField(
-                                controller: useremailController,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please Enter Email';
-                                  }
-                                  return null;
-                                },
-                                decoration: InputDecoration(
-                                  hintText: 'Email',
-                                  hintStyle: AppWidget.semiBoldTextFeildStyle(),
-                                  prefixIcon: Icon(Icons.email_outlined),
-                                ),
-                              ),
-                              SizedBox(height: 30.0),
-                              TextFormField(
-                                controller: userpasswordController,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please Enter Password';
-                                  }
-                                  return null;
-                                },
-                                obscureText: true,
-                                decoration: InputDecoration(
-                                  hintText: 'Password',
-                                  hintStyle: AppWidget.semiBoldTextFeildStyle(),
-                                  prefixIcon: Icon(Icons.lock),
-                                ),
-                              ),
-                            
-                              SizedBox(height: 30.0),
-                              GestureDetector(
-                                onTap: () {
-                                  if (_formKey.currentState!.validate()) {
-                                    setState(() {
-                                      email = useremailController.text;
-                                      password = userpasswordController.text;
-                                    });
-                                    userSignUp();
-                                  }
-                                },
-                                onTapDown: (_) {
-                                  setState(() {
-                                    isTapped = true;
-                                  });
-                                },
-                                onTapUp: (_) {
-                                  setState(() {
-                                    isTapped = false;
-                                  });
-                                },
-                                onTapCancel: () {
-                                  setState(() {
-                                    isTapped = false;
-                                  });
-                                },
-                                child: Material(
-                                  elevation: 5.0,
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: AnimatedContainer(
-                                    duration: const Duration(milliseconds: 200),
-                                    padding: EdgeInsets.symmetric(vertical: 15.0),
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      color: isTapped ? Colors.grey[400] : Colors.grey,
-                                      borderRadius: BorderRadius.circular(20),
+                        const SizedBox(height: 50.0),
+                        Material(
+                          elevation: 5.0,
+                          borderRadius: BorderRadius.circular(20),
+                          child: Container(
+                            padding: const EdgeInsets.all(20.0),
+                            width: MediaQuery.of(context).size.width,
+                            decoration: BoxDecoration(
+                              color: Colors.white70,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Form(
+                              key: _formKey,
+                              child: Column(
+                                children: [
+                                  const SizedBox(height: 30.0),
+                                  Text(
+                                    "Sign Up",
+                                    style: AppWidget.HeadlineText1FeildStyle(),
+                                  ),
+                                  const SizedBox(height: 30.0),
+                                  TextFormField(
+                                    controller: userNameController,
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please Enter Name';
+                                      }
+                                      return null;
+                                    },
+                                    onChanged: (value) => name = value.trim(),
+                                    decoration: InputDecoration(
+                                      hintText: 'Name',
+                                      hintStyle: AppWidget.semiBoldTextFeildStyle(),
+                                      prefixIcon: const Icon(Icons.person),
                                     ),
-                                    child: Center(
-                                      child: Text(
-                                        "SIGNUP",
-                                        style: TextStyle(
-                                          color: Colors.black54,
-                                          fontSize: 18.0,
-                                          fontFamily: 'Poppins1',
-                                          fontWeight: FontWeight.bold,
+                                  ),
+                                  const SizedBox(height: 30.0),
+                                  TextFormField(
+                                    controller: userEmailController,
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please Enter Email';
+                                      }
+                                      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                                        return 'Please Enter a Valid Email';
+                                      }
+                                      return null;
+                                    },
+                                    onChanged: (value) => email = value.trim(),
+                                    decoration: InputDecoration(
+                                      hintText: 'Email',
+                                      hintStyle: AppWidget.semiBoldTextFeildStyle(),
+                                      prefixIcon: const Icon(Icons.email_outlined),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 30.0),
+                                  TextFormField(
+                                    controller: userPasswordController,
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please Enter Password';
+                                      }
+                                      if (value.length < 6) {
+                                        return 'Password must be at least 6 characters';
+                                      }
+                                      return null;
+                                    },
+                                    onChanged: (value) => password = value,
+                                    obscureText: true,
+                                    decoration: InputDecoration(
+                                      hintText: 'Password',
+                                      hintStyle: AppWidget.semiBoldTextFeildStyle(),
+                                      prefixIcon: const Icon(Icons.lock),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 80.0),
+                                  GestureDetector(
+                                    onTap: signUp,
+                                    onTapDown: (_) {
+                                      setState(() {
+                                        isTapped = true;
+                                      });
+                                    },
+                                    onTapUp: (_) {
+                                      setState(() {
+                                        isTapped = false;
+                                      });
+                                    },
+                                    onTapCancel: () {
+                                      setState(() {
+                                        isTapped = false;
+                                      });
+                                    },
+                                    child: Material(
+                                      elevation: 5.0,
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: AnimatedContainer(
+                                        duration: const Duration(milliseconds: 200),
+                                        padding: const EdgeInsets.symmetric(vertical: 15.0),
+                                        width: double.infinity,
+                                        decoration: BoxDecoration(
+                                          color: isTapped ? Colors.grey[400] : Colors.grey,
+                                          borderRadius: BorderRadius.circular(20),
+                                        ),
+                                        child: const Center(
+                                          child: Text(
+                                            "SIGN UP",
+                                            style: TextStyle(
+                                              color: Colors.black54,
+                                              fontSize: 18.0,
+                                              fontFamily: 'Poppins1',
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
+                                  const SizedBox(height: 20.0),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => const LogIn()),
+                                      );
+                                    },
+                                    child: Text(
+                                      "Already have an account? Log In",
+                                      style: AppWidget.semiBoldTextFeildStyle(),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              SizedBox(height: 20.0),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => LogIn()),
-                                  );
-                                },
-                                child: Text(
-                                  "Have an account? Login",
-                                  style: AppWidget.semiBoldTextFeildStyle(),
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (isLoading)
+            Container(
+              color: Colors.black54,
+              child: Center(
+                child: Lottie.asset(
+                  'images/Loder_foody.json',
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.contain,
                 ),
               ),
             ),
-          ],
-        ),
+        ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    userNameController.dispose();
+    userEmailController.dispose();
+    userPasswordController.dispose();
+    super.dispose();
   }
 }
