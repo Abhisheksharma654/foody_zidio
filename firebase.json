@@ -1,1 +1,22 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"foody-37139","appId":"1:300023402608:android:117b8e9f943e2811a564b5","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"foody-37139","configurations":{"android":"1:300023402608:android:117b8e9f943e2811a564b5","web":"1:300023402608:web:93a47d4d7c06d3fba564b5"}}}}}}
+{
+    "flutter": {
+        "platforms": {
+            "android": {
+                "default": {
+                    "projectId": "foody-37139",
+                    "appId": "1:300023402608:android:117b8e9f943e2811a564b5",
+                    "fileOutput": "android/app/google-services.json"
+                }
+            },
+            "dart": {
+                "lib/firebase_options.dart": {
+                    "projectId": "foody-37139",
+                    "configurations": {
+                        "android": "1:300023402608:android:117b8e9f943e2811a564b5",
+                        "web": "1:300023402608:web:93a47d4d7c06d3fba564b5"
+                    }
+                }
+            }
+        }
+    }
+}
