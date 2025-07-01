@@ -2,20 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:foody_zidio/Content/bottom_nav.dart';
 import 'package:lottie/lottie.dart';
 
-class PaymentSuccessfull extends StatefulWidget {
+class PaymentSuccessfull extends StatelessWidget {
   const PaymentSuccessfull({Key? key}) : super(key: key);
-
-  @override
-  _PaymentSuccessfullState createState() => _PaymentSuccessfullState();
-}
-
-class _PaymentSuccessfullState extends State<PaymentSuccessfull> {
-  bool navigateToBottomNav = false;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,52 +12,44 @@ class _PaymentSuccessfullState extends State<PaymentSuccessfull> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Container(
-                    height: 700, // Adjust size as needed
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Lottie.asset(
-                        'images/Payment_success.json', // Replace with your JSON file path
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+            Lottie.asset(
+              'images/Payment_success.json',
+              width: 200,
+              height: 200,
+              fit: BoxFit.contain,
+              repeat: false,
             ),
-            SizedBox(height: 100),
+            const SizedBox(height: 20),
+            const Text(
+              "Payment Successful!",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 20),
             GestureDetector(
               onTap: () {
-                setState(() {
-                  navigateToBottomNav = true; // Set flag to navigate to BottomNav
-                });
-                Navigator.pushReplacement(
+                Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => BottomNav()),
+                  MaterialPageRoute(builder: (context) => const BottomNav()),
+                  (route) => false,
                 );
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 15.0),
-                width: MediaQuery.of(context).size.width * 0.7,
+                padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
                 decoration: BoxDecoration(
-                  color: Colors.green,
-                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.grey,
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Center(
-                  child: Text(
-                    "Keep Shopping",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.bold,
-                    ),
+                child: const Text(
+                  "Back to Home",
+                  style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
