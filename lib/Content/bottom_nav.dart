@@ -1,75 +1,96 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:foody_zidio/pages/ShoppingList.dart';
 import 'package:foody_zidio/pages/home.dart';
-import 'package:foody_zidio/pages/myorder.dart';
 import 'package:foody_zidio/pages/profile.dart';
 import 'package:foody_zidio/pages/wallet.dart';
 
 class BottomNav extends StatefulWidget {
-  const BottomNav({super.key});
+  const BottomNav({Key? key}) : super(key: key);
 
   @override
-  _BottomNavState createState() => _BottomNavState();
+  State<BottomNav> createState() => _BottomNavState();
 }
 
 class _BottomNavState extends State<BottomNav> {
-  int currentTabIndex = 0;
-
-  late List<Widget> pages;
-  late Widget currentPage;
-  late Home homepage;
-  late Profile profile;
-  late Ordered order;
-  late Wallet wallet;
+  int _selectedIndex = 0;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  DateTime? _lastBackPressTime;
 
   @override
   void initState() {
-    homepage = Home();
-    order = Ordered();
-    profile = Profile();
-    wallet = Wallet();
-    pages = [homepage, order, wallet, profile];
     super.initState();
+  }
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  Future<bool> _onWillPop() async {
+    if (_selectedIndex != 0) {
+      setState(() {
+        _selectedIndex = 0; // Return to Home tab
+      });
+      return false;
+    }
+    final now = DateTime.now();
+    if (_lastBackPressTime == null ||
+        now.difference(_lastBackPressTime!) > const Duration(seconds: 2)) {
+      _lastBackPressTime = now;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Press back again to exit'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return false;
+    }
+    return true; // Allow app exit
   }
 
   @override
   Widget build(BuildContext context) {
+    String? userId = _auth.currentUser?.uid;
+    final List<Widget> _pages = [
+      const Home(),
+      userId != null
+          ? ShoppingList(userId: userId)
+          : const Center(child: Text("Please log in")),
+      const Wallet(),
+      const Profile(),
+    ];
+
     return WillPopScope(
-      onWillPop: () async {
-        return false;
-      },
+      onWillPop: _onWillPop,
       child: Scaffold(
-        backgroundColor: Colors.grey[900],
-        bottomNavigationBar: CurvedNavigationBar(
-          height: 65,
-          backgroundColor: Colors.transparent,
-          color: Colors.grey,
-          animationDuration: Duration(milliseconds: 500),
-          onTap: (int index) {
-            setState(() {
-              currentTabIndex = index;
-            });
-          },
-          items: [
-            Icon(
-              Icons.home_outlined,
-              color: Colors.black,
+        body: _pages[_selectedIndex],
+        bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: Colors.black,
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.grey,
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          type: BottomNavigationBarType.fixed,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
             ),
-            Icon(
-              Icons.shopping_bag_outlined,
-              color: Colors.black,
+            BottomNavigationBarItem(
+              icon: Icon(Icons.shopping_cart),
+              label: 'Orders',
             ),
-            Icon(
-              Icons.wallet_outlined,
-              color: Colors.black,
+            BottomNavigationBarItem(
+              icon: Icon(Icons.account_balance_wallet),
+              label: 'Wallet',
             ),
-            Icon(
-              Icons.person_outline,
-              color: Colors.black,
-            )
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
           ],
         ),
-        body: pages[currentTabIndex],
       ),
     );
   }
