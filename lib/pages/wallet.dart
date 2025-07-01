@@ -1,388 +1,263 @@
-import 'dart:async';
-import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:foody_zidio/Database/database.dart';
-import 'package:foody_zidio/service/app_constraint.dart';
-import 'package:foody_zidio/service/shared_pref.dart';
-import 'package:foody_zidio/widget/widget_support.dart';
+import 'package:foody_zidio/services/app_constraint.dart';
+import 'package:foody_zidio/services/database.dart';
+import 'package:foody_zidio/services/local_cache.dart';
+import 'package:foody_zidio/services/widget_support.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Wallet extends StatefulWidget {
-  const Wallet({super.key});
+  const Wallet({Key? key}) : super(key: key);
 
   @override
   State<Wallet> createState() => _WalletState();
 }
 
 class _WalletState extends State<Wallet> {
-  String? wallet, id;
-  int? add;
-  TextEditingController amountcontroller =  TextEditingController();
-
-  getthesharedpref() async {
-    wallet = await SharedPreferenceHelper().getUserWallet();
-    id = await SharedPreferenceHelper().getUserId();
-    setState(() {});
-  }
-
-  ontheload() async {
-    await getthesharedpref();
-    setState(() {});
-  }
+  String walletBalance = "0";
+  TextEditingController amountController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final DatabaseMethods _databaseMethods = DatabaseMethods();
+  final LocalCacheService _cacheService = LocalCacheService();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  bool _isLoading = false;
 
   @override
   void initState() {
-    ontheload();
     super.initState();
+    _loadWalletBalance();
   }
 
-  Map<String, dynamic>? paymentIntent;
+  Future<void> _loadWalletBalance() async {
+    String? uid = _auth.currentUser?.uid;
+    if (uid != null) {
+      try {
+        Map<String, String>? cachedData = await _cacheService.getUserData(uid);
+        if (cachedData != null && _cacheService.isCacheValid(cachedData)) {
+          setState(() {
+            walletBalance = cachedData['wallet'] ?? '0';
+          });
+        } else {
+          Map<String, dynamic>? userData = await _databaseMethods.getUserDetails(uid);
+          if (userData != null) {
+            setState(() {
+              walletBalance = userData['Wallet'] ?? '0';
+            });
+            await _cacheService.updateUserData(id: uid, wallet: walletBalance);
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.redAccent,
+              content: Text("Error loading wallet: $e", style: const TextStyle(fontSize: 20.0)),
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _makePayment() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      String amount = amountController.text.trim();
+      var response = await http.post(
+        Uri.parse('https://api.stripe.com/v1/payment_intents'),
+        headers: {
+          'Authorization': 'Bearer $secretKey',
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: {
+          'amount': '${int.parse(amount) * 100}',
+          'currency': 'INR',
+          'payment_method_types[]': 'card',
+        },
+      );
+      var json = jsonDecode(response.body);
+      if (json['error'] != null) {
+        throw Exception(json['error']['message']);
+      }
+      await Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          paymentIntentClientSecret: json['client_secret'],
+          merchantDisplayName: 'Foody Zidio',
+        ),
+      );
+      await Stripe.instance.presentPaymentSheet();
+      String? uid = _auth.currentUser?.uid;
+      if (uid != null) {
+        int currentBalance = int.parse(walletBalance);
+        int newBalance = currentBalance + int.parse(amount);
+        await _databaseMethods.updateUserWallet(uid, newBalance.toString());
+        await _cacheService.updateUserData(id: uid, wallet: newBalance.toString());
+        setState(() {
+          walletBalance = newBalance.toString();
+          amountController.clear();
+        });
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.greenAccent,
+              content: Text("Wallet topped up successfully!", style: TextStyle(fontSize: 20.0)),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      print('Error processing payment: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.redAccent,
+            content: Text("Payment failed: $e", style: const TextStyle(fontSize: 20.0)),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[900],
-       appBar: AppBar(
-        backgroundColor: Colors.black, // Make app bar transparent
-        elevation: 0, // Remove elevation
-        title: Text(
-          "Wallet",
-          style: AppWidget.semiBoldWhiteTextFeildStyle()
-        ),
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        title: Text("Wallet", style: AppWidget.semiBoldWhiteTextFeildStyle()),
         centerTitle: true,
-
         leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(Icons.arrow_back),
-          color: Colors.white,
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
         ),
       ),
-      body: wallet == null
-          ? const CircularProgressIndicator()
-          : Container(
-              margin: const EdgeInsets.only(top: 60.0),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Container(
+              margin: const EdgeInsets.all(20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-            
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-                    width: MediaQuery.of(context).size.width,
-                    decoration: const BoxDecoration(color: Colors.transparent),
-                    child: Row(
-                      children: [
-                        Image.asset(
-                          "images/wallet.png",
-                          height: 60,
-                          width: 60,
-                          fit: BoxFit.cover,
-                        ),
-                        const SizedBox(
-                          width: 40.0,
-                        ),
-                        Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Your Wallet",
-                              style: AppWidget.LightTextFeildStyle(),
-                            ),
-                            const SizedBox(
-                              height: 5.0,
-                            ),
-                            Text(
-                              "\u{20B9}" + wallet!,
-                              style: AppWidget.boldTextFeildStyle(),
-                            )
-                          ],
-                        )
-                      ],
+                  Center(
+                    child: Image.asset(
+                      "images/wallet.png",
+                      width: 100,
+                      height: 100,
                     ),
                   ),
-                  const SizedBox(
-                    height: 20.0,
+                  const SizedBox(height: 20.0),
+                  Text(
+                    "Current Balance: ₹$walletBalance",
+                    style: AppWidget.HeadlineTextFeildStyle(),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: Text(
-                      "Add money",
-                      style: AppWidget.semiBoldWhiteTextFeildStyle(),
+                  const SizedBox(height: 40.0),
+                  Text(
+                    "Add Money to Wallet",
+                    style: AppWidget.semiBoldWhiteTextFeildStyle(),
+                  ),
+                  const SizedBox(height: 10.0),
+                  Form(
+                    key: _formKey,
+                    child: TextFormField(
+                      controller: amountController,
+                      keyboardType: TextInputType.number,
+                      style: const TextStyle(color: Colors.white), // Fix: Set text color to white
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter an amount';
+                        }
+                        int? amount = int.tryParse(value.trim());
+                        if (amount == null || amount <= 0) {
+                          return 'Please enter a valid amount';
+                        }
+                        return null;
+                      },
+                      decoration: InputDecoration(
+                        hintText: "Enter amount",
+                        hintStyle: AppWidget.semiBoldTextFeildStyle(),
+                        filled: true,
+                        fillColor: Colors.grey[800], // Background for input field
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(color: Colors.white70),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(color: Colors.white70),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(color: Colors.white),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(color: Colors.redAccent),
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.currency_rupee,
+                          color: Colors.white70, // Fix: Set icon color
+                        ),
+                      ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 10.0,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          makePayment('100');
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                              border: Border.all(color: const Color(0xFFE9E2E2)),
-                              borderRadius: BorderRadius.circular(5)),
-                          child: Text(
-                            "\u{20B9}" + "100",
-                            style: AppWidget.semiBoldWhiteTextFeildStyle(),
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          makePayment('500');
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                              border: Border.all(color: const Color(0xFFE9E2E2)),
-                              borderRadius: BorderRadius.circular(5)),
-                          child: Text(
-                            "\u{20B9}" + "500",
-                            style: AppWidget.semiBoldWhiteTextFeildStyle(),
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          makePayment('1000');
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                              border: Border.all(color: const Color(0xFFE9E2E2)),
-                              borderRadius: BorderRadius.circular(5)),
-                          child: Text(
-                            "\u{20B9}" + "1000",
-                            style: AppWidget.semiBoldWhiteTextFeildStyle(),
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          makePayment('2000');
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                              border: Border.all(color: const Color(0xFFE9E2E2)),
-                              borderRadius: BorderRadius.circular(5)),
-                          child: Text(
-                            "\u{20B9}" + "2000",
-                            style: AppWidget.semiBoldWhiteTextFeildStyle(),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 50.0,
-                  ),
+                  const SizedBox(height: 40.0),
                   GestureDetector(
-                    onTap: () {
-                      openEdit();
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                      padding: const EdgeInsets.symmetric(vertical: 12.0),
-                      width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(
-                          color: const Color(0xFF008080),
-                          borderRadius: BorderRadius.circular(8)),
-                      child: const Center(
-                        child: Text(
-                          "Add Money",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16.0,
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.bold),
+                    onTap: _makePayment,
+                    child: Material(
+                      elevation: 5.0,
+                      borderRadius: BorderRadius.circular(20),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 15.0),
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: Colors.grey,
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-    );
-  }
-
-  Future<void> makePayment(String amount) async {
-    try {
-      paymentIntent = await createPaymentIntent(amount, 'INR');
-      //Payment Sheet
-      await Stripe.instance
-          .initPaymentSheet(
-              paymentSheetParameters: SetupPaymentSheetParameters(
-                  paymentIntentClientSecret: paymentIntent!['client_secret'],
-                  // applePay: const PaymentSheetApplePay(merchantCountryCode: '+92',),
-                  // googlePay: const PaymentSheetGooglePay(testEnv: true, currencyCode: "US", merchantCountryCode: "+92"),
-                  style: ThemeMode.dark,
-                  merchantDisplayName: 'Adnan'))
-          .then((value) {});
-
-      ///now finally display payment sheeet
-      displayPaymentSheet(amount);
-    } catch (e, s) {
-      print('exception:$e$s');
-    }
-  }
-  displayPaymentSheet(String amount) async {
-    try {
-      await Stripe.instance.presentPaymentSheet().then((value) async {
-        add = int.parse(wallet!) + int.parse(amount);
-        await SharedPreferenceHelper().saveUserWallet(add.toString());
-        await DatabaseMethods().updateUserWallet(id!, add.toString());
-        // ignore: use_build_context_synchronously
-        showDialog(
-            context: context,
-            builder: (_) => const AlertDialog(
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.check_circle,
-                            color: Colors.green,
-                          ),
-                          Text("Payment Successfull"),
-                        ],
-                      ),
-                    ],
-                  ),
-                ));
-        await getthesharedpref();
-        // ignore: use_build_context_synchronously
-
-        paymentIntent = null;
-      }).onError((error, stackTrace) {
-        print('Error is:--->$error $stackTrace');
-      });
-    } on StripeException catch (e) {
-      print('Error is:---> $e');
-      showDialog(
-          context: context,
-          builder: (_) => const AlertDialog(
-                content: Text("Cancelled "),
-              ));
-    } catch (e) {
-      print('$e');
-    }
-  }
-
-  //  Future<Map<String, dynamic>>
-  createPaymentIntent(String amount, String currency) async {
-    try {
-      Map<String, dynamic> body = {
-        'amount': calculateAmount(amount),
-        'currency': currency,
-        'payment_method_types[]': 'card'
-      };
-
-      var response = await http.post(
-        Uri.parse('https://api.stripe.com/v1/payment_intents'),
-        headers: {
-          'Authorization': 'Bearer $secretKey',
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: body,
-      );
-      // ignore: avoid_print
-      print('Payment Intent Body->>> ${response.body.toString()}');
-      return jsonDecode(response.body);
-    } catch (err) {
-      // ignore: avoid_print
-      print('err charging user: ${err.toString()}');
-    }
-  }
-
-  calculateAmount(String amount) {
-    final calculatedAmout = (int.parse(amount)) * 100;
-
-    return calculatedAmout.toString();
-  }
-
-  Future openEdit() => showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-            content: SingleChildScrollView(
-              child: Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Icon(Icons.cancel)),
-                        const SizedBox(
-                          width: 60.0,
-                        ),
-                        const Center(
+                        child: const Center(
                           child: Text(
                             "Add Money",
                             style: TextStyle(
-                              color: Color(0xFF008080),
+                              color: Colors.black54,
+                              fontSize: 18.0,
+                              fontFamily: 'Poppins1',
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                        )
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 20.0,
-                    ),
-                    const Text("Amount"),
-                    const SizedBox(
-                      height: 10.0,
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black38, width: 2.0),
-                          borderRadius: BorderRadius.circular(10)),
-                      child: TextField(
-                        controller: amountcontroller,
-                        decoration: const InputDecoration(
-                            border: InputBorder.none, hintText: 'Enter Amount'),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 20.0,
-                    ),
-                    Center(
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                          makePayment(amountcontroller.text);
-                        },
-                        child: Container(
-                          width: 100,
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF008080),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: const Center(
-                              child: Text(
-                            "Pay",
-                            style: TextStyle(color: Colors.white),
-                          )),
                         ),
                       ),
-                    )
-                  ],
-                ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ));
+          ),
+          if (_isLoading)
+            Container(
+              color: Colors.black54,
+              child: const Center(child: CircularProgressIndicator()),
+            ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    amountController.dispose();
+    super.dispose();
+  }
 }
