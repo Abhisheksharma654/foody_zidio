@@ -1,57 +1,59 @@
-import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:foody_zidio/Content/bottom_nav.dart';
-import 'package:foody_zidio/Content/splash_screen.dart';
-import 'package:foody_zidio/service/app_constraint.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'pages/login.dart';
+import 'package:foody_zidio/Content/onboard.dart';
+import 'package:foody_zidio/services/app_constraint.dart';
+import 'package:foody_zidio/services/local_cache.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Stripe.publishableKey = publishableKey;
   await Firebase.initializeApp();
-  runApp(const MyApp());
+  final LocalCacheService cacheService = LocalCacheService();
+  Stripe.publishableKey = publishableKey;
+  await cacheService.init();
+  runApp(MyApp(cacheService: cacheService));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final LocalCacheService cacheService;
+
+  const MyApp({Key? key, required this.cacheService}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      title: 'Foody Zidio',
+      theme: ThemeData(
+        primarySwatch: Colors.grey,
+        scaffoldBackgroundColor: Colors.grey[900],
+      ),
+      home: AuthWrapper(cacheService: cacheService),
     );
   }
 }
 
-class Checkuser extends StatelessWidget {
+class AuthWrapper extends StatelessWidget {
+  final LocalCacheService cacheService;
+
+  const AuthWrapper({Key? key, required this.cacheService}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _checkUserStatus(),
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
-        } else {
-          bool isLoggedIn = snapshot.data as bool;
-
-          if (isLoggedIn) {
-            return BottomNav();
-          } else {
-            return const LogIn();
-          }
         }
+        if (snapshot.hasData && snapshot.data != null) {
+          return BottomNav(); 
+        }
+        return Onboard(cacheService: cacheService); 
       },
     );
-  }
-
-  Future<bool> _checkUserStatus() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    return user != null;
   }
 }
